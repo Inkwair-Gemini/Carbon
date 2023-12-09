@@ -9,12 +9,9 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>model</module>
-        <module>utils</module>
-        <module>config</module>
-        <module>security</module>
-        <module>operate</module>
-        <module>other</module>
+        <module>other/common</module>
+        <module>other/utils</module>
+        <module>other/security</module>
     </modules>
 
     <properties>
