@@ -1,7 +1,7 @@
 package com.carbon.po;
 
 // 群组报价成交记录
-class GroupDoneRecord {
+public class GroupDoneRecord {
     private String id;
     private Date time;
     private String groupId;

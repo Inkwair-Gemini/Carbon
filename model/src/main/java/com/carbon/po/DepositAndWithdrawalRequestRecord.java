@@ -1,7 +1,14 @@
 package com.carbon.po;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 // 出入金申请记录
-class DepositAndWithdrawalRequestRecord {
+public class DepositAndWithdrawalRequestRecord {
     private String id;
     private String date;
     private String time;

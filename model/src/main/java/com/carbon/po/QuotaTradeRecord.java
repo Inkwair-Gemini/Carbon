@@ -1,7 +1,7 @@
 package com.carbon.po;
 
 // 配额交易流水
-class QuotaTradeRecord {
+public class QuotaTradeRecord {
     private String id;
     private String date;
     private String time;

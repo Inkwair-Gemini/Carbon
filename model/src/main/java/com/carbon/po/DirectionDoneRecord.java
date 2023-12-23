@@ -1,7 +1,7 @@
 package com.carbon.po;
 
 // 定向报价成交记录
-class DirectionDoneRecord {
+public class DirectionDoneRecord {
     private String id;
     private Date time;
     private String subjectMatterCode;

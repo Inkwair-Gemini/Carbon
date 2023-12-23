@@ -1,7 +1,7 @@
 package com.carbon.input;
 
 // 群组报价表单
-class GroupPost {
+public class GroupPost {
     private String id;
     private String subjectMatterCode; // 标的物代码
     private String subjectMatterName; // 标的物名称

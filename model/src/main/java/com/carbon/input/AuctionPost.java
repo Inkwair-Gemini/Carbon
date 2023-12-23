@@ -1,7 +1,7 @@
 package com.carbon.input;
 
 // 单向竞价报价表单
-class AuctionPost {
+public class AuctionPost {
     private String id;
     private Date time;
     private String subjectMatterCode;

@@ -1,7 +1,7 @@
 package com.carbon.input;
 
 // 配额划转表单
-class QuotaTransferPost {
+public class QuotaTransferPost {
     private String id;
     private String quotaAccount; // 配额账号
     private String subjectMatterCode; // 标的物代码

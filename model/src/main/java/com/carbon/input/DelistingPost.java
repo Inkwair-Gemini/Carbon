@@ -1,7 +1,7 @@
 package com.carbon.input;
 
 // 摘牌表单
-class DelistingPost {
+public class DelistingPost {
     private String id;
     private String ListingPostId; // 挂牌表单ID
     private String accountType; // 账户类型

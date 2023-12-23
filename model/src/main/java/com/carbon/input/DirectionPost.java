@@ -1,7 +1,7 @@
 package com.carbon.input;
 
 // 定向报价表单
-class DirectionPost {
+public class DirectionPost {
     private String id;
     private String subjectMatterCode; // 标的物代码
     private String subjectMatterName; // 标的物名称

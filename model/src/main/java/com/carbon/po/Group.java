@@ -1,7 +1,7 @@
 package com.carbon.po;
 
 // 群组
-class Group {
+public class Group {
     private String id;
     private String name;
     private Date createTime;

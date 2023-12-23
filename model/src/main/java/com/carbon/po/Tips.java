@@ -1,7 +1,7 @@
 package com.carbon.po;
 
 // 消息提示
-class Tips {
+public class Tips {
     private String id;
     private Date time;
     private String content;

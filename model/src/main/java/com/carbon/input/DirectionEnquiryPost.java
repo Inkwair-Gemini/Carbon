@@ -1,7 +1,7 @@
 package com.carbon.input;
 
 // 定向洽谈报价表单
-class DirectionEnquiryPost {
+public class DirectionEnquiryPost {
     private String id;
     private Date time;
     private String subjectMatterCode; // 标的物代码
