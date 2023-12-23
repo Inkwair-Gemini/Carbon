@@ -2,18 +2,22 @@ package com.carbon.service;
 
 import com.carbon.po.CapitalAccount;
 import com.carbon.po.CapitalTradeRecord;
+import com.carbon.po.DepositAndWithdrawalRecord;
+import com.carbon.po.DepositAndWithdrawalRequestRecord;
+
+import java.util.List;
 
 public interface CapitalService {
     //转入交易资金
-    Boolean capitalIn(String fromBankId,String toAccountId,Double amount);
+    void capitalIn(String fromBankId,String toAccountId,Double amount);
     //转出交易资金
-    Boolean capitalOut(String fromAccountId,String toBankId,Double value);
+    void capitalOut(String fromAccountId,String toBankId,Double value);
     //查询资金账户
     CapitalAccount selectCapitalAccount(String accountId);
     //查询资金交易流水
-    CapitalTradeRecord selectCapitalTradeRecord(String accountId);
+    List<CapitalTradeRecord> selectCapitalTradeRecord(String operatorCode);
     //查询出入金记录
-    DepositAndWithdrawalRecord selectDepositAndWithdrawalRecord();
+    List<DepositAndWithdrawalRecord> selectDepositAndWithdrawalRecord(String operatorCode);
     //查询出入金申请记录
-    DepositAndWithdrawalRequestRecord selectDepositAndWithdrawalRequestRecord();
+    List<DepositAndWithdrawalRequestRecord> selectDepositAndWithdrawalRequestRecord(String operatorCode);
 }

@@ -1,7 +1,7 @@
 package com.carbon.po;
 
 // 单向竞价成交记录
-class AuctionDoneRecord {
+public class AuctionDoneRecord {
     private String id;
     private Date time;
     private String subjectMatterCode;

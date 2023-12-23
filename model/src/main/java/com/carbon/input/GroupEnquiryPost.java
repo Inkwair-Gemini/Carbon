@@ -1,7 +1,7 @@
 package com.carbon.input;
 
 // 群组洽谈报价表单
-class GroupEnquiryPost {
+public class GroupEnquiryPost {
     private String id;
     private Date time;
     private String subjectMatterCode; // 标的物代码

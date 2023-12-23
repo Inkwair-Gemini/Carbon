@@ -1,7 +1,7 @@
 package com.carbon.po;
 
 // 配额转入转出流水
-class QuotaTransferRecord {
+public class QuotaTransferRecord {
     private String id;
     private String date;
     private String time;

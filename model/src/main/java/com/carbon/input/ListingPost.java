@@ -1,7 +1,7 @@
 package com.carbon.input;
 
 // 挂牌表单
-class ListingPost {
+public class ListingPost {
     private String id;
     private String subjectMatterCode; // 标的物代码
     private String subjectMatterName; // 标的物名称

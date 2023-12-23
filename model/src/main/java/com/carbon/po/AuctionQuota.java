@@ -1,7 +1,7 @@
 package com.carbon.po;
 
 // 单向竞价商品
-class AuctionQuota {
+public class AuctionQuota {
     private String id;
     private String time; // 平台发布时间
     private String subjectMatterCode; // 标的物代码

@@ -1,7 +1,7 @@
 package com.carbon.output;
 
 // 定向报价查询
-class DirectionSelectResult {
+public class DirectionSelectResult {
     private String id;
     private Date time;
     private String subjectMatterCode;

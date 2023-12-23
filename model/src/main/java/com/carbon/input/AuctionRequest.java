@@ -1,7 +1,7 @@
 package com.carbon.input;
 
 // 单向竞价委托单
-class AuctionRequest {
+public class AuctionRequest {
     private String id;
     private String time; // 申请时间
     private String subjectMatterCode; // 标的物代码

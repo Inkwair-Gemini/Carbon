@@ -1,7 +1,7 @@
 package com.carbon.output;
 
 // 群组报价查询
-class GroupSelectResult {
+public class GroupSelectResult {
     private String id;
     private Date time;
     private String subjectMatterCode;

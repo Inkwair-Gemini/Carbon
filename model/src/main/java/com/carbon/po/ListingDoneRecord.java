@@ -1,7 +1,7 @@
 package com.carbon.po;
 
 // 挂牌交易成交记录
-class ListingDoneRecord {
+public class ListingDoneRecord {
     private String id;
     private Date time;
     private String subjectMatterCode; // 标的物代码
