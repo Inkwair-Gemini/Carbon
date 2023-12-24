@@ -19,42 +19,34 @@ public class SelectMarketServiceImpl implements SelectMarketService {
     SelectMarketDao selectMarketDao;
 
     @Override
-    //查询当日单向竞价成交记录
     public List<AuctionDoneRecord> selectAuctionDoneRecordCurrent(){
         return selectMarketDao.selectAuctionDoneRecordByDate(LocalDate.now());
     }
     @Override
-    //查询当日定向报价成交记录
     public List<DirectionDoneRecord> selectDirectionDoneRecordCurrent(){
         return selectMarketDao.selectDirectionDoneRecordByDate(LocalDate.now());
     }
     @Override
-    //查询当日群组报价成交记录
     public List<GroupDoneRecord> selectGroupDoneRecordCurrent(){
         return selectMarketDao.selectGroupDoneRecordByDate(LocalDate.now());
     }
     @Override
-    //查询当日挂牌交易成交记录
     public List<ListingDoneRecord> selectListingDoneRecordCurrent(){
         return selectMarketDao.selectListingDoneRecordByDate(LocalDate.now());
     }
     @Override
-    //查询历史单向竞价成交记录
     public List<AuctionDoneRecord> selectAuctionDoneRecordHistory(LocalDate date){
         return selectMarketDao.selectAuctionDoneRecordByDate(date);
     }
     @Override
-    //查询历史定向报价成交记录
     public List<DirectionDoneRecord> selectDirectionDoneRecordHistory(LocalDate date){
         return selectMarketDao.selectDirectionDoneRecordByDate(date);
     }
     @Override
-    //查询历史群组报价成交记录
     public List<GroupDoneRecord> selectGroupDoneRecordHistory(LocalDate date){
         return selectMarketDao.selectGroupDoneRecordByDate(date);
     }
     @Override
-    //查询历史挂牌交易成交记录
     public List<ListingDoneRecord> selectListingDoneRecordHistory(LocalDate date){
         return selectMarketDao.selectListingDoneRecordByDate(date);
     }
