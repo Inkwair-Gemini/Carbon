@@ -23,6 +23,6 @@ public class GroupDoneRecord {
     private Double finallyPrice;
     private Double finallyAmount;
     private Double finallyBalance; // 最终报价金额
-    private String buyClient; // 买方
-    private String sellClient; // 卖方
+    private String listingClient; // 挂牌方
+    private String delistingClient; // 摘牌方
 }
