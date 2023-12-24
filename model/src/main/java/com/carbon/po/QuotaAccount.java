@@ -8,5 +8,4 @@ public class QuotaAccount {
     private String clientId;
     private String password;
     private String accountType; // 账户类型
-    private List<TradeQuota> tradeQuotas;
 }
