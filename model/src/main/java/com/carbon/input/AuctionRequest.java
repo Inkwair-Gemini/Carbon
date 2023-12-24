@@ -1,8 +1,10 @@
-package com.carbon.intput;
+package com.carbon.input;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -11,7 +13,7 @@ import lombok.NoArgsConstructor;
 // 单向竞价委托单
 public class AuctionRequest {
     private String id;
-    private String time; // 申请时间
+    private Date time; // 申请时间
     private String subjectMatterCode; // 标的物代码
     private String subjectMatterName; // 标的物名称
     private String accountType; // 账户类型

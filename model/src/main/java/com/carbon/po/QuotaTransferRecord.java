@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -11,8 +13,7 @@ import lombok.NoArgsConstructor;
 // 配额转入转出流水
 public class QuotaTransferRecord {
     private String id;
-    private String date;
-    private String time;
+    private Date time;
     private String clientId;
     private String clientName;
     private String operatorCode;

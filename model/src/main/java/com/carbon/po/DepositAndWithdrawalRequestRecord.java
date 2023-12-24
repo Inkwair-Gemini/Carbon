@@ -4,14 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 // 出入金申请记录
 public class DepositAndWithdrawalRequestRecord {
     private String id;
-    private String date;
-    private String time;
+    private Date time;
     private String initiator; // 发起员
     private String bindBank; // 银行Id
     private String bankAccountId; // 银行账户Id

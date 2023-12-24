@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -11,8 +13,7 @@ import lombok.NoArgsConstructor;
 // 配额交易流水
 public class QuotaTradeRecord {
     private String id;
-    private String date;
-    private String time;
+    private Date time;
     private String clientId; // 客户号
     private String clientName; // 客户名称
     private String subjectMatterCode; // 标的物代码

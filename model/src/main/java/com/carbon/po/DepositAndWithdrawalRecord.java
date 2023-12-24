@@ -4,13 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+import java.util.Date;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -18,8 +13,7 @@ import lombok.NoArgsConstructor;
 // 出入金流水
 public class DepositAndWithdrawalRecord {
     private String id;
-    private String date;
-    private String time;
+    private Date time;
     private String capitalAccount; // 资金账户Id
     private String operatorCode;
     private String type; // 出/入

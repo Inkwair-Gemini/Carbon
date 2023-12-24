@@ -3,6 +3,7 @@ package com.carbon.po;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -22,6 +23,6 @@ public class GroupDoneRecord {
     private Double finallyPrice;
     private Double finallyAmount;
     private Double finallyBalance; // 最终报价金额
-    private String oppositeClient; // 群组中成交客户
-    private String operatorCode; // 操作员代码
+    private String buyClient; // 买方
+    private String sellClient; // 卖方
 }

@@ -1,8 +1,9 @@
-package com.carbon.intput;
+package com.carbon.input;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
