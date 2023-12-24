@@ -1,11 +1,19 @@
 package com.carbon.po;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+
 // 客户交易配额
 public class ClientTradeQuota {
     private String AccountId; // 配额账户Id
     private String subjectMatterCode; // 标的物代码
     private String subjectMatterName; // 标的物名称
-    private double amount; // 总数量
-    private double availableQuotaAmount; // 可用数量
-    private double unavailableQuotaAmount; // 冻结数量
+    private Double amount; // 总数量
+    private Double availableQuotaAmount; // 可用数量
+    private Double unavailableQuotaAmount; // 冻结数量
 }

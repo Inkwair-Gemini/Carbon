@@ -1,4 +1,12 @@
-package com.carbon.input;
+package com.carbon.intput;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 
 // 单向竞价委托单
 public class AuctionRequest {
@@ -8,8 +16,8 @@ public class AuctionRequest {
     private String subjectMatterName; // 标的物名称
     private String accountType; // 账户类型
     private String quotaAccount; // 配额账户
-    private double price; // 委托价格
-    private double amount; // 委托数量
+    private Double price; // 委托价格
+    private Double amount; // 委托数量
     private String operatorCode; // 操作员代码
     private String status; // 状态
 }

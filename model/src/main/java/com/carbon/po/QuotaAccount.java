@@ -1,6 +1,12 @@
 package com.carbon.po;
 
-import com.carbon.input.TradeQuota;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 
 // 配额账户
 public class QuotaAccount {

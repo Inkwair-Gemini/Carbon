@@ -15,7 +15,7 @@ public class CapitalTradeRecord {
     private String operatorCode; // 操作员代码
     private String capitalAccount; // 资金账号
     private String type; // 划转类型
-    private double actualAmount; // 发生金额
-    private double endingBalance; // 期后余额
-    private double endingAvailableBalance; // 期后可用余额
+    private Double actualAmount; // 发生金额
+    private Double endingBalance; // 期后余额
+    private Double endingAvailableBalance; // 期后可用余额
 }
