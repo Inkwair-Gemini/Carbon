@@ -17,6 +17,6 @@ public class DepositAndWithdrawalRequestRecord {
     private String bankAccountId; // 银行账户Id
     private String type; // 出/入
     private String requestState; // 申请状态
-    private double actualAmount; // 发生金额
+    private Double actualAmount; // 发生金额
     private String description; // 备注
 }

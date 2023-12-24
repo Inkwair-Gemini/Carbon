@@ -1,4 +1,12 @@
-package com.carbon.input;
+package com.carbon.intput;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 
 // 群组洽谈报价表单
 public class GroupEnquiryPost {

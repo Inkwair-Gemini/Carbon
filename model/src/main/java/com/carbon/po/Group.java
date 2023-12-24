@@ -1,5 +1,13 @@
 package com.carbon.po;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+
 // 群组
 public class Group {
     private String id;
