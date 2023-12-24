@@ -17,4 +17,5 @@ public class Tips {
     private String content;
     private String type; // 消息类型
     private String from; // 发出者
+    private String to; // 接收者
 }
