@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+
 public class CapitalServiceImpl implements CapitalService {
     @Autowired
     CapitalDao capitalDao;
