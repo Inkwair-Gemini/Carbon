@@ -11,7 +11,7 @@ import java.util.Date;
 // 单向竞价报价表单
 public class AuctionPost {
     private String id;
-    private Date time;
+    private Timestamp time;
     private String subjectMatterCode;
     private String subjectMatterName;
     private String price;

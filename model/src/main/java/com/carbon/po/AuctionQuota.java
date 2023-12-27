@@ -13,7 +13,7 @@ import java.util.Date;
 // 单向竞价商品
 public class AuctionQuota {
     private String id;
-    private Date time; // 平台发布时间
+    private Timestamp time; // 平台发布时间
     private String subjectMatterCode; // 标的物代码
     private String subjectMatterName; // 标的物名称
     private Double price; // 委托价格

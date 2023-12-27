@@ -12,7 +12,7 @@ import java.util.Date;
 // 出入金流水
 public class DepositAndWithdrawalRecord {
     private String id;
-    private Date time;
+    private Timestamp time;
     private String capitalAccount; // 资金账户Id
     private String operatorCode;
     private String type; // 出/入

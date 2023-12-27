@@ -11,7 +11,7 @@ import java.util.Date;
 // 群组报价查询
 public class GroupSelectResult {
     private String id;
-    private Date time;
+    private Timestamp time;
     private String subjectMatterCode;
     private String subjectMatterName;
     private String flowType;

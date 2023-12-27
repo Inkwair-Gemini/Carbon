@@ -11,7 +11,7 @@ import java.util.Date;
 // 公告
 public class Announcement {
     private String id;
-    private Date time;
+    private Timestamp time;
     private String content;
     private String type;
 }

@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -11,6 +13,7 @@ import lombok.NoArgsConstructor;
 // 群组报价表单
 public class GroupPost {
     private String id;
+    private Timestamp time;
     private String subjectMatterCode; // 标的物代码
     private String subjectMatterName; // 标的物名称
     private String accountType; // 账户类型

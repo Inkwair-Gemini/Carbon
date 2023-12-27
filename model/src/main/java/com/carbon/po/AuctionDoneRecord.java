@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 // 单向竞价成交记录
 public class AuctionDoneRecord {
     private String id;
-    private Date time;
+    private Timestamp time;
     private String subjectMatterCode;
     private String subjectMatterName;
     private Double finallyBalance; // 最终报价金额

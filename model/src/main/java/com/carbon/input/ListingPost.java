@@ -13,7 +13,7 @@ import java.util.Date;
 // 挂牌表单
 public class ListingPost {
     private String id;
-    private Date time;
+    private Timestamp time;
     private String subjectMatterCode; // 标的物代码
     private String subjectMatterName; // 标的物名称
     private String accountType; // 账户类型

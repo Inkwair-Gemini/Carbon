@@ -13,7 +13,7 @@ import java.util.Date;
 // 配额交易流水
 public class QuotaTradeRecord {
     private String id;
-    private Date time;
+    private Timestamp time;
     private String clientId; // 客户号
     private String clientName; // 客户名称
     private String subjectMatterCode; // 标的物代码

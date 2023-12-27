@@ -12,7 +12,7 @@ import java.util.Date;
 // 定向报价成交记录
 public class DirectionDoneRecord {
     private String id;
-    private Date time;
+    private Timestamp time;
     private String subjectMatterCode;
     private String subjectMatterName;
     private String flowType;

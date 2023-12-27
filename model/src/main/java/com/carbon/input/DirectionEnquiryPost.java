@@ -12,7 +12,7 @@ import java.util.Date;
 // 定向洽谈报价表单
 public class DirectionEnquiryPost {
     private String id;
-    private Date time;
+    private Timestamp time;
     private String subjectMatterCode; // 标的物代码
     private String subjectMatterName; // 标的物名称
     private String flowType;

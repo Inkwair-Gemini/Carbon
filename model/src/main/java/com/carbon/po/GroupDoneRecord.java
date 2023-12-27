@@ -12,7 +12,7 @@ import java.util.Date;
 // 群组报价成交记录
 public class GroupDoneRecord {
     private String id;
-    private Date time;
+    private Timestamp time;
     private String groupId;
     private String subjectMatterCode;
     private String subjectMatterName;

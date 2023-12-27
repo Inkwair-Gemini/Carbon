@@ -13,7 +13,7 @@ import java.util.Date;
 // 配额转入转出流水
 public class QuotaTransferRecord {
     private String id;
-    private Date time;
+    private Timestamp time;
     private String clientId;
     private String clientName;
     private String operatorCode;

@@ -12,7 +12,7 @@ import java.util.Date;
 // 资金交易流水
 public class CapitalTradeRecord {
     private String id;
-    private Date time;
+    private Timestamp time;
     private String operatorCode; // 操作员代码
     private String capitalAccount; // 资金账号
     private String type; // 划转类型
