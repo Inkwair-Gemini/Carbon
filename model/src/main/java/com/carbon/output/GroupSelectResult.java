@@ -3,6 +3,8 @@ package com.carbon.output;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.sql.Timestamp;
 import java.util.Date;
 @Data
 @NoArgsConstructor

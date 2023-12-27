@@ -3,6 +3,8 @@ package com.carbon.po;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 @Data
@@ -13,7 +15,7 @@ import java.util.List;
 public class Group {
     private String id;
     private String name;
-    private Date createTime;
-    private Date updateTime;
+    private Timestamp createTime;
+    private Timestamp updateTime;
     private List<String> members;
 }
