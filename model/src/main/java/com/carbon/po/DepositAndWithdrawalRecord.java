@@ -12,7 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 // 出入金流水
-public class DepositAndWithdrawalRecord {
+public class DepositAndWithdrawalRecord implements Serializable {
     private String id;
     private Timestamp time;
     private String capitalAccount; // 资金账户Id

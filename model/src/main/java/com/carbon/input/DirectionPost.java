@@ -12,7 +12,7 @@ import java.util.Date;
 @AllArgsConstructor
 
 // 定向报价表单
-public class DirectionPost {
+public class DirectionPost implements Serializable {
     private String id;
     private Timestamp time;
     private String subjectMatterCode; // 标的物代码

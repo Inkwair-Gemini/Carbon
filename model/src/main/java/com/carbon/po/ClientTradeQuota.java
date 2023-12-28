@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 
 // 客户交易配额
-public class ClientTradeQuota {
+public class ClientTradeQuota implements Serializable {
     private String AccountId; // 配额账户Id
     private String subjectMatterCode; // 标的物代码
     private String subjectMatterName; // 标的物名称

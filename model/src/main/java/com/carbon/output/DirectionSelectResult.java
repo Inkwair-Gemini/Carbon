@@ -11,7 +11,7 @@ import java.util.Date;
 @AllArgsConstructor
 
 // 定向报价查询
-public class DirectionSelectResult {
+public class DirectionSelectResult implements Serializable {
     private String id;
     private Timestamp time;
     private String subjectMatterCode;

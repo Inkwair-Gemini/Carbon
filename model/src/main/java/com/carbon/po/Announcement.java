@@ -11,7 +11,7 @@ import java.util.Date;
 @AllArgsConstructor
 
 // 公告
-public class Announcement {
+public class Announcement implements Serializable {
     private String id;
     private Timestamp time;
     private String content;

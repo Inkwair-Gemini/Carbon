@@ -11,7 +11,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 // 资金交易流水
-public class CapitalTradeRecord {
+public class CapitalTradeRecord implements Serializable {
     private String id;
     private Timestamp time;
     private String operatorCode; // 操作员代码

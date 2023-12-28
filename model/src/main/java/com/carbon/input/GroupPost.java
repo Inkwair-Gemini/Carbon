@@ -12,7 +12,7 @@ import java.util.Date;
 @AllArgsConstructor
 
 // 群组报价表单
-public class GroupPost {
+public class GroupPost implements Serializable {
     private String id;
     private Timestamp time;
     private String subjectMatterCode; // 标的物代码

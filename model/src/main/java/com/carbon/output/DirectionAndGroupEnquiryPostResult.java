@@ -11,7 +11,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class DirectionAndGroupEnquiryPostResult {
+public class DirectionAndGroupEnquiryPostResult implements Serializable {
     private String id;
     private Timestamp time;
     private String subjectMatterCode; // 标的物代码

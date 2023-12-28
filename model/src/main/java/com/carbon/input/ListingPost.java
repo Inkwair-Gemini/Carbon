@@ -12,7 +12,7 @@ import java.util.Date;
 @AllArgsConstructor
 
 // 挂牌表单
-public class ListingPost {
+public class ListingPost implements Serializable {
     private String id;
     private Timestamp time;
     private String subjectMatterCode; // 标的物代码

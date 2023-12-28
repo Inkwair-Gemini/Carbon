@@ -1,0 +1,23 @@
+server:
+  port: 8800
+#mysql
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/carbon?allowPublicKeyRetrieval=true&serverTimezone=GMT%2B8&useSSL=false&characterEncoding=utf-8
+    username: root
+    password: admin
+#mybatis-plus
+mybatis-plus:
+  mapper-locations: classpath:classpath*:/mapper/**/*.xml
+  global-config:
+    db-config:
+      id-type: auto
+      field-strategy: NOT_NULL
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  configuration:
+    cache-enabled: false
+    mapUnderscoreToCamelCase: true # 开启驼峰命名转换法
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 配置日志

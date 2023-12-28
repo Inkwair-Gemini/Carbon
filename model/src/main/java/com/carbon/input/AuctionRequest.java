@@ -12,7 +12,7 @@ import java.util.Date;
 @AllArgsConstructor
 
 // 单向竞价委托单
-public class AuctionRequest {
+public class AuctionRequest implements Serializable {
     private String id;
     private Timestamp time; // 申请时间
     private String subjectMatterCode; // 标的物代码

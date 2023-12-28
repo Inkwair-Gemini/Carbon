@@ -11,7 +11,7 @@ import java.util.Date;
 @AllArgsConstructor
 
 // 单向竞价报价表单
-public class AuctionPost {
+public class AuctionPost implements Serializable {
     private String id;
     private Timestamp time;
     private String subjectMatterCode;

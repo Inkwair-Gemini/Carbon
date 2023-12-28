@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 //资金账户
-public class CapitalAccount {
+public class CapitalAccount implements Serializable {
     private String id;
     private String password;
     //账户类型

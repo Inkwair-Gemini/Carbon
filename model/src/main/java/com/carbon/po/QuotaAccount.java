@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 
 // 配额账户
-public class QuotaAccount {
+public class QuotaAccount implements Serializable {
     private String id;
     private String clientId;
     private String password;

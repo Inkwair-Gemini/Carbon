@@ -12,7 +12,7 @@ import java.util.Date;
 @AllArgsConstructor
 
 // 定向报价成交记录
-public class DirectionDoneRecord {
+public class DirectionDoneRecord implements Serializable {
     private String id;
     private Timestamp time;
     private String subjectMatterCode;

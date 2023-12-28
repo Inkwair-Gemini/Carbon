@@ -11,7 +11,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 // 出入金申请记录
-public class DepositAndWithdrawalRequestRecord {
+public class DepositAndWithdrawalRequestRecord implements Serializable {
     private String id;
     private Timestamp time;
     private String initiator; // 发起员

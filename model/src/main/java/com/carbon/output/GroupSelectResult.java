@@ -11,7 +11,7 @@ import java.util.Date;
 @AllArgsConstructor
 
 // 群组报价查询
-public class GroupSelectResult {
+public class GroupSelectResult implements Serializable {
     private String id;
     private Timestamp time;
     private String subjectMatterCode;

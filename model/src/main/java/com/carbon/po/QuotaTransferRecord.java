@@ -12,7 +12,7 @@ import java.util.Date;
 @AllArgsConstructor
 
 // 配额转入转出流水
-public class QuotaTransferRecord {
+public class QuotaTransferRecord implements Serializable {
     private String id;
     private Timestamp time;
     private String clientId;

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 
 // 资金划转表单
-public class CapitalTransferPost {
+public class CapitalTransferPost implements Serializable {
     private String id;
     private String capitalAccount; // 资金账号
     private String type; // 划转类型

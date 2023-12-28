@@ -12,7 +12,7 @@ import java.util.Date;
 @AllArgsConstructor
 
 // 单向竞价商品
-public class AuctionQuota {
+public class AuctionQuota implements Serializable {
     private String id;
     private Timestamp time; // 平台发布时间
     private String subjectMatterCode; // 标的物代码

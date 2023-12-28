@@ -11,7 +11,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class DirectionAndGroupDoneRecordResult {
+public class DirectionAndGroupDoneRecordResult implements Serializable {
     private String id;
     private Timestamp time;
     private String groupId;

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 
 // 配额划转表单
-public class QuotaTransferPost {
+public class QuotaTransferPost implements Serializable {
     private String id;
     private String quotaAccount; // 配额账号
     private String subjectMatterCode; // 标的物代码

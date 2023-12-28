@@ -4,15 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.Date;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 
 // 挂牌交易成交记录
-public class ListingDoneRecord {
+public class ListingDoneRecord implements Serializable {
     private String id;
     private Timestamp time;
     private String subjectMatterCode; // 标的物代码

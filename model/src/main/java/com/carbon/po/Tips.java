@@ -12,7 +12,7 @@ import java.util.Date;
 @AllArgsConstructor
 
 // 消息提示
-public class Tips {
+public class Tips implements Serializable {
     private String id;
     private Timestamp time;
     private String content;

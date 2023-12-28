@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 
 // 系统管理员
-public class SystemManager {
+public class SystemManager implements Serializable {
     private String id;
 }
