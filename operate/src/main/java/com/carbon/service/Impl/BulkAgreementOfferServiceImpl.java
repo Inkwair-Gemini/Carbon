@@ -2,6 +2,7 @@ package com.carbon.service.Impl;
 
 import com.carbon.dao.CapitalDao;
 import com.carbon.input.DirectionPost;
+import com.carbon.input.GroupPost;
 import com.carbon.input.ListingPost;
 import com.carbon.po.CapitalAccount;
 import com.carbon.po.ClientOperator;
@@ -55,14 +56,14 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
     }
 
     @Override
-    public void groupOffer(Group group) {
+    public void groupOffer(GroupPost groupPost) {
         ClientOperator clientOperator = clientOperatorDao.selectClientOperatorById(String clientOperatorId);
         CapitalAccount capitalAccount = capitalDao.selectCapitalAccount(clientOperator.getAccountId());
         QuotaAccount quotaAccount = quotaDao.selectQuotaAccount(clientOperator.getAccountId());
         //todo 1.判断是否有足够的配额
-        boolean isEnoughQuota = quotaAccount.getQuota() >= directionPost.getQuota();
+        boolean isEnoughQuota = quotaAccount.getQuota() >= groupPost.getQuota();
         //todo 2.判断是否有足够的资金
-        boolean isEnoughCapital = capitalAccount.getCapital() >= directionPost.getCapital();
+        boolean isEnoughCapital = capitalAccount.getCapital() >= groupPost.getCapital();
 
     }
 

@@ -1,6 +1,7 @@
 package com.carbon.service;
 
 import com.carbon.input.DirectionPost;
+import com.carbon.input.GroupPost;
 
 import java.util.List;
 
@@ -9,7 +10,7 @@ public interface BulkAgreementOfferService {
     //定向报价
     void directionOffer(DirectionPost directionPost);
     //群组报价
-    void groupOffer();
+    void groupOffer(GroupPost groupPost );
     //修改委托
     void modifyOffer();
     //撤销委托

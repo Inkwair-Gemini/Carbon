@@ -1,17 +1,18 @@
 package com.carbon.service;
 
-//单向竞价控制类
+import com.carbon.input.AuctionPost;
+import com.carbon.input.AuctionRequest;
+import com.carbon.po.AuctionQuota;
+
 public interface AuctionService {
-    //提交报价单
-    void postAuctionOffer();
     //申请拍卖
-    void requestAuction();
+    void requestAuction(AuctionRequest auctionRequest);
     //参加拍卖
-    void joinAuction();
+    void joinAuction(String ClientOperatorCode);
     //提交竞价
-    void submitOffer();
+    void submitOffer(AuctionPost auctionPost);
+
     //结算尾款
-    void finishPay();
-    //结束拍卖
-    void finishAuction();
+    void finishPay(AuctionQuota auctionQuota, AuctionPost auctionPost);
+
 }

@@ -1,6 +1,8 @@
 package com.carbon.service.Impl;
 
 import com.carbon.input.DirectionPost;
+import com.carbon.input.GroupEnquiryPost;
+import com.carbon.po.Group;
 import com.carbon.service.BulkAgreementEnquiryService;
 
 /**
@@ -13,9 +15,9 @@ import com.carbon.service.BulkAgreementEnquiryService;
  */
 public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryService {
     @Override
-    public void sendOfferEnquiry(QueryPost queryPost) {
+    public void sendOfferEnquiry(GroupEnquiryPost groupEnquiryPost) {
         //todo 1.提交洽谈出价
-        QueryPostDao.insertQueryPost(queryPost);
+        GroupEnquiryPostDao.insertGroupEnquiryPost(groupEnquiryPost);
         //todo 2.更新洽谈出价记录
     }
 

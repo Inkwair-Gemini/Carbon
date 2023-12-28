@@ -16,6 +16,6 @@ public class AuctionPost {
     private Timestamp time;
     private String subjectMatterCode;
     private String subjectMatterName;
-    private String price;
+    private Double price;
     private String operatorCode; // 操作员代码
 }
