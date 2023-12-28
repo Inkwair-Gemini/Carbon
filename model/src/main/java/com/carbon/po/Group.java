@@ -17,5 +17,4 @@ public class Group {
     private String name;
     private Timestamp createTime;
     private Timestamp updateTime;
-    private List<String> members;
 }
