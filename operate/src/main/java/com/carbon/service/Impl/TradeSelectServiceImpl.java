@@ -1,7 +1,9 @@
 package com.carbon.service.Impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.carbon.Utils.StringUtils;
 import com.carbon.input.*;
+import com.carbon.mapper.*;
 import com.carbon.output.DirectionAndGroupDoneRecordResult;
 import com.carbon.output.DirectionAndGroupEnquiryPostResult;
 import com.carbon.output.DirectionAndGroupPostResult;
@@ -21,47 +23,61 @@ import java.util.stream.Collectors;
 @Service
 public class TradeSelectServiceImpl implements TradeSelectService {
     @Autowired
-    TradeSelectDao tradeSelectDao;
+    ListingPostMapper listingPostMapper;
     @Autowired
-    DirectionAndGroupDao directionAndGroupDao;
+    ListingDoneRecordMapper listingDoneRecordMapper;
+    @Autowired
+    DirectionPostMapper directionPostMapper;
+    @Autowired
+    GroupPostMapper groupPostMapper;
+    @Autowired
+    DirectionEnquiryPostMapper directionEnquiryPostMapper;
+    @Autowired
+    GroupEnquiryPostMapper groupEnquiryPostMapper;
+    @Autowired
+    DirectionDoneRecordMapper directionDoneRecordMapper;
+    @Autowired
+    GroupDoneRecordMapper groupDoneRecordMapper;
+    @Autowired
+    AuctionRequestMapper auctionRequestMapper;
+    @Autowired
+    AuctionDoneRecordMapper auctionDoneRecordMapper;
 
     @Override
     public List<ListingPost> selectListingPost(String operatorCode, String subjectMatterCode, Date beginTime, Date endTime, String flowType) {
-        List<ListingPost> list = listingTradeDao.selectAllListingPost();
-
-        list=list.stream().filter(p->p.getOperatorCode().equals(operatorCode)).collect(Collectors.toList());
+        QueryWrapper query = new QueryWrapper<ListingPost>();
+        query.eq("operator_code",operatorCode);
 
         if(StringUtils.isNotEmpty(subjectMatterCode))
-            list=list.stream().filter(p->p.getSubjectMatterCode().equals(subjectMatterCode)).collect(Collectors.toList());
+            query.eq("subject_matter_code",subjectMatterCode);
 
         if(beginTime!=null)
-            list=list.stream().filter(p->p.getTime().after(beginTime)).collect(Collectors.toList());
+            query.ge("begin_time",beginTime);
 
         if(endTime!=null)
-            list=list.stream().filter(p->p.getTime().before(endTime)).collect(Collectors.toList());
+            query.le("end_time",endTime);
 
         if(StringUtils.isNotEmpty(flowType))
-            list=list.stream().filter(p-> p.getFlowType().equals(flowType)).collect(Collectors.toList());
+            query.eq("flow_type",flowType);
 
-        return list;
+        return listingPostMapper.selectList(query);
     }
 
     @Override
     public List<ListingDoneRecord> selectListingDoneRecord(String clientId, String subjectMatterCode, Date beginTime, Date endTime, String flowType) {
-        List<ListingDoneRecord> list = listingTradeDao.selectAllListingDoneRecord();
-
-        list=list.stream().filter(
-                p->p.getListingClient().equals(clientId) || p.getDelistingClient()
-                          .equals(clientId)).collect(Collectors.toList());
+        QueryWrapper query = new QueryWrapper<ListingDoneRecord>();
+        query.eq("client_id",clientId);
 
         if(StringUtils.isNotEmpty(subjectMatterCode))
-            list=list.stream().filter(p->p.getSubjectMatterCode().equals(subjectMatterCode)).collect(Collectors.toList());
+            query.eq("subject_matter_code",subjectMatterCode);
 
         if(beginTime!=null)
-            list=list.stream().filter(p->p.getTime().after(beginTime)).collect(Collectors.toList());
+            query.ge("begin_time",beginTime);
 
         if(endTime!=null)
-            list=list.stream().filter(p->p.getTime().before(endTime)).collect(Collectors.toList());
+            query.le("end_time",endTime);
+
+        List<ListingDoneRecord> list = listingDoneRecordMapper.selectList(query);
 
         if(StringUtils.isNotEmpty(flowType))
             list=list.stream().filter((p) -> {
@@ -74,8 +90,8 @@ public class TradeSelectServiceImpl implements TradeSelectService {
 
     @Override
     public List<DirectionAndGroupPostResult> selectDirectionAndGroupPost(String operatorCode, String subjectMatterCode, Date beginTime, Date endTime, String flowType) {
-        List<DirectionPost> directionList = directionAndGroupDao.selectAllDirectionPost();
-        List<GroupPost> groupList = directionAndGroupDao.selectAllGroupPost();
+        List<DirectionPost> directionList = directionPostMapper.selectList(null);
+        List<GroupPost> groupList = groupPostMapper.selectList(null);
         List<DirectionAndGroupPostResult> list = new ArrayList<DirectionAndGroupPostResult>();
         //添加定向大宗表单
         for (DirectionPost directionPost : directionList) {
@@ -112,8 +128,8 @@ public class TradeSelectServiceImpl implements TradeSelectService {
 
     @Override
     public List<DirectionAndGroupEnquiryPostResult> selectDirectionAndGroupEnquiryPost(String operatorCode, String subjectMatterCode, Date beginTime, Date endTime, String flowType) {
-        List<DirectionEnquiryPost> directionEnquiryPostList = directionAndGroupDao.selectAllDirectionEnquiryPost();
-        List<GroupEnquiryPost> groupEnquiryList = directionAndGroupDao.selectAllGroupEnquiry();
+        List<DirectionEnquiryPost> directionEnquiryPostList = directionEnquiryPostMapper.selectList(null);
+        List<GroupEnquiryPost> groupEnquiryList = groupEnquiryPostMapper.selectList(null);
         List<DirectionAndGroupEnquiryPostResult> list = new ArrayList<>();
         //添加定向大宗表单
         for (DirectionEnquiryPost directionEnquiryPost : directionEnquiryPostList) {
@@ -150,8 +166,8 @@ public class TradeSelectServiceImpl implements TradeSelectService {
 
     @Override
     public List<DirectionAndGroupDoneRecordResult> selectDirectionAndGroupDoneRecord(String clientId, String subjectMatterCode, Date beginTime, Date endTime, String flowType) {
-        List<DirectionDoneRecord> directionDoneRecordList = directionAndGroupDao.selectAllDirectionDoneRecord();
-        List<GroupDoneRecord> groupDoneRecordList = directionAndGroupDao.selectAllGroupDoneRecord();
+        List<DirectionDoneRecord> directionDoneRecordList = directionDoneRecordMapper.selectList(null);
+        List<GroupDoneRecord> groupDoneRecordList = groupDoneRecordMapper.selectList(null);
         List<DirectionAndGroupDoneRecordResult> list = new ArrayList<>();
         //添加定向大宗表单
         for (DirectionDoneRecord directionDoneRecord : directionDoneRecordList) {
@@ -190,40 +206,36 @@ public class TradeSelectServiceImpl implements TradeSelectService {
 
     @Override
     public List<AuctionRequest> selectAuctionRequest(String operatorCode, String subjectMatterCode, Date beginTime, Date endTime) {
-        List<AuctionRequest> list = actionTradeDao.selectAllActionRequest();
+        QueryWrapper query = new QueryWrapper<AuctionRequest>();
 
-        list=list.stream().filter(
-                p->p.getOperatorCode()==operatorCode).collect(Collectors.toList());
+        query.eq("operator_code",operatorCode);
 
         if(StringUtils.isNotEmpty(subjectMatterCode))
-            list=list.stream().filter(p->p.getSubjectMatterCode().equals(subjectMatterCode)).collect(Collectors.toList());
+            query.eq("subject_matter_code", subjectMatterCode);
 
         if(beginTime!=null)
-            list=list.stream().filter(p->p.getTime().after(beginTime)).collect(Collectors.toList());
+            query.ge("begin_time",beginTime);
 
         if(endTime!=null)
-            list=list.stream().filter(p->p.getTime().before(endTime)).collect(Collectors.toList());
+            query.le("end_time",endTime);
 
-        return list;
+        return listingPostMapper.selectList(query);
     }
 
     @Override
     public List<AuctionDoneRecord> selectAuctionDoneRecord(String clientId, String subjectMatterCode, Date beginTime, Date endTime) {
-        List<AuctionDoneRecord> list = actionTradeDao.selectAllAuctionDoneRecord();
-
-        list=list.stream().filter(
-                p->p.getRequestClient().equals(clientId) || p.getPurchaserClient().equals(clientId))
-                          .collect(Collectors.toList());
+        QueryWrapper query = new QueryWrapper<AuctionDoneRecord>()
+                .eq("request_client",clientId).or().eq("purchaser_client",clientId);
 
         if(StringUtils.isNotEmpty(subjectMatterCode))
-            list=list.stream().filter(p->p.getSubjectMatterCode().equals(subjectMatterCode)).collect(Collectors.toList());
+            query.eq("subject_matter_code",subjectMatterCode);
 
         if(beginTime!=null)
-            list=list.stream().filter(p->p.getTime().after(beginTime)).collect(Collectors.toList());
+            query.ge("begin_time",beginTime);
 
         if(endTime!=null)
-            list=list.stream().filter(p->p.getTime().before(endTime)).collect(Collectors.toList());
+            query.le("end_time",endTime);
 
-        return list;
+        return listingPostMapper.selectList(query);
     }
 }

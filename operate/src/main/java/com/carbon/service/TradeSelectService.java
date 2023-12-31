@@ -19,9 +19,6 @@ public interface TradeSelectService {
     List<DirectionAndGroupPostResult> selectDirectionAndGroupPost(String operatorCode, String subjectMatterCode, Date beginTime, Date endTime, String flowType);
     //大宗协议交易询价查询
     List<DirectionAndGroupEnquiryPostResult> selectDirectionAndGroupEnquiryPost(String operatorCode, String subjectMatterCode, Date beginTime, Date endTime, String flowType);
-
-    //大宗协议交易对话流水查询 //todo 准备阉了
-
     //大宗协议交易询价查询
     List<DirectionAndGroupDoneRecordResult> selectDirectionAndGroupDoneRecord(String operatorCode, String subjectMatterCode, Date beginTime, Date endTime, String flowType);
     //单向竞价交易请求查询
