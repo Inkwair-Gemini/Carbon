@@ -3,6 +3,9 @@ package com.carbon.po;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Data
@@ -10,9 +13,9 @@ import java.util.Date;
 @AllArgsConstructor
 
 // 群组报价成交记录
-public class GroupDoneRecord {
+public class GroupDoneRecord implements Serializable {
     private String id;
-    private Date time;
+    private Timestamp time;
     private String groupId;
     private String subjectMatterCode;
     private String subjectMatterName;

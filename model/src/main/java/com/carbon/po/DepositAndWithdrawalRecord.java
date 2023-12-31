@@ -3,6 +3,8 @@ package com.carbon.po;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.sql.Timestamp;
 import java.util.Date;
 
 
@@ -10,9 +12,9 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 // 出入金流水
-public class DepositAndWithdrawalRecord {
+public class DepositAndWithdrawalRecord implements Serializable {
     private String id;
-    private Date time;
+    private Timestamp time;
     private String capitalAccount; // 资金账户Id
     private String operatorCode;
     private String type; // 出/入

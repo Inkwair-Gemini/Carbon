@@ -3,15 +3,17 @@ package com.carbon.output;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.sql.Timestamp;
 import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 
 // 群组报价查询
-public class GroupSelectResult {
+public class GroupSelectResult implements Serializable {
     private String id;
-    private Date time;
+    private Timestamp time;
     private String subjectMatterCode;
     private String subjectMatterName;
     private String flowType;

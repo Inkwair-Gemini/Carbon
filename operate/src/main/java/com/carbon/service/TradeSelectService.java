@@ -16,16 +16,16 @@ public interface TradeSelectService {
     //挂牌交易历史成交
     List<ListingDoneRecord> selectListingDoneRecord(String clientId, String subjectMatterCode, Date beginTime, Date endTime, String flowType);
     //大宗协议交易报价查询
-    List<DirectionAndGroupPostResult> selectDirectionAndGroupPost(String clientId, String subjectMatterCode, Date beginTime, Date endTime, String flowType);
+    List<DirectionAndGroupPostResult> selectDirectionAndGroupPost(String operatorCode, String subjectMatterCode, Date beginTime, Date endTime, String flowType);
     //大宗协议交易询价查询
-    List<DirectionAndGroupEnquiryPostResult> selectDirectionAndGroupEnquiryPost(String clientId, String subjectMatterCode, Date beginTime, Date endTime, String flowType);
+    List<DirectionAndGroupEnquiryPostResult> selectDirectionAndGroupEnquiryPost(String operatorCode, String subjectMatterCode, Date beginTime, Date endTime, String flowType);
 
     //大宗协议交易对话流水查询 //todo 准备阉了
 
     //大宗协议交易询价查询
-    List<DirectionAndGroupDoneRecordResult> selectDirectionAndGroupDoneRecord(String clientId, String subjectMatterCode, Date beginTime, Date endTime, String flowType);
+    List<DirectionAndGroupDoneRecordResult> selectDirectionAndGroupDoneRecord(String operatorCode, String subjectMatterCode, Date beginTime, Date endTime, String flowType);
     //单向竞价交易请求查询
-    List<AuctionRequest> selectAuctionRequest(String clientId,String subjectMatterCode, Date beginTime, Date endTime);
+    List<AuctionRequest> selectAuctionRequest(String operatorCode,String subjectMatterCode, Date beginTime, Date endTime);
     //单向竞价交易成交查询
     List<AuctionDoneRecord> selectAuctionDoneRecord(String clientId,String subjectMatterCode, Date beginTime, Date endTime);
 }

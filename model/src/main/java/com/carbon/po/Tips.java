@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Data
@@ -11,9 +12,9 @@ import java.util.Date;
 @AllArgsConstructor
 
 // 消息提示
-public class Tips {
+public class Tips implements Serializable {
     private String id;
-    private Date time;
+    private Timestamp time;
     private String content;
     private String type; // 消息类型
     private String from; // 发出者

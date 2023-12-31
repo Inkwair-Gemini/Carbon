@@ -3,16 +3,18 @@ package com.carbon.po;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.util.Date;
+
+import java.io.Serializable;
+import java.sql.Timestamp;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 
 // 挂牌交易成交记录
-public class ListingDoneRecord {
+public class ListingDoneRecord implements Serializable {
     private String id;
-    private Date time;
+    private Timestamp time;
     private String subjectMatterCode; // 标的物代码
     private String subjectMatterName; // 标的物名称
     private String flowType; // 买入/卖出

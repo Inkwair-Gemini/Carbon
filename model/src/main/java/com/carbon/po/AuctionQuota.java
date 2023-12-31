@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Data
@@ -11,9 +12,9 @@ import java.util.Date;
 @AllArgsConstructor
 
 // 单向竞价商品
-public class AuctionQuota {
+public class AuctionQuota implements Serializable {
     private String id;
-    private Date time; // 平台发布时间
+    private Timestamp time; // 平台发布时间
     private String subjectMatterCode; // 标的物代码
     private String subjectMatterName; // 标的物名称
     private Double price; // 委托价格

@@ -11,10 +11,9 @@ import java.util.List;
 @AllArgsConstructor
 
 // 客户
-public class Client {
+public class Client implements Serializable {
     private String id; // 客户Id
     private String name;
     private String capitalAccountId; // 资金账户Id
     private String quotaAccountId; // 配额账户Id
-    private List<ClientOperator> operatorList; // 操作员列表
 }

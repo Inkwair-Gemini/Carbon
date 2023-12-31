@@ -1,5 +1,6 @@
 package com.carbon.po;
 
+import java.io.Serializable;
 import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,9 +11,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 
 // 单向竞价成交记录
-public class AuctionDoneRecord {
+public class AuctionDoneRecord implements Serializable implements Serializable {
     private String id;
-    private Date time;
+    private Timestamp time;
     private String subjectMatterCode;
     private String subjectMatterName;
     private Double finallyBalance; // 最终报价金额

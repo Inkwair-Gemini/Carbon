@@ -4,15 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 // 资金交易流水
-public class CapitalTradeRecord {
+public class CapitalTradeRecord implements Serializable {
     private String id;
-    private Date time;
+    private Timestamp time;
     private String operatorCode; // 操作员代码
     private String capitalAccount; // 资金账号
     private String type; // 划转类型

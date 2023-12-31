@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Data
@@ -11,9 +12,9 @@ import java.util.Date;
 @AllArgsConstructor
 
 // 挂牌表单
-public class ListingPost {
+public class ListingPost implements Serializable {
     private String id;
-    private Date time;
+    private Timestamp time;
     private String subjectMatterCode; // 标的物代码
     private String subjectMatterName; // 标的物名称
     private String ClientId;//客户号
