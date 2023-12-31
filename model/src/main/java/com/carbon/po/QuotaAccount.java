@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,4 +16,5 @@ public class QuotaAccount {
     private String clientId;
     private String password;
     private String accountType; // 账户类型
+    private List<ClientTradeQuota> clientTradeQuotas; // 客户交易配额
 }

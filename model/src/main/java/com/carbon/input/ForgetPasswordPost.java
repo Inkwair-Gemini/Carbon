@@ -5,4 +5,5 @@ public class ForgetPasswordPost {
     private String operatorId;
     private String emailCaptcha;
     private String newPassword;
+    private String renewPassword;
 }

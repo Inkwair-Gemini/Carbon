@@ -1,22 +1,29 @@
 package com.carbon.service;
 
+import com.carbon.input.DelistingPost;
+import com.carbon.input.ListingPost;
+import com.carbon.output.SelectPositionInfoResult;
+import com.carbon.po.Listing;
+
+import java.util.List;
+
 public interface ListingService{
-    // 买房挂牌
-    boolean purchaserListing();
+    // 买方挂牌
+    boolean purchaserListing(ListingPost listingPost);
     // 卖方挂牌
-    boolean sellerListing();
-    // 买房摘牌
-    boolean purchaserDelisting();
+    boolean sellerListing(ListingPost listingPost);
+    // 买方摘牌
+    boolean purchaserDelisting(DelistingPost delistingPost);
     // 卖方摘牌
-    boolean sellerDelisting();
+    boolean sellerDelisting(DelistingPost delistingPost);
     // 当前持仓查询
-    void selectPositionInfo();
+    SelectPositionInfoResult selectPositionInfo(String clientId);
     // 当前委托查询
-    void selectEntrustInfo();
+    List<ListingPost> selectEntrustInfo(String clientId);
     // 当前成交查询
-    void selectBargainInfo();
+    List<Listing> selectBargainInfo(String clientId);
     // 挂牌撤销
-    boolean cancelListing();
-    // 闭式自动撤销委托
+    boolean cancelListing(String listingId);
+    // 闭市自动撤销委托
     void autoCancel();
 }

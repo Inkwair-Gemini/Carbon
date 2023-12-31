@@ -1,10 +1,14 @@
 package com.carbon.service;
 
+import com.carbon.input.ForgetPasswordPost;
+import com.carbon.input.LoginPost;
+import com.carbon.input.ModifyPasswordPost;
+
 public interface LoginService {
     //登录
-    String login(String clientId,String operatorId, String password,String captcha);
+    String login(LoginPost loginPost);
     //修改密码
-    boolean modifyPassword(String clientId,String operatorId, String password,String newPassword,String renewPassword);
+    boolean modifyPassword(ModifyPasswordPost modifyPasswordPost);
     //忘记密码
-    boolean forgetPassword(String clientId,String operatorId,String emailCaptcha,String newPassword);
+    boolean forgetPassword(ForgetPasswordPost forgetPasswordPost);
 }

@@ -1,4 +1,4 @@
-package com.carbon.input;
+package com.carbon.po;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +11,7 @@ import java.util.Date;
 @AllArgsConstructor
 
 // 挂牌表单
-public class ListingPost {
+public class Listing {
     private String id;
     private Date time;
     private String subjectMatterCode; // 标的物代码
