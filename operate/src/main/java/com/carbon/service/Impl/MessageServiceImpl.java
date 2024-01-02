@@ -1,6 +1,8 @@
 package com.carbon.service.Impl;
 
-import com.carbon.dao.MessageDao;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.carbon.mapper.AnnouncementMapper;
+import com.carbon.mapper.TipsMapper;
 import com.carbon.po.Announcement;
 import com.carbon.po.Tips;
 import com.carbon.service.MessageService;
@@ -12,17 +14,21 @@ import java.util.List;
 @Service
 public class MessageServiceImpl implements MessageService {
     @Autowired
-    MessageDao messageDao;
+    TipsMapper tipsMapper;
+    @Autowired
+    AnnouncementMapper announcementMapper;
     @Override
     public void sendTips(Tips tips) {
-        messageDao.insertTips(tips.getTo());
+        tipsMapper.insert(tips);
     }
     @Override
     public void postAnnounce(Announcement announcement) {
-        messageDao.insertAnnouncement();
+        announcementMapper.insert(announcement);
     }
     @Override
     public List<Tips> getTips(String accountId){
-        return messageDao.selectTipsById(accountId);
+        QueryWrapper<Tips> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("from_user", accountId).or().eq("to_user", accountId);
+        return tipsMapper.selectList(queryWrapper);
     }
 }

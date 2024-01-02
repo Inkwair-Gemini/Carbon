@@ -1,6 +1,11 @@
 package com.carbon.service.Impl;
 
-import com.carbon.dao.SelectMarketDao;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.carbon.Utils.StringUtils;
+import com.carbon.mapper.AuctionDoneRecordMapper;
+import com.carbon.mapper.DirectionDoneRecordMapper;
+import com.carbon.mapper.GroupDoneRecordMapper;
+import com.carbon.mapper.ListingDoneRecordMapper;
 import com.carbon.po.AuctionDoneRecord;
 import com.carbon.po.DirectionDoneRecord;
 import com.carbon.po.GroupDoneRecord;
@@ -12,42 +17,78 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SelectMarketServiceImpl implements SelectMarketService {
     @Autowired
-    SelectMarketDao selectMarketDao;
+    AuctionDoneRecordMapper auctionDoneRecordMapper;
+    @Autowired
+    DirectionDoneRecordMapper directionDoneRecordMapper;
+    @Autowired
+    GroupDoneRecordMapper groupDoneRecordMapper;
+    @Autowired
+    ListingDoneRecordMapper listingDoneRecordMapper;
 
     @Override
-    public List<AuctionDoneRecord> selectAuctionDoneRecordCurrent(){
-        return selectMarketDao.selectAuctionDoneRecordByDate(LocalDate.now());
+    public List<AuctionDoneRecord> selectAuctionDoneRecord(String subjectMatterCode, Date beginTime, Date endTime) {
+        QueryWrapper query = new QueryWrapper<AuctionDoneRecord>();
+
+        if(StringUtils.isNotEmpty(subjectMatterCode))
+            query.eq("subject_matter_code",subjectMatterCode);
+
+        if(beginTime!=null)
+            query.ge("begin_time",beginTime);
+
+        if(endTime!=null)
+            query.le("end_time",endTime);
+
+        return auctionDoneRecordMapper.selectList(query);
     }
     @Override
-    public List<DirectionDoneRecord> selectDirectionDoneRecordCurrent(){
-        return selectMarketDao.selectDirectionDoneRecordByDate(LocalDate.now());
+    public List<DirectionDoneRecord> selectDirectionDoneRecord(String subjectMatterCode, Date beginTime, Date endTime){
+        QueryWrapper query = new QueryWrapper<DirectionDoneRecord>();
+
+        if(StringUtils.isNotEmpty(subjectMatterCode))
+            query.eq("subject_matter_code",subjectMatterCode);
+
+        if(beginTime!=null)
+            query.ge("begin_time",beginTime);
+
+        if(endTime!=null)
+            query.le("end_time",endTime);
+
+        return directionDoneRecordMapper.selectList(query);
     }
     @Override
-    public List<GroupDoneRecord> selectGroupDoneRecordCurrent(){
-        return selectMarketDao.selectGroupDoneRecordByDate(LocalDate.now());
+    public List<GroupDoneRecord> selectGroupDoneRecord(String subjectMatterCode, Date beginTime, Date endTime){
+        QueryWrapper query = new QueryWrapper<GroupDoneRecord>();
+
+        if(StringUtils.isNotEmpty(subjectMatterCode))
+            query.eq("subject_matter_code",subjectMatterCode);
+
+        if(beginTime!=null)
+            query.ge("begin_time",beginTime);
+
+        if(endTime!=null)
+            query.le("end_time",endTime);
+
+        return groupDoneRecordMapper.selectList(query);
     }
     @Override
-    public List<ListingDoneRecord> selectListingDoneRecordCurrent(){
-        return selectMarketDao.selectListingDoneRecordByDate(LocalDate.now());
-    }
-    @Override
-    public List<AuctionDoneRecord> selectAuctionDoneRecordHistory(LocalDate date){
-        return selectMarketDao.selectAuctionDoneRecordByDate(date);
-    }
-    @Override
-    public List<DirectionDoneRecord> selectDirectionDoneRecordHistory(LocalDate date){
-        return selectMarketDao.selectDirectionDoneRecordByDate(date);
-    }
-    @Override
-    public List<GroupDoneRecord> selectGroupDoneRecordHistory(LocalDate date){
-        return selectMarketDao.selectGroupDoneRecordByDate(date);
-    }
-    @Override
-    public List<ListingDoneRecord> selectListingDoneRecordHistory(LocalDate date){
-        return selectMarketDao.selectListingDoneRecordByDate(date);
+    public List<ListingDoneRecord> selectListingDoneRecord(String subjectMatterCode, Date beginTime, Date endTime) {
+        QueryWrapper query = new QueryWrapper<ListingDoneRecord>();
+
+        if(StringUtils.isNotEmpty(subjectMatterCode))
+            query.eq("subject_matter_code",subjectMatterCode);
+
+        if(beginTime!=null)
+            query.ge("begin_time",beginTime);
+
+        if(endTime!=null)
+            query.le("end_time",endTime);
+
+        List<ListingDoneRecord> list = listingDoneRecordMapper.selectList(query);
+        return list;
     }
 }
