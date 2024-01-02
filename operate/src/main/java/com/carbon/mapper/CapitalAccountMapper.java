@@ -1,7 +1,8 @@
 package com.carbon.mapper;
 
-.CapitalAccount;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.carbon.po.CapitalAccount;
+import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface CapitalAccountMapper extends BaseMapper<CapitalAccount> {

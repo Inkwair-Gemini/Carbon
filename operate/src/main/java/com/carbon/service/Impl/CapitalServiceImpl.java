@@ -1,68 +1,111 @@
 package com.carbon.service.Impl;
 
-import com.carbon.dao.CapitalDao;
-import com.carbon.po.CapitalAccount;
-import com.carbon.po.CapitalTradeRecord;
-import com.carbon.po.DepositAndWithdrawalRecord;
-import com.carbon.po.DepositAndWithdrawalRequestRecord;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.carbon.mapper.CapitalAccountMapper;
+import com.carbon.mapper.CapitalTradeRecordMapper;
+import com.carbon.mapper.DepositAndWithdrawalRecordMapper;
+import com.carbon.mapper.DepositAndWithdrawalRequestRecordMapper;
+import com.carbon.po.*;
 import com.carbon.service.CapitalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 
 public class CapitalServiceImpl implements CapitalService {
     @Autowired
-    CapitalDao capitalDao;
+    private CapitalAccountMapper capitalAccountMapper;
+    @Autowired
+    private CapitalTradeRecordMapper capitalTradeRecordMapper;
+    @Autowired
+    private DepositAndWithdrawalRecordMapper depositAndWithdrawalRecordMapper;
+    @Autowired
+    private DepositAndWithdrawalRequestRecordMapper depositAndWithdrawalRequestRecordMapper;
 
     @Override
-    public void capitalIn(String fromBankId, String toAccountId, Double amount) {
+    public void capitalIn(String fromAccountId, String toAccountId, Double amount) {
         // 1.获取账户
-        BankAccount bankAccount = bankAccountDao.getBankAccount(fromBankId);
-        CapitalAccount capitalAccount = capitalDao.getCapitalAccount(toAccountId);
+        CapitalAccount fromCapitalAccount = capitalAccountMapper.selectById(fromAccountId);
+        CapitalAccount toCapitalAccount = capitalAccountMapper.selectById(toAccountId);
         // 2.更改金额
-        bankAccount.setAmount(bankAccount.getAmount() - amount);
-        capitalAccount.setCapital(capitalAccount.getCapital() + amount);
+        fromCapitalAccount.setCapital(fromCapitalAccount.getCapital() - amount);
+        fromCapitalAccount.setAvailableCapital(fromCapitalAccount.getAvailableCapital() - amount);
+        fromCapitalAccount.setTransferCapital(fromCapitalAccount.getTransferCapital() -amount);
+        toCapitalAccount.setCapital(toCapitalAccount.getCapital() + amount);
+        toCapitalAccount.setAvailableCapital(toCapitalAccount.getAvailableCapital() + amount);
+        toCapitalAccount.setTransferCapital(toCapitalAccount.getTransferCapital() + amount);
+
         /*todo 可用可出资金的转换逻辑*/
 
         // 3.更新账户
-        bankDao.updateBankAccount(bankAccount);
-        capitalDao.updateCapitalAccount(capitalAccount);
+        UpdateWrapper<CapitalAccount> fromCapitalAccountUpdateWrapper = new UpdateWrapper<>();
+        fromCapitalAccountUpdateWrapper.eq("capital", fromCapitalAccount.getCapital());
+        fromCapitalAccountUpdateWrapper.eq("available_capital",fromCapitalAccount.getAvailableCapital());
+        fromCapitalAccountUpdateWrapper.eq("transfer_capital",fromCapitalAccount.getTransferCapital());
+        capitalAccountMapper.update(fromCapitalAccount,fromCapitalAccountUpdateWrapper);
+        UpdateWrapper<CapitalAccount> toCapitalAccountUpdateWrapper = new UpdateWrapper<>();
+        toCapitalAccountUpdateWrapper.eq("capital", toCapitalAccount.getCapital());
+        toCapitalAccountUpdateWrapper.eq("available_capital",toCapitalAccount.getAvailableCapital());
+        toCapitalAccountUpdateWrapper.eq("transfer_capital",toCapitalAccount.getTransferCapital());
+        capitalAccountMapper.update(toCapitalAccount,toCapitalAccountUpdateWrapper);
     }
 
     @Override
-    public void capitalOut(String fromAccountId, String toBankId, Double amount) {
+    public void capitalOut(String fromAccountId, String toAccountId, Double amount) {
         // 1.获取账户
-        BankAccount bankAccount = bankAccountDao.getBankAccount(toBankId);
-        CapitalAccount capitalAccount = capitalDao.getCapitalAccount(toBankId);
+        CapitalAccount fromCapitalAccount = capitalAccountMapper.selectById(fromAccountId);
+        CapitalAccount toCapitalAccount = capitalAccountMapper.selectById(toAccountId);
         // 2.更改金额
-        bankAccount.setAmount(bankAccount.getAmount() + amount);
-        capitalAccount.setCapital(capitalAccount.getCapital() - amount);
+        fromCapitalAccount.setCapital(fromCapitalAccount.getCapital() + amount);
+        fromCapitalAccount.setAvailableCapital(fromCapitalAccount.getAvailableCapital() + amount);
+        fromCapitalAccount.setTransferCapital(fromCapitalAccount.getTransferCapital() + amount);
+        toCapitalAccount.setCapital(toCapitalAccount.getCapital() - amount);
+        toCapitalAccount.setAvailableCapital(toCapitalAccount.getAvailableCapital() - amount);
+        toCapitalAccount.setTransferCapital(toCapitalAccount.getTransferCapital() - amount);
+
         /*todo 可用可出资金的转换逻辑*/
 
         // 3.更新账户
-        bankDao.updateBankAccount(bankAccount);
-        capitalDao.updateCapitalAccount(capitalAccount);
+        UpdateWrapper<CapitalAccount> fromCapitalAccountUpdateWrapper = new UpdateWrapper<>();
+        fromCapitalAccountUpdateWrapper.eq("capital", fromCapitalAccount.getCapital());
+        fromCapitalAccountUpdateWrapper.eq("available_capital",fromCapitalAccount.getAvailableCapital());
+        fromCapitalAccountUpdateWrapper.eq("transfer_capital",fromCapitalAccount.getTransferCapital());
+        capitalAccountMapper.update(fromCapitalAccount,fromCapitalAccountUpdateWrapper);
+        UpdateWrapper<CapitalAccount> toCapitalAccountUpdateWrapper = new UpdateWrapper<>();
+        toCapitalAccountUpdateWrapper.eq("capital", toCapitalAccount.getCapital());
+        toCapitalAccountUpdateWrapper.eq("available_capital",toCapitalAccount.getAvailableCapital());
+        toCapitalAccountUpdateWrapper.eq("transfer_capital",toCapitalAccount.getTransferCapital());
+        capitalAccountMapper.update(toCapitalAccount,toCapitalAccountUpdateWrapper);
     }
 
     @Override
     public CapitalAccount selectCapitalAccount(String accountId) {
-        return capitalDao.selectCapitalAccount(accountId);
+
+        return capitalAccountMapper.selectById(accountId);
     }
 
     @Override
     public List<CapitalTradeRecord> selectCapitalTradeRecord(String operatorCode) {
-        return capitalDao.selectCapitalTradeRecord(operatorCode);
+        Map<String,Object> map=new HashMap<>();
+        map.put("operator_code",operatorCode);
+        return capitalTradeRecordMapper.selectByMap(map);
     }
 
     @Override
     public List<DepositAndWithdrawalRecord> selectDepositAndWithdrawalRecord(String operatorCode) {
-        return capitalDao.selectDepositAndWithdrawalRecord(operatorCode);
+        Map<String,Object> map=new HashMap<>();
+        map.put("operator_code",operatorCode);
+        return depositAndWithdrawalRecordMapper.selectByMap(map);
     }
 
     @Override
     public List<DepositAndWithdrawalRequestRecord> selectDepositAndWithdrawalRequestRecord(String operatorCode) {
-        return capitalDao.selectDepositAndWithdrawalRequestRecord(operatorCode);
+        Map<String,Object> map=new HashMap<>();
+        map.put("operator_code",operatorCode);
+        return depositAndWithdrawalRequestRecordMapper.selectByMap(map);
     }
 }

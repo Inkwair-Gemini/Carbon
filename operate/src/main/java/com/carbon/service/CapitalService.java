@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface CapitalService {
     //转入交易资金
-    void capitalIn(String fromBankId,String toAccountId,Double amount);
+    void capitalIn(String fromAccountId,String toAccountId,Double amount);
     //转出交易资金
-    void capitalOut(String fromAccountId,String toBankId,Double value);
+    void capitalOut(String fromAccountId,String toAccountId,Double value);
     //查询资金账户
     CapitalAccount selectCapitalAccount(String accountId);
     //查询资金交易流水
