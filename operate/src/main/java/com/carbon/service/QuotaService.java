@@ -17,7 +17,7 @@ public interface QuotaService {
     //转出交易配额
     void QuotaOut(String QuotaAccountId ,String subjectMatterCode,double amount);
     //转入转出流水
-    List<QuotaTransferRecord> SelectTransferRecord(String QuotaAccountId);
+    List<QuotaTransferRecord> SelectTransferRecord(String clientId);
     //配额交易流水
-    List<QuotaTradeRecord> selectQuotaTradeRecord(String QuotaAccountId);
+    List<QuotaTradeRecord> selectQuotaTradeRecord(String clientId);
 }

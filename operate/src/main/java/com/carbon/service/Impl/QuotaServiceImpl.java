@@ -1,66 +1,125 @@
 package com.carbon.service.Impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.carbon.mapper.*;
 import com.carbon.po.*;
 import com.carbon.service.QuotaService;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class QuotaServiceImpl implements QuotaService {
 
+    @Autowired
+    private ClientTradeQuotaMapper clientTradeQuotaMapper;
+    @Autowired
+    private ClientRegisterQuotaMapper clientRegisterQuotaMapper;
+    @Autowired
+    private QuotaAccountMapper quotaAccountMapper;
+    @Autowired
+    private QuotaTransferRecordMapper quotaTransferRecordMapper;
+    @Autowired
+    private QuotaTradeRecordMapper quotaTradeRecordMapper;
 
     @Override
-    public List<ClientTradeQuota> SelectClientTradeQuota(String QuotaAccountId) {
-        List<ClientTradeQuota> list = ClientTradeQuotaDao.getTradeQuota(QuotaAccountId);
+    public List<ClientTradeQuota> SelectClientTradeQuota(String accountId) {
+        Map<String,Object> map=new HashMap<>();
+        map.put("account_id",accountId);
+        List<ClientTradeQuota> list = clientTradeQuotaMapper.selectByMap(map);
         return list;
     }
 
     @Override
-    public List<ClientRegisterQuota> SelectClientRegisterQuota(String ClientId) {
-        List<ClientRegisterQuota> list = ClientRegisterQuotaDao.getRegisterQuota(ClientId);
+    public List<ClientRegisterQuota> SelectClientRegisterQuota(String clientId) {
+        Map<String,Object> map=new HashMap<>();
+        map.put("client_id",clientId);
+        List<ClientRegisterQuota> list = clientRegisterQuotaMapper.selectByMap(map);
         return list;
     }
 
     @Override
-    public void QuotaIn(String QuotaAccountId, String subjectMatterCode, double amount) {
+    public void QuotaIn(String accountId, String subjectMatterCode, double amount) {
         // 1.获取登记配额与交易配额
-        String clientId =QuotaAccountDao.getQuotaAccount(QuotaAccountID).getClientid();
-        ClientTradeQuota clientTradeQuota = ClientTradeQuotaDao.getTradeQuota(QuotaAccountId,subjectMatterCode);
-        ClientRegisterQuota clientRegisterQuota = ClientRegisterQuotaDao.getRegisterQuota(clientId,subjectMatterCode);
+        String clientId =quotaAccountMapper.selectById(accountId).getClientId();
+        Map<String,Object> clientRegisterQuotamap=new HashMap<>();
+        clientRegisterQuotamap.put("client_id",clientId);
+        clientRegisterQuotamap.put("subject_matter_code",subjectMatterCode);
+        List<ClientRegisterQuota> clientRegisterQuota = clientRegisterQuotaMapper.selectByMap(clientRegisterQuotamap);
+
+        Map<String,Object> clientTradeQuotamap=new HashMap<>();
+        clientTradeQuotamap.put("account_id",accountId);
+        clientTradeQuotamap.put("subject_matter_code",subjectMatterCode);
+        List<ClientTradeQuota> clientTradeQuota = clientTradeQuotaMapper.selectByMap(clientTradeQuotamap);
+
         // 2.更改交易账户配额数目
-        clientTradeQuota.setAmount(clientTradeQuota.getAmount() + amount);
-        clientRegisterQuota.setAmount(clientRegisterQuota.getAmount() - amount);
+        clientTradeQuota.get(0).setAmount(clientTradeQuota.get(0).getAmount() + amount);
+        clientRegisterQuota.get(0).setAmount(clientRegisterQuota.get(0).getAmount() - amount);
         /*todo 可用可出资金的转换逻辑*/
 
         // 3.更新账户
-        ClientTradeQuotaDao.updateTradeQuota(clientTradeQuota);
-        ClientRegisterQuotaDao.updateTradeQuota(clientTradeQuota);
+        UpdateWrapper<ClientRegisterQuota> clientRegisterQuotaUpdateWrapper = new UpdateWrapper<>();
+        clientRegisterQuotaUpdateWrapper.eq("client_id", clientId);
+        clientRegisterQuotaUpdateWrapper.eq("subject_matter_code",subjectMatterCode);
+        clientRegisterQuotaMapper.update(clientRegisterQuota.get(0), clientRegisterQuotaUpdateWrapper);
+
+        UpdateWrapper<ClientTradeQuota> clientTradeQuotaUpdateWrapper = new UpdateWrapper<>();
+        clientTradeQuotaUpdateWrapper.eq("account_id", accountId);
+        clientTradeQuotaUpdateWrapper.eq("subject_matter_code",subjectMatterCode);
+        clientTradeQuotaMapper.update(clientTradeQuota.get(0), clientTradeQuotaUpdateWrapper);
+
+
 
     }
 
     @Override
-    public void QuotaOut(String QuotaAccountId ,String subjectMatterCode,double amount) {
+    public void QuotaOut(String accountId ,String subjectMatterCode,double amount) {
         // 1.获取登记配额与交易配额
-        String clientId =QuotaAccountDao.getQuotaAccount(QuotaAccountID).getClientid();
-        ClientTradeQuota clientTradeQuota = ClientTradeQuotaDao.getTradeQuota(QuotaAccountId,subjectMatterCode);
-        ClientRegisterQuota clientRegisterQuota = ClientRegisterQuotaDao.getRegisterQuota(clientId,subjectMatterCode);
+        String clientId =quotaAccountMapper.selectById(accountId).getClientId();
+        Map<String,Object> clientRegisterQuotamap=new HashMap<>();
+        clientRegisterQuotamap.put("client_id",clientId);
+        clientRegisterQuotamap.put("subject_matter_code",subjectMatterCode);
+        List<ClientRegisterQuota> clientRegisterQuota = clientRegisterQuotaMapper.selectByMap(clientRegisterQuotamap);
+
+        Map<String,Object> clientTradeQuotamap=new HashMap<>();
+        clientTradeQuotamap.put("account_id",accountId);
+        clientTradeQuotamap.put("subject_matter_code",subjectMatterCode);
+        List<ClientTradeQuota> clientTradeQuota = clientTradeQuotaMapper.selectByMap(clientTradeQuotamap);
+
         // 2.更改交易账户配额数目
-        clientTradeQuota.setAmount(clientTradeQuota.getAmount() - amount);
-        clientRegisterQuota.setAmount(clientRegisterQuota.getAmount() + amount);
+        clientTradeQuota.get(0).setAmount(clientTradeQuota.get(0).getAmount() - amount);
+        clientRegisterQuota.get(0).setAmount(clientRegisterQuota.get(0).getAmount() + amount);
         /*todo 可用可出资金的转换逻辑*/
 
         // 3.更新账户
-        ClientTradeQuotaDao.updateTradeQuota(clientTradeQuota);
-        ClientRegisterQuotaDao.updateTradeQuota(clientTradeQuota);
+        UpdateWrapper<ClientRegisterQuota> clientRegisterQuotaUpdateWrapper = new UpdateWrapper<>();
+        clientRegisterQuotaUpdateWrapper.eq("client_id", clientId);
+        clientRegisterQuotaUpdateWrapper.eq("subject_matter_code",subjectMatterCode);
+        clientRegisterQuotaMapper.update(clientRegisterQuota.get(0), clientRegisterQuotaUpdateWrapper);
+
+        UpdateWrapper<ClientTradeQuota> clientTradeQuotaUpdateWrapper = new UpdateWrapper<>();
+        clientTradeQuotaUpdateWrapper.eq("account_id", accountId);
+        clientTradeQuotaUpdateWrapper.eq("subject_matter_code",subjectMatterCode);
+        clientTradeQuotaMapper.update(clientTradeQuota.get(0), clientTradeQuotaUpdateWrapper);
+
+
+
     }
 
     @Override
-    public List<QuotaTransferRecord> SelectTransferRecord(String QuotaAccountId) {
-        List<QuotaTransferRecord> list = QuotaTransferRecordDao.getQuotaTransferRecord(QuotaAccountId);
+    public List<QuotaTransferRecord> SelectTransferRecord(String clientId) {
+        Map<String,Object> map=new HashMap<>();
+        map.put("client_id",clientId);
+        List<QuotaTransferRecord> list = quotaTransferRecordMapper.selectByMap(map);
         return list;
     }
 
     @Override
-    public  List<QuotaTradeRecord> selectQuotaTradeRecord(String QuotaAccountId) {
-        List<QuotaTradeRecord> list = QuotaTradeRecordDao.getQuotaTradeRecord(QuotaAccountId);
+    public  List<QuotaTradeRecord> selectQuotaTradeRecord(String clientId) {
+        Map<String,Object> map=new HashMap<>();
+        map.put("client_id",clientId);
+        List<QuotaTradeRecord> list = quotaTradeRecordMapper.selectByMap(map);
         return list;
     }
 }
