@@ -11,7 +11,6 @@ public interface AuctionService {
     void joinAuction(String ClientOperatorCode);
     //提交竞价
     void submitOffer(AuctionPost auctionPost);
-
     //结算尾款
     void finishPay(AuctionQuota auctionQuota, AuctionPost auctionPost);
 

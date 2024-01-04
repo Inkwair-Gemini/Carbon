@@ -20,7 +20,7 @@ public class CapitalAccount implements Serializable {
     //可用资金
     private Double availableCapital;
     //可出资金
-    private Double transferCapital;
+    private Double unavailableCapital;
     //银行Id
     private String bindBank;
 
@@ -65,11 +65,11 @@ public class CapitalAccount implements Serializable {
     }
 
     public Double getTransferCapital() {
-        return transferCapital;
+        return unavailableCapital;
     }
 
-    public void setTransferCapital(Double transferCapital) {
-        this.transferCapital = transferCapital;
+    public void setTransferCapital(Double unavailableCapital) {
+        this.unavailableCapital = unavailableCapital;
     }
 
     public String getBindBank() {
