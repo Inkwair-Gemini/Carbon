@@ -1,10 +1,7 @@
 package com.carbon.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.carbon.mapper.CapitalAccountMapper;
-import com.carbon.mapper.CapitalTradeRecordMapper;
-import com.carbon.mapper.DepositAndWithdrawalRecordMapper;
-import com.carbon.mapper.DepositAndWithdrawalRequestRecordMapper;
+import com.carbon.mapper.*;
 import com.carbon.po.*;
 import com.carbon.service.CapitalService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,16 +22,16 @@ public class CapitalServiceImpl implements CapitalService {
     private DepositAndWithdrawalRecordMapper depositAndWithdrawalRecordMapper;
     @Autowired
     private DepositAndWithdrawalRequestRecordMapper depositAndWithdrawalRequestRecordMapper;
+    @Autowired
+    private BankAccountMapper bankAccountMapper;
 
     @Override
     public void capitalIn(String fromAccountId, String toAccountId, Double amount) {
         // 1.获取账户
-        CapitalAccount fromCapitalAccount = capitalAccountMapper.selectById(fromAccountId);
+        BankAccount fromCapitalAccount = bankAccountMapper.selectById(fromAccountId);
         CapitalAccount toCapitalAccount = capitalAccountMapper.selectById(toAccountId);
         // 2.更改金额
         fromCapitalAccount.setCapital(fromCapitalAccount.getCapital() - amount);
-        fromCapitalAccount.setAvailableCapital(fromCapitalAccount.getAvailableCapital() - amount);
-        fromCapitalAccount.setTransferCapital(fromCapitalAccount.getTransferCapital() -amount);
         toCapitalAccount.setCapital(toCapitalAccount.getCapital() + amount);
         toCapitalAccount.setAvailableCapital(toCapitalAccount.getAvailableCapital() + amount);
         toCapitalAccount.setTransferCapital(toCapitalAccount.getTransferCapital() + amount);
@@ -42,11 +39,9 @@ public class CapitalServiceImpl implements CapitalService {
         /*todo 可用可出资金的转换逻辑*/
 
         // 3.更新账户
-        UpdateWrapper<CapitalAccount> fromCapitalAccountUpdateWrapper = new UpdateWrapper<>();
+        UpdateWrapper<BankAccount> fromCapitalAccountUpdateWrapper = new UpdateWrapper<>();
         fromCapitalAccountUpdateWrapper.eq("capital", fromCapitalAccount.getCapital());
-        fromCapitalAccountUpdateWrapper.eq("available_capital",fromCapitalAccount.getAvailableCapital());
-        fromCapitalAccountUpdateWrapper.eq("transfer_capital",fromCapitalAccount.getTransferCapital());
-        capitalAccountMapper.update(fromCapitalAccount,fromCapitalAccountUpdateWrapper);
+        bankAccountMapper.update(fromCapitalAccount,fromCapitalAccountUpdateWrapper);
         UpdateWrapper<CapitalAccount> toCapitalAccountUpdateWrapper = new UpdateWrapper<>();
         toCapitalAccountUpdateWrapper.eq("capital", toCapitalAccount.getCapital());
         toCapitalAccountUpdateWrapper.eq("available_capital",toCapitalAccount.getAvailableCapital());
@@ -57,12 +52,10 @@ public class CapitalServiceImpl implements CapitalService {
     @Override
     public void capitalOut(String fromAccountId, String toAccountId, Double amount) {
         // 1.获取账户
-        CapitalAccount fromCapitalAccount = capitalAccountMapper.selectById(fromAccountId);
+        BankAccount fromCapitalAccount = bankAccountMapper.selectById(fromAccountId);
         CapitalAccount toCapitalAccount = capitalAccountMapper.selectById(toAccountId);
         // 2.更改金额
         fromCapitalAccount.setCapital(fromCapitalAccount.getCapital() + amount);
-        fromCapitalAccount.setAvailableCapital(fromCapitalAccount.getAvailableCapital() + amount);
-        fromCapitalAccount.setTransferCapital(fromCapitalAccount.getTransferCapital() + amount);
         toCapitalAccount.setCapital(toCapitalAccount.getCapital() - amount);
         toCapitalAccount.setAvailableCapital(toCapitalAccount.getAvailableCapital() - amount);
         toCapitalAccount.setTransferCapital(toCapitalAccount.getTransferCapital() - amount);
@@ -70,16 +63,15 @@ public class CapitalServiceImpl implements CapitalService {
         /*todo 可用可出资金的转换逻辑*/
 
         // 3.更新账户
-        UpdateWrapper<CapitalAccount> fromCapitalAccountUpdateWrapper = new UpdateWrapper<>();
+        UpdateWrapper<BankAccount> fromCapitalAccountUpdateWrapper = new UpdateWrapper<>();
         fromCapitalAccountUpdateWrapper.eq("capital", fromCapitalAccount.getCapital());
-        fromCapitalAccountUpdateWrapper.eq("available_capital",fromCapitalAccount.getAvailableCapital());
-        fromCapitalAccountUpdateWrapper.eq("transfer_capital",fromCapitalAccount.getTransferCapital());
-        capitalAccountMapper.update(fromCapitalAccount,fromCapitalAccountUpdateWrapper);
+        bankAccountMapper.update(fromCapitalAccount,fromCapitalAccountUpdateWrapper);
         UpdateWrapper<CapitalAccount> toCapitalAccountUpdateWrapper = new UpdateWrapper<>();
         toCapitalAccountUpdateWrapper.eq("capital", toCapitalAccount.getCapital());
         toCapitalAccountUpdateWrapper.eq("available_capital",toCapitalAccount.getAvailableCapital());
         toCapitalAccountUpdateWrapper.eq("transfer_capital",toCapitalAccount.getTransferCapital());
         capitalAccountMapper.update(toCapitalAccount,toCapitalAccountUpdateWrapper);
+
     }
 
     @Override
