@@ -17,7 +17,6 @@ public class QuotaAccount implements Serializable {
     private String clientId;
     private String password;
     private String accountType; // 账户类型
-    private List<ClientTradeQuota> clientTradeQuotas; // 客户交易配额
 
     public String getId() {
         return id;
@@ -51,11 +50,5 @@ public class QuotaAccount implements Serializable {
         this.accountType = accountType;
     }
 
-    public List<ClientTradeQuota> getClientTradeQuotas() {
-        return clientTradeQuotas;
-    }
 
-    public void setClientTradeQuotas(List<ClientTradeQuota> clientTradeQuotas) {
-        this.clientTradeQuotas = clientTradeQuotas;
-    }
 }

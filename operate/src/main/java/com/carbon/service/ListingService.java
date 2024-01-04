@@ -3,7 +3,7 @@ package com.carbon.service;
 import com.carbon.input.DelistingPost;
 import com.carbon.input.ListingPost;
 import com.carbon.output.SelectPositionInfoResult;
-import com.carbon.po.Listing;
+import com.carbon.po.ListingDoneRecord;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ public interface ListingService{
     // 当前委托查询
     List<ListingPost> selectEntrustInfo(String clientId);
     // 当前成交查询
-    List<Listing> selectBargainInfo(String clientId);
+    List<ListingDoneRecord> selectBargainInfo(String clientId);
     // 挂牌撤销
     boolean cancelListing(String listingId);
     // 闭市自动撤销委托
