@@ -8,5 +8,5 @@ public interface BulkAgreementEnquiryService {
     //洽谈出价
     void sendOfferEnquiry(GroupEnquiryPost groupEnquiryPost);
     //达成交易
-    void makeBargain(DirectionPost directionPost);
+    void makeBargain(GroupEnquiryPost groupEnquiryPost);
 }
