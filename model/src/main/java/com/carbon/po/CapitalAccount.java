@@ -21,6 +21,6 @@ public class CapitalAccount implements Serializable {
     private Double availableCapital;
     //可出资金
     private Double unavailableCapital;
-    //银行Id
-    private String bindBank;
+    //银行账户Id
+    private String bindBankAccount;
 }
