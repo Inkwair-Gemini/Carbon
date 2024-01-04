@@ -5,11 +5,11 @@ import com.carbon.mapper.*;
 import com.carbon.po.*;
 import com.carbon.service.QuotaService;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+@Service
 public class QuotaServiceImpl implements QuotaService {
 
     @Autowired
@@ -24,15 +24,15 @@ public class QuotaServiceImpl implements QuotaService {
     private QuotaTradeRecordMapper quotaTradeRecordMapper;
 
     @Override
-    public List<ClientTradeQuota> SelectClientTradeQuota(String accountId) {
+    public List<ClientTradeQuota> SelectClientTradeQuota(String QuotaAccountId, String subjectMatterCode) {
         Map<String,Object> map=new HashMap<>();
-        map.put("account_id",accountId);
+        map.put("quota_account_id",QuotaAccountId);
         List<ClientTradeQuota> list = clientTradeQuotaMapper.selectByMap(map);
         return list;
     }
 
     @Override
-    public List<ClientRegisterQuota> SelectClientRegisterQuota(String clientId) {
+    public List<ClientRegisterQuota> SelectClientRegisterQuota(String clientId, String subjectMatterCode) {
         Map<String,Object> map=new HashMap<>();
         map.put("client_id",clientId);
         List<ClientRegisterQuota> list = clientRegisterQuotaMapper.selectByMap(map);
@@ -40,7 +40,7 @@ public class QuotaServiceImpl implements QuotaService {
     }
 
     @Override
-    public void QuotaIn(String accountId, String subjectMatterCode, double amount) {
+    public void QuotaIn(String accountId, String subjectMatterCode, Double amount) {
         // 1.获取登记配额与交易配额
         String clientId =quotaAccountMapper.selectById(accountId).getClientId();
         Map<String,Object> clientRegisterQuotamap=new HashMap<>();
@@ -49,7 +49,7 @@ public class QuotaServiceImpl implements QuotaService {
         List<ClientRegisterQuota> clientRegisterQuota = clientRegisterQuotaMapper.selectByMap(clientRegisterQuotamap);
 
         Map<String,Object> clientTradeQuotamap=new HashMap<>();
-        clientTradeQuotamap.put("account_id",accountId);
+        clientTradeQuotamap.put("quota_quota_account_id",accountId);
         clientTradeQuotamap.put("subject_matter_code",subjectMatterCode);
         List<ClientTradeQuota> clientTradeQuota = clientTradeQuotaMapper.selectByMap(clientTradeQuotamap);
 
@@ -65,16 +65,14 @@ public class QuotaServiceImpl implements QuotaService {
         clientRegisterQuotaMapper.update(clientRegisterQuota.get(0), clientRegisterQuotaUpdateWrapper);
 
         UpdateWrapper<ClientTradeQuota> clientTradeQuotaUpdateWrapper = new UpdateWrapper<>();
-        clientTradeQuotaUpdateWrapper.eq("account_id", accountId);
+        clientTradeQuotaUpdateWrapper.eq("quota_account_id", accountId);
         clientTradeQuotaUpdateWrapper.eq("subject_matter_code",subjectMatterCode);
         clientTradeQuotaMapper.update(clientTradeQuota.get(0), clientTradeQuotaUpdateWrapper);
-
-
 
     }
 
     @Override
-    public void QuotaOut(String accountId ,String subjectMatterCode,double amount) {
+    public void QuotaOut(String accountId ,String subjectMatterCode,Double amount) {
         // 1.获取登记配额与交易配额
         String clientId =quotaAccountMapper.selectById(accountId).getClientId();
         Map<String,Object> clientRegisterQuotamap=new HashMap<>();
@@ -83,7 +81,7 @@ public class QuotaServiceImpl implements QuotaService {
         List<ClientRegisterQuota> clientRegisterQuota = clientRegisterQuotaMapper.selectByMap(clientRegisterQuotamap);
 
         Map<String,Object> clientTradeQuotamap=new HashMap<>();
-        clientTradeQuotamap.put("account_id",accountId);
+        clientTradeQuotamap.put("quota_account_id",accountId);
         clientTradeQuotamap.put("subject_matter_code",subjectMatterCode);
         List<ClientTradeQuota> clientTradeQuota = clientTradeQuotaMapper.selectByMap(clientTradeQuotamap);
 
@@ -99,12 +97,9 @@ public class QuotaServiceImpl implements QuotaService {
         clientRegisterQuotaMapper.update(clientRegisterQuota.get(0), clientRegisterQuotaUpdateWrapper);
 
         UpdateWrapper<ClientTradeQuota> clientTradeQuotaUpdateWrapper = new UpdateWrapper<>();
-        clientTradeQuotaUpdateWrapper.eq("account_id", accountId);
+        clientTradeQuotaUpdateWrapper.eq("quota_account_id", accountId);
         clientTradeQuotaUpdateWrapper.eq("subject_matter_code",subjectMatterCode);
         clientTradeQuotaMapper.update(clientTradeQuota.get(0), clientTradeQuotaUpdateWrapper);
-
-
-
     }
 
     @Override

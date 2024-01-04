@@ -1,6 +1,6 @@
 package com.carbon.service.Impl;
 
-import com.carbon.dao.CapitalDao;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.carbon.input.DirectionPost;
 import com.carbon.input.GroupPost;
 import com.carbon.input.ListingPost;
@@ -29,12 +29,6 @@ import java.util.List;
 @Service
 public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService {
     @Autowired
-    private ClientOperatorDao clientOperatorDao;
-    @Autowired
-    private CapitalDao capitalDao;
-    @Autowired
-    private QuotaDao quotaDao;
-    @Autowired
     private ClientOperatorMapper clientOperatorMapper;
     @Autowired
     private CapitalAccountMapper capitalAccountMapper;
@@ -42,11 +36,12 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
     private QuotaAccountMapper quotaAccountMapper;
     @Autowired
     private DirectionPostMapper directionPostMapper;
+
     @Override
     public void directionOffer(DirectionPost directionPost) {
-        ClientOperator clientOperator = clientOperatorDao.selectClientOperatorById(String clientOperatorId);
-        CapitalAccount capitalAccount = capitalDao.selectCapitalAccount(clientOperator.getAccountId());
-        QuotaAccount quotaAccount = quotaDao.selectQuotaAccount(clientOperator.getAccountId());
+        ClientOperator clientOperator = clientOperatorMapper.selectById(directionPost.getOperatorCode());
+        CapitalAccount capitalAccount = capitalAccountMapper.selectById(directionPost.getAccount());
+        QuotaAccount quotaAccount = quotaAccountMapper.selectById(directionPost.getQuotaAccountId);
         //todo 1.判断是否有足够的配额
         boolean isEnoughQuota = quotaAccount.getQuota() >= directionPost.getQuota();
         //todo 2.判断是否有足够的资金
