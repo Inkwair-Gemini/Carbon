@@ -4,6 +4,10 @@ import com.carbon.dao.CapitalDao;
 import com.carbon.input.DirectionPost;
 import com.carbon.input.GroupPost;
 import com.carbon.input.ListingPost;
+import com.carbon.mapper.CapitalAccountMapper;
+import com.carbon.mapper.ClientOperatorMapper;
+import com.carbon.mapper.DirectionPostMapper;
+import com.carbon.mapper.QuotaAccountMapper;
 import com.carbon.po.CapitalAccount;
 import com.carbon.po.ClientOperator;
 import com.carbon.po.Group;
@@ -30,7 +34,14 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
     private CapitalDao capitalDao;
     @Autowired
     private QuotaDao quotaDao;
-
+    @Autowired
+    private ClientOperatorMapper clientOperatorMapper;
+    @Autowired
+    private CapitalAccountMapper capitalAccountMapper;
+    @Autowired
+    private QuotaAccountMapper quotaAccountMapper;
+    @Autowired
+    private DirectionPostMapper directionPostMapper;
     @Override
     public void directionOffer(DirectionPost directionPost) {
         ClientOperator clientOperator = clientOperatorDao.selectClientOperatorById(String clientOperatorId);
