@@ -1,5 +1,6 @@
 package com.carbon.service;
 
+import com.carbon.input.CapitalTransferPost;
 import com.carbon.po.CapitalAccount;
 import com.carbon.po.CapitalTradeRecord;
 import com.carbon.po.DepositAndWithdrawalRecord;
@@ -8,10 +9,14 @@ import com.carbon.po.DepositAndWithdrawalRequestRecord;
 import java.util.List;
 
 public interface CapitalService {
+    //出入金申请记录
+    void DepositAndWithdrawalRequestRecord(CapitalTransferPost capitalTransferPost,String initiator);
+    //出入金记录
+    void DepositAndWithdrawalRecord(CapitalTransferPost capitalTransferPost,String operatorCode);
     //转入交易资金
-    void capitalIn(String fromAccountId,String toAccountId,Double amount);
+    void capitalIn(String capitalAccountId,Double amount);
     //转出交易资金
-    void capitalOut(String fromAccountId,String toAccountId,Double value);
+    void capitalOut(String capitalAccountId,Double amount);
     //查询资金账户
     CapitalAccount selectCapitalAccount(String accountId);
     //查询资金交易流水

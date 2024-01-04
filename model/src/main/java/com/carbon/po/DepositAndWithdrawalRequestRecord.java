@@ -15,10 +15,10 @@ public class DepositAndWithdrawalRequestRecord implements Serializable {
     private String id;
     private Timestamp time;
     private String initiator; // 发起员
-    private String bindBank; // 银行Id
+    private String bindBank; // 银行
     private String bankAccountId; // 银行账户Id
     private String type; // 出/入
-    private String requestState; // 申请状态
+    private String requestState; // 申请状态 成功/失败
     private Double actualAmount; // 发生金额
     private String description; // 备注
 }

@@ -1,12 +1,15 @@
 package com.carbon.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.carbon.input.CapitalTransferPost;
 import com.carbon.mapper.*;
 import com.carbon.po.*;
 import com.carbon.service.CapitalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,53 +27,105 @@ public class CapitalServiceImpl implements CapitalService {
     private DepositAndWithdrawalRequestRecordMapper depositAndWithdrawalRequestRecordMapper;
     @Autowired
     private BankAccountMapper bankAccountMapper;
+    @Autowired
+    private CapitalTransferPostMapper capitalTransferPostMapper;
 
     @Override
-    public void capitalIn(String fromAccountId, String toAccountId, Double amount) {
+    public void DepositAndWithdrawalRequestRecord(CapitalTransferPost capitalTransferPost,String initiator){
+        //1.创建转入转出资金申请记录类来存储信息
+        DepositAndWithdrawalRequestRecord depositAndWithdrawalRequestRecord = new DepositAndWithdrawalRequestRecord();
+
+        Timestamp currentTimestamp = new Timestamp(new Date().getTime());
+        depositAndWithdrawalRequestRecord.setTime(currentTimestamp);//时间
+        depositAndWithdrawalRequestRecord.setInitiator(initiator);//发起员
+        String capitalAccountId=capitalTransferPost.getCapitalAccount();
+        CapitalAccount capitalAccount = capitalAccountMapper.selectById(capitalAccountId);
+        String bankAccountId = capitalAccount.getBindBankAccount();
+        BankAccount bankAccount= bankAccountMapper.selectById(bankAccountId);
+        depositAndWithdrawalRequestRecord.setBindBank(bankAccount.getBank());//绑定银行（名称）
+        depositAndWithdrawalRequestRecord.setBankAccountId(bankAccountId);//银行id
+        depositAndWithdrawalRequestRecord.setType(capitalTransferPost.getType());//类别
+        depositAndWithdrawalRequestRecord.setActualAmount(capitalTransferPost.getActualAmount());//发生金额
+
+        //2.申请状态的判定
+
+        if(capitalTransferPost.getType()=="入"){
+            if(bankAccount.getCapital()>= capitalTransferPost.getActualAmount()){
+                depositAndWithdrawalRequestRecord.setRequestState("成功");
+                depositAndWithdrawalRequestRecord.setDescription("无");
+            }else{
+                depositAndWithdrawalRequestRecord.setRequestState("失败");
+                depositAndWithdrawalRequestRecord.setDescription("银行余额不足");
+            }
+        }
+        if(capitalTransferPost.getType()=="出"){
+            if(capitalAccount.getAvailableCapital()>= capitalTransferPost.getActualAmount()){
+                depositAndWithdrawalRequestRecord.setRequestState("成功");
+                depositAndWithdrawalRequestRecord.setDescription("无");
+            }else{
+                depositAndWithdrawalRequestRecord.setRequestState("失败");
+                depositAndWithdrawalRequestRecord.setDescription("账户余额不足");
+            }
+        }
+
+        //3.更新出入金申请表
+        depositAndWithdrawalRequestRecordMapper.insert(depositAndWithdrawalRequestRecord);
+
+    };
+
+    @Override
+    public void DepositAndWithdrawalRecord(CapitalTransferPost capitalTransferPost,String operatorCode){
+        //1.创建转入转出资金记录类来存储信息
+        DepositAndWithdrawalRecord depositAndWithdrawalRecord = new DepositAndWithdrawalRecord();
+
+        Timestamp currentTimestamp = new Timestamp(new Date().getTime());
+        depositAndWithdrawalRecord.setTime(currentTimestamp);//时间
+        depositAndWithdrawalRecord.setOperatorCode(operatorCode);//发起员
+        String capitalAccountId=capitalTransferPost.getCapitalAccount();
+        CapitalAccount capitalAccount = capitalAccountMapper.selectById(capitalAccountId);
+        depositAndWithdrawalRecord.setCapitalAccount(capitalAccountId);
+        depositAndWithdrawalRecord.setType(capitalTransferPost.getType());//类别
+        depositAndWithdrawalRecord.setActualAmount(capitalTransferPost.getActualAmount());//发生金额
+        depositAndWithdrawalRecord.setEndingBalance(capitalAccount.getCapital());//期后余额
+        depositAndWithdrawalRecord.setEndingAvailableBalance(capitalAccount.getAvailableCapital());//期后可用余额
+
+        //3.更新出入金申请表
+        depositAndWithdrawalRecordMapper.insert(depositAndWithdrawalRecord);
+
+    };
+    @Override
+    public void capitalIn(String capitalAccountId, Double amount) {
         // 1.获取账户
-        BankAccount fromCapitalAccount = bankAccountMapper.selectById(fromAccountId);
-        CapitalAccount toCapitalAccount = capitalAccountMapper.selectById(toAccountId);
+        CapitalAccount capitalAccount = capitalAccountMapper.selectById(capitalAccountId);
+        String bankAccountId = capitalAccount.getBindBankAccount();
+        BankAccount bankAccount= bankAccountMapper.selectById(bankAccountId);
         // 2.更改金额
-        fromCapitalAccount.setCapital(fromCapitalAccount.getCapital() - amount);
-        toCapitalAccount.setCapital(toCapitalAccount.getCapital() + amount);
-        toCapitalAccount.setAvailableCapital(toCapitalAccount.getAvailableCapital() + amount);
-        toCapitalAccount.setTransferCapital(toCapitalAccount.getTransferCapital() + amount);
+        bankAccount.setCapital(bankAccount.getCapital() - amount);
+        capitalAccount.setCapital(capitalAccount.getCapital() + amount);
+        capitalAccount.setAvailableCapital(capitalAccount.getAvailableCapital() + amount);
 
         /*todo 可用可出资金的转换逻辑*/
 
         // 3.更新账户
-        UpdateWrapper<BankAccount> fromCapitalAccountUpdateWrapper = new UpdateWrapper<>();
-        fromCapitalAccountUpdateWrapper.eq("capital", fromCapitalAccount.getCapital());
-        bankAccountMapper.update(fromCapitalAccount,fromCapitalAccountUpdateWrapper);
-        UpdateWrapper<CapitalAccount> toCapitalAccountUpdateWrapper = new UpdateWrapper<>();
-        toCapitalAccountUpdateWrapper.eq("capital", toCapitalAccount.getCapital());
-        toCapitalAccountUpdateWrapper.eq("available_capital",toCapitalAccount.getAvailableCapital());
-        toCapitalAccountUpdateWrapper.eq("transfer_capital",toCapitalAccount.getTransferCapital());
-        capitalAccountMapper.update(toCapitalAccount,toCapitalAccountUpdateWrapper);
+        bankAccountMapper.updateById(bankAccount);
+        capitalAccountMapper.updateById(capitalAccount);
     }
 
     @Override
-    public void capitalOut(String fromAccountId, String toAccountId, Double amount) {
+    public void capitalOut(String capitalAccountId, Double amount) {
         // 1.获取账户
-        BankAccount fromCapitalAccount = bankAccountMapper.selectById(fromAccountId);
-        CapitalAccount toCapitalAccount = capitalAccountMapper.selectById(toAccountId);
-        // 2.更改金额
-        fromCapitalAccount.setCapital(fromCapitalAccount.getCapital() + amount);
-        toCapitalAccount.setCapital(toCapitalAccount.getCapital() - amount);
-        toCapitalAccount.setAvailableCapital(toCapitalAccount.getAvailableCapital() - amount);
-        toCapitalAccount.setTransferCapital(toCapitalAccount.getTransferCapital() - amount);
+        CapitalAccount capitalAccount = capitalAccountMapper.selectById(capitalAccountId);
+        String bankAccountId = capitalAccount.getBindBankAccount();
+        BankAccount bankAccount= bankAccountMapper.selectById(bankAccountId);
 
-        /*todo 可用可出资金的转换逻辑*/
+        // 2.更改金额
+        bankAccount.setCapital(bankAccount.getCapital() + amount);
+        capitalAccount.setCapital(capitalAccount.getCapital() - amount);
+        capitalAccount.setAvailableCapital(capitalAccount.getAvailableCapital() - amount);
 
         // 3.更新账户
-        UpdateWrapper<BankAccount> fromCapitalAccountUpdateWrapper = new UpdateWrapper<>();
-        fromCapitalAccountUpdateWrapper.eq("capital", fromCapitalAccount.getCapital());
-        bankAccountMapper.update(fromCapitalAccount,fromCapitalAccountUpdateWrapper);
-        UpdateWrapper<CapitalAccount> toCapitalAccountUpdateWrapper = new UpdateWrapper<>();
-        toCapitalAccountUpdateWrapper.eq("capital", toCapitalAccount.getCapital());
-        toCapitalAccountUpdateWrapper.eq("available_capital",toCapitalAccount.getAvailableCapital());
-        toCapitalAccountUpdateWrapper.eq("transfer_capital",toCapitalAccount.getTransferCapital());
-        capitalAccountMapper.update(toCapitalAccount,toCapitalAccountUpdateWrapper);
+        bankAccountMapper.updateById(bankAccount);
+        capitalAccountMapper.updateById(capitalAccount);
 
     }
 

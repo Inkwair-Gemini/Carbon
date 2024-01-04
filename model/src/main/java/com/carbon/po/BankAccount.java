@@ -1,23 +1,17 @@
 package com.carbon.po;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class BankAccount {
+    //银行账户
     private String id;
+    //银行名称
+    private String bank;
     //资金余额
     private Double capital;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public Double getCapital() {
-        return capital;
-    }
-
-    public void setCapital(Double capital) {
-        this.capital = capital;
-    }
 }
