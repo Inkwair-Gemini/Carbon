@@ -16,6 +16,7 @@ import java.util.List;
 public class Group implements Serializable {
     private String id;
     private String name;
+    private String groupMaster;
     private Timestamp createTime;
     private Timestamp updateTime;
 }
