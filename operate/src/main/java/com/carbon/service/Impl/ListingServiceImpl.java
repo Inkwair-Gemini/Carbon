@@ -6,15 +6,19 @@ import com.carbon.input.DelistingPost;
 import com.carbon.input.ListingPost;
 import com.carbon.mapper.*;
 import com.carbon.output.SelectPositionInfoResult;
+import com.carbon.po.CapitalAccount;
 import com.carbon.po.ClientTradeQuota;
+import com.carbon.po.DirectionDoneRecord;
 import com.carbon.po.ListingDoneRecord;
 import com.carbon.service.ListingService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.sql.Timestamp;
 import java.sql.Wrapper;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -40,30 +44,86 @@ public class ListingServiceImpl implements ListingService {
         listingDoneRecord.setDealPrice(listingPost.getPrice());
         listingDoneRecord.setDealAmount(delistingPost.getAmount());
         listingDoneRecord.setDealBalance(listingPost.getPrice()* delistingPost.getAmount());
-        listingDoneRecord.setListingClient(listingPost.getOperatorCode());
-        listingDoneRecord.setDelistingClient(delistingPost.getOperatorCode());
+        //只保留数字
+        String listingClient=listingPost.getOperatorCode().replaceAll("[^0-9]","");
+        String delistingClient=delistingPost.getOperatorCode().replaceAll("[^0-9]","");
+        listingDoneRecord.setListingClient(listingClient);
+        listingDoneRecord.setDelistingClient(delistingClient);
         return listingDoneRecord;
     }
     @Override
     public boolean purchaserListing(ListingPost listingPost) {
-        if(CapitalAccountMapper.selectById(listingPost.getQuotaAccount()).getAvailableCapital()
-                <listingPost.getPrice()*listingPost.getAmount())
+        // 限制价格
+        LocalDate localDate = LocalDate.now();
+        LocalDate yesterday = localDate.minusDays(1);
+        Timestamp beginTime = Timestamp.valueOf(yesterday.atStartOfDay());
+        Timestamp endTime = Timestamp.valueOf(yesterday.atTime(23, 59, 59));
+        QueryWrapper<ListingDoneRecord> query=new QueryWrapper<>();
+        //查询昨天的成交记录
+        query.eq("subject_matter_code",
+                listingPost.getSubjectMatterCode()).between("time",beginTime,endTime);
+        List<ListingDoneRecord> listingDoneRecordList=ListingDoneRecordMapper.selectList(query);
+        if (!listingDoneRecordList.isEmpty()) {
+            // 按时间升序对列表进行排序
+            listingDoneRecordList.sort(Comparator.comparing(ListingDoneRecord::getTime));
+            // 获取最后一条记录
+            ListingDoneRecord latestRecord = listingDoneRecordList.get(listingDoneRecordList.size() - 1);
+            if(listingPost.getPrice()<listingPost.getPrice()*0.9||listingPost.getPrice()>listingPost.getPrice()*1.1)
+                return false;
+        }
+
+        // 挂牌交易
+        Double availableCapital=CapitalAccountMapper.selectById(listingPost.getQuotaAccount()).getAvailableCapital();
+        Double unavailableCapital=CapitalAccountMapper.selectById(listingPost.getQuotaAccount()).getUnavailableCapital();
+        if(availableCapital <listingPost.getPrice()*listingPost.getAmount())
             return false;//可用资金不够
         ListingPostMapper.insert(listingPost);
-        //todo 更新配额和资金
+        //更新资金
+        UpdateWrapper update = new UpdateWrapper<CapitalAccount>();
+        update.eq("id",listingPost.getQuotaAccount());
+        update.set("available_capital",availableCapital-listingPost.getPrice()*listingPost.getAmount());
+        update.set("unavailable_capital",unavailableCapital+listingPost.getPrice()*listingPost.getAmount());
+        CapitalAccountMapper.update(null,update);
         return true;
     }
 
     @Override
     public boolean sellerListing(ListingPost listingPost) {
-        QueryWrapper query = new QueryWrapper<ListingPost>();
-        query.eq("account_id",listingPost.getQuotaAccount());
-        query.eq("subject_matter_code",listingPost.getSubjectMatterCode());
-        Double amount= ClientTradeQuotaMapper.selectOne(query).getAmount();
+        // 限制价格
+        LocalDate localDate = LocalDate.now();
+        LocalDate yesterday = localDate.minusDays(1);
+        Timestamp beginTime = Timestamp.valueOf(yesterday.atStartOfDay());
+        Timestamp endTime = Timestamp.valueOf(yesterday.atTime(23, 59, 59));
+        QueryWrapper<ListingDoneRecord> query=new QueryWrapper<>();
+        //查询昨天的成交记录
+        query.eq("subject_matter_code",
+                listingPost.getSubjectMatterCode()).between("time",beginTime,endTime);
+        List<ListingDoneRecord> listingDoneRecordList=ListingDoneRecordMapper.selectList(query);
+        if (!listingDoneRecordList.isEmpty()) {
+            // 按时间升序对列表进行排序
+            listingDoneRecordList.sort(Comparator.comparing(ListingDoneRecord::getTime));
+            // 获取最后一条记录
+            ListingDoneRecord latestRecord = listingDoneRecordList.get(listingDoneRecordList.size() - 1);
+            if(listingPost.getPrice()<listingPost.getPrice()*0.9||listingPost.getPrice()>listingPost.getPrice()*1.1)
+                return false;
+        }
+
+
+        QueryWrapper query2 = new QueryWrapper<ListingPost>();
+        query2.eq("account_id",listingPost.getQuotaAccount());
+        query2.eq("subject_matter_code",listingPost.getSubjectMatterCode());
+        Double amount= ClientTradeQuotaMapper.selectOne(query2).getAvailableQuotaAmount();
+        Double unamount=ClientTradeQuotaMapper.selectOne(query2).getUnavailableQuotaAmount();
         if(amount<listingPost.getAmount())
             return false;//可用配额不够
         ListingPostMapper.insert(listingPost);
-        //todo 更新配额和资金
+        //更新配额
+        UpdateWrapper update = new UpdateWrapper<ClientTradeQuota>();
+        update.eq("account_id",listingPost.getQuotaAccount());
+        update.eq("subject_matter_code",listingPost.getSubjectMatterCode());
+        update.set("available_quota_amount",amount-listingPost.getAmount());
+        update.set("unavailable_quota_amount",unamount+listingPost.getAmount());
+        ClientTradeQuotaMapper.update(null,update);
         return true;
     }
 
@@ -72,8 +132,9 @@ public class ListingServiceImpl implements ListingService {
         QueryWrapper query = new QueryWrapper<ListingPost>();
         query.eq("id",delistingPost.getListingId());
         ListingPost listingPost=ListingPostMapper.selectOne(query);
-        if(CapitalAccountMapper.selectById(delistingPost.getQuotaAccount()).getAvailableCapital()
-                <listingPost.getPrice()*delistingPost.getAmount())
+        Double availableCapital=CapitalAccountMapper.selectById(delistingPost.getQuotaAccount()).getAvailableCapital();
+        Double unavailableCapital=CapitalAccountMapper.selectById(delistingPost.getQuotaAccount()).getUnavailableCapital();
+        if(availableCapital<listingPost.getPrice()*delistingPost.getAmount())
             return false;//可用资金不够
         if(listingPost.getAmount()>delistingPost.getAmount()){
             UpdateWrapper update = new UpdateWrapper<ListingPost>();
@@ -93,7 +154,12 @@ public class ListingServiceImpl implements ListingService {
             ListingDoneRecord listingDoneRecord = setListingDoneRecord(delistingPost, listingPost);
             ListingDoneRecordMapper.insert(listingDoneRecord);
         }
-        //todo 更新配额和资金
+        //更新资金
+        UpdateWrapper update = new UpdateWrapper<CapitalAccount>();
+        update.eq("id",listingPost.getQuotaAccount());
+        update.set("available_capital",availableCapital-listingPost.getPrice()*listingPost.getAmount());
+        update.set("unavailable_capital",unavailableCapital+listingPost.getPrice()*listingPost.getAmount());
+        CapitalAccountMapper.update(null,update);
         return true;
     }
 
@@ -107,7 +173,8 @@ public class ListingServiceImpl implements ListingService {
         QueryWrapper query = new QueryWrapper<ListingPost>();
         query.eq("account_id",delistingPost.getQuotaAccount());
         query.eq("subject_matter_code",listingPost.getSubjectMatterCode());
-        Double amount= ClientTradeQuotaMapper.selectOne(query).getAmount();
+        Double amount= ClientTradeQuotaMapper.selectOne(query).getAvailableQuotaAmount();
+        Double unamount=ClientTradeQuotaMapper.selectOne(query).getUnavailableQuotaAmount();
         
         if(amount<delistingPost.getAmount())
             return false;//可用配额不够
@@ -129,7 +196,13 @@ public class ListingServiceImpl implements ListingService {
             ListingDoneRecord listingDoneRecord = setListingDoneRecord(delistingPost, listingPost);
             ListingDoneRecordMapper.insert(listingDoneRecord);
         }
-        //todo 更新配额和资金
+        //更新配额
+        UpdateWrapper update = new UpdateWrapper<ClientTradeQuota>();
+        update.eq("account_id",listingPost.getQuotaAccount());
+        update.eq("subject_matter_code",listingPost.getSubjectMatterCode());
+        update.set("available_quota_amount",amount-listingPost.getAmount());
+        update.set("unavailable_quota_amount",unamount+listingPost.getAmount());
+        ClientTradeQuotaMapper.update(null,update);
         return true;
     }
 
@@ -181,6 +254,36 @@ public class ListingServiceImpl implements ListingService {
         update.set("status","已撤销");
         update.set("delisting_time",new Timestamp(System.currentTimeMillis()));
         ListingPostMapper.update(null,update);
+        QueryWrapper query=new QueryWrapper<ListingPost>();
+        query.eq("id",listingId);
+        ListingPost listingPost=ListingPostMapper.selectOne(query);
+        //更新配额和资金
+        if(listingPost.getFlowType().equals("买入"))
+        {
+            Double availableCapital=CapitalAccountMapper.selectById(listingPost.getQuotaAccount()).getAvailableCapital();
+            Double unavailableCapital=CapitalAccountMapper.selectById(listingPost.getQuotaAccount()).getUnavailableCapital();
+            //更新资金
+            UpdateWrapper update2 = new UpdateWrapper<CapitalAccount>();
+            update2.eq("id",listingPost.getQuotaAccount());
+            update2.set("available_capital",availableCapital+listingPost.getPrice()*listingPost.getAmount());
+            update2.set("unavailable_capital",unavailableCapital-listingPost.getPrice()*listingPost.getAmount());
+            CapitalAccountMapper.update(null,update);
+        }
+        else
+        {
+            QueryWrapper query2 = new QueryWrapper<ListingPost>();
+            query2.eq("account_id",listingPost.getQuotaAccount());
+            query2.eq("subject_matter_code",listingPost.getSubjectMatterCode());
+            Double amount= ClientTradeQuotaMapper.selectOne(query2).getAvailableQuotaAmount();
+            Double unamount=ClientTradeQuotaMapper.selectOne(query2).getUnavailableQuotaAmount();
+            //更新配额
+            UpdateWrapper update3 = new UpdateWrapper<ClientTradeQuota>();
+            update3.eq("account_id",listingPost.getQuotaAccount());
+            update3.eq("subject_matter_code",listingPost.getSubjectMatterCode());
+            update3.set("available_quota_amount",amount-listingPost.getAmount());
+            update3.set("unavailable_quota_amount",unamount+listingPost.getAmount());
+            ClientTradeQuotaMapper.update(null,update3);
+        }
         return true;
     }
 
