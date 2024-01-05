@@ -5,6 +5,7 @@ import com.carbon.input.ListingPost;
 import com.carbon.output.SelectPositionInfoResult;
 import com.carbon.po.ListingDoneRecord;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 public interface ListingService{
@@ -20,8 +21,12 @@ public interface ListingService{
     SelectPositionInfoResult selectPositionInfo(String clientId);
     // 当前委托查询
     List<ListingPost> selectEntrustInfo(String clientId);
+    // 历史委托查询
+    List<ListingPost> selectEntrustInfo(String clientId, Timestamp start,Timestamp end);
     // 当前成交查询
     List<ListingDoneRecord> selectBargainInfo(String clientId);
+    //历史成交查询
+    List<ListingDoneRecord> selectBargainInfo(String clientId,Timestamp start,Timestamp end);
     // 查询买方挂牌
     List<ListingPost> selectPurchaserListing();
     // 查询卖方挂牌
