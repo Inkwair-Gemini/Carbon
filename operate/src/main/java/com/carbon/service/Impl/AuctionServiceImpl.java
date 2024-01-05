@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * @projectName: Carbon
@@ -41,6 +42,8 @@ public class AuctionServiceImpl implements AuctionService {
     AuctionPostMapper auctionPostMapper;
     @Autowired
     AuctionDoneRecordMapper auctionDoneRecordMapper;
+    @Autowired
+    AuctionClientMapper auctionClientMapper;
 
     @Override
     public void requestAuction(AuctionRequest auctionRequest) {
@@ -53,73 +56,126 @@ public class AuctionServiceImpl implements AuctionService {
         queryWrapper.eq("account_id", quotaAccount.getId())
                 .eq("subject_matter_code", auctionRequest.getSubjectMatterCode());
         ClientTradeQuota clientTradeQuota = clientTradeQuotaMapper.selectOne(queryWrapper);
-        //todo 1.判断是否有足够的配额
+        //判断是否有足够的配额
         boolean isEnoughQuota = clientTradeQuota.getAvailableQuotaAmount() >= auctionRequest.getAmount();
-        //todo 2.判断是否有足够的资金
+        //判断是否有足够的资金
         //boolean isEnoughCapital = capitalAccount.getCapital() >= auctionRequest.getCapital();
-        //todo 3.提交申请
+        //提交申请
         if (isEnoughQuota/* && isEnoughCapital*/) {
-            //todo 3.1.冻结部分配额
+            //冻结部分配额
             QueryWrapper<ClientTradeQuota> updateWrapper = new QueryWrapper<>();
             updateWrapper.eq("account_id", quotaAccount.getId())
                     .eq("subject_matter_code", auctionRequest.getSubjectMatterCode());
             clientTradeQuota.setAvailableQuotaAmount(clientTradeQuota.getAvailableQuotaAmount() - auctionRequest.getAmount());
             clientTradeQuota.setUnavailableQuotaAmount(clientTradeQuota.getUnavailableQuotaAmount() + auctionRequest.getAmount());
-            //todo 3.2.冻结部分资金
+            //冻结部分资金
             //capitalAccount.setCapital(capitalAccount.getCapital() - auctionRequest.getCapital());
-            //todo 3.3.更新配额账户
+            //更新配额账户
             clientTradeQuotaMapper.update(clientTradeQuota,updateWrapper);
-            //todo 3.4.更新资金账户
+            //更新资金账户
             //capitalDao.updateCapitalAccount(capitalAccount);
-            //todo 3.6.添加请求记录
+            //添加请求记录
             auctionRequestMapper.insert(auctionRequest);
-            //todo 3.7.等待申请时间
+            //todo 等待申请时间
 
-            //todo 3.8.新建单向竞价商品
+            //新建单向竞价商品
             AuctionQuota auctionQuota=new AuctionQuota();
-            //todo 3.8.1.添加auctionRequest内信息到auctionQuota
+            //添加auctionRequest内信息到auctionQuota
             auctionQuota.setClientId(clientOperator.getClientId());
             auctionQuota.setSubjectMatterCode(auctionRequest.getSubjectMatterCode());
             auctionQuota.setSubjectMatterName(auctionRequest.getSubjectMatterName());
             auctionQuota.setPrice(auctionRequest.getPrice());
             auctionQuota.setAmount(auctionRequest.getAmount());
-            auctionQuota.setTotalBalance(Double.toString(auctionRequest.getPrice()*auctionRequest.getAmount()));
-            //todo 3.8.2 添加未来发布时间、状态
+            auctionQuota.setTotalBalance(auctionRequest.getPrice()*auctionRequest.getAmount());
+            //todo 添加未来发布时间、状态
             //获取当前时间
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.HOUR_OF_DAY, 2); // 当前时间加两个小时
 
             auctionQuota.setTime(new Timestamp(calendar.getTimeInMillis()));//添加未来平台发布时间
             auctionQuota.setStatus("未成交");
-            //todo 3.9 向auctionQuota插入单向竞价商品
+            //向auctionQuota插入单向竞价商品
             auctionQuotaMapper.insert(auctionQuota);
+
+            //向AuctionClient中插入对象
+            auctionClientMapper.insert(new AuctionClient(auctionQuota.getId(),clientOperator.getClientId()));
+
 
         }
     }
 
     @Override
-    public void joinAuction(String ClientOperatorCode) {
-        ClientOperator clientOperator = clientOperatorMapper.selectById(ClientOperatorCode);
+    public void joinAuction(String auctionQuotaId,String clientOperatorCode) {
+        ClientOperator clientOperator = clientOperatorMapper.selectById(clientOperatorCode);
         Client client=clientMapper.selectById(clientOperator.getClientId());
         CapitalAccount capitalAccount = capitalAccountMapper.selectById(client.getCapitalAccountId());
         Double count= 1000.0;
-        //todo 1.判断是否有足够的资金
+        //判断是否有足够的资金
         boolean isEnoughCapital = capitalAccount.getCapital() >= count;
-        //todo 2.提交申请
+        //提交申请
         if (isEnoughCapital) {
-            //todo 2.1.冻结部分资金
-            capitalAccount.setAvailableCapital(capitalAccount.getCapital() - count);
-            capitalAccount.setUnavailableCapital(capitalAccount.getCapital() + count);
-            //todo 2.2.更新资金账户
+            //冻结部分资金
+            capitalAccount.setAvailableCapital(capitalAccount.getAvailableCapital() - count);
+            capitalAccount.setUnavailableCapital(capitalAccount.getUnavailableCapital() + count);
+            //更新资金账户
             capitalAccountMapper.updateById(capitalAccount);
+            //向AuctionClient中插入对象
+            auctionClientMapper.insert(new AuctionClient(auctionQuotaId,clientOperator.getClientId()));
         }
+    }
+
+    @Override
+    public void leaveAuction(String auctionQuotaId,String clientOperatorCode){
+        ClientOperator clientOperator = clientOperatorMapper.selectById(clientOperatorCode);
+        Client client=clientMapper.selectById(clientOperator.getClientId());
+        CapitalAccount capitalAccount = capitalAccountMapper.selectById(client.getCapitalAccountId());
+        Double count= 1000.0;
+        //解冻部分资金
+        capitalAccount.setAvailableCapital(capitalAccount.getAvailableCapital() + count);
+        capitalAccount.setUnavailableCapital(capitalAccount.getUnavailableCapital() - count);
+        //更新资金账户
+        capitalAccountMapper.updateById(capitalAccount);
+        //删除AuctionClient中对象
+        String clientId=client.getId();
+        QueryWrapper<AuctionClient> auctionClientQueryWrapper=new QueryWrapper<>();
+        auctionClientQueryWrapper.eq("auction_quota_id",auctionQuotaId).eq("client_id",clientId);
+        auctionClientMapper.delete(auctionClientQueryWrapper);
+
     }
 
     @Override
     public void submitOffer(AuctionPost auctionPost) {
-        //todo 1.提交洽谈出价
-        auctionPostMapper.insert(auctionPost);
-        //todo 2.更新洽谈出价记录
+        //判断资金
+        ClientOperator clientOperator = clientOperatorMapper.selectById(auctionPost.getOperatorCode());
+        Client client=clientMapper.selectById(clientOperator.getClientId());
+        CapitalAccount capitalAccount = capitalAccountMapper.selectById(client.getCapitalAccountId());
+        AuctionQuota auctionQuota=auctionQuotaMapper.selectById(auctionPost.getAuctionQuotaId());
+        //判断是否有足够的资金
+        boolean isEnoughCapital = capitalAccount.getCapital() >= auctionPost.getPrice();
+        //判断是否出价更高
+        boolean isHigh=auctionPost.getPrice() >= auctionQuota.getTotalBalance();
+        if(isEnoughCapital && isHigh){
+            //提交洽谈出价
+            auctionPostMapper.insert(auctionPost);
+        }
+    }
+
+    @Override
+    public List<AuctionPost> selectOffer(String auctionQuotaId){
+        QueryWrapper<AuctionPost> queryWrapper=new QueryWrapper<>();
+        queryWrapper.eq("auction_quota_id",auctionQuotaId);
+        return auctionPostMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public AuctionPost selectHighestOffer(List<AuctionPost> auctionPosts){
+        AuctionPost highestBid = auctionPosts.get(0);
+        for (AuctionPost auctionPost : auctionPosts) {
+            if (auctionPost.getPrice() > highestBid.getPrice()) {
+                highestBid = auctionPost;
+            }
+        }
+        return highestBid;
     }
 
     @Override
@@ -127,31 +183,31 @@ public class AuctionServiceImpl implements AuctionService {
         ClientOperator clientOperator = clientOperatorMapper.selectById(auctionPost.getOperatorCode());
         Client client=clientMapper.selectById(clientOperator.getClientId());
         CapitalAccount capitalAccount = capitalAccountMapper.selectById(client.getCapitalAccountId());
-        //todo 1.判断是否有足够的资金
+        //判断是否有足够的资金
         boolean isEnoughCapital = capitalAccount.getAvailableCapital() >= auctionPost.getPrice();
-        //todo 2.达成交易
+        //达成交易
         if (isEnoughCapital) {
-            //todo 2.1 更新资金账户
+            //更新资金账户
             capitalAccount.setAvailableCapital(capitalAccount.getAvailableCapital() - auctionPost.getPrice());
             capitalAccount.setUnavailableCapital(capitalAccount.getUnavailableCapital() + auctionPost.getPrice());
             capitalAccountMapper.updateById(capitalAccount);
-            //todo 2.2 更新单向竞价商品状态
+            //更新单向竞价商品状态
             auctionQuota.setStatus("已成交");
             auctionQuotaMapper.updateById(auctionQuota);
-            //todo 2.3 插入单向竞价成交记录
-            //todo 2.3.1新建一条成交记录并获取信息
+            //插入单向竞价成交记录
+            //新建一条成交记录并获取信息
             AuctionDoneRecord auctionDoneRecord=new AuctionDoneRecord();
             Timestamp originalTime = auctionQuota.getTime();
             long originalTimeInMillis = originalTime.getTime();
             long oneHourLaterInMillis = originalTimeInMillis + 3600000; // 加上一个小时的毫秒数
-            Timestamp oneHourLater = new Timestamp(oneHourLaterInMillis);
+            Timestamp oneHourLater = new Timestamp(oneHourLaterInMillis);//默认拍卖时间为1小时
             auctionDoneRecord.setTime(oneHourLater);
             auctionDoneRecord.setSubjectMatterCode(auctionQuota.getSubjectMatterCode());
             auctionDoneRecord.setSubjectMatterName(auctionQuota.getSubjectMatterName());
             auctionDoneRecord.setFinallyBalance(auctionPost.getPrice());
             auctionDoneRecord.setRequestClient(auctionQuota.getClientId());
             auctionDoneRecord.setPurchaserClient(clientOperator.getClientId());
-            //todo 2.3.2插入记录
+            //插入记录
             auctionDoneRecordMapper.insert(auctionDoneRecord);
         }
     }
