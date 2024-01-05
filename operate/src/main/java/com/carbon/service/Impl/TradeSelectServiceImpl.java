@@ -16,7 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,7 +44,7 @@ public class TradeSelectServiceImpl implements TradeSelectService {
     AuctionDoneRecordMapper auctionDoneRecordMapper;
 
     @Override
-    public List<ListingPost> selectListingPost(String operatorCode, String subjectMatterCode, Date beginTime, Date endTime, String flowType) {
+    public List<ListingPost> selectListingPost(String operatorCode, String subjectMatterCode, Timestamp beginTime, Timestamp endTime, String flowType) {
         QueryWrapper query = new QueryWrapper<ListingPost>();
         query.eq("operator_code",operatorCode);
 
@@ -64,7 +64,7 @@ public class TradeSelectServiceImpl implements TradeSelectService {
     }
 
     @Override
-    public List<ListingDoneRecord> selectListingDoneRecord(String clientId, String subjectMatterCode, Date beginTime, Date endTime, String flowType) {
+    public List<ListingDoneRecord> selectListingDoneRecord(String clientId, String subjectMatterCode, Timestamp beginTime, Timestamp endTime, String flowType) {
         QueryWrapper query = new QueryWrapper<ListingDoneRecord>();
         query.eq("client_id",clientId);
 
@@ -89,7 +89,7 @@ public class TradeSelectServiceImpl implements TradeSelectService {
     }
 
     @Override
-    public List<DirectionAndGroupPostResult> selectDirectionAndGroupPost(String operatorCode, String subjectMatterCode, Date beginTime, Date endTime, String flowType) {
+    public List<DirectionAndGroupPostResult> selectDirectionAndGroupPost(String operatorCode, String subjectMatterCode, Timestamp beginTime, Timestamp endTime, String flowType) {
         List<DirectionPost> directionList = directionPostMapper.selectList(null);
         List<GroupPost> groupList = groupPostMapper.selectList(null);
         List<DirectionAndGroupPostResult> list = new ArrayList<DirectionAndGroupPostResult>();
@@ -127,7 +127,7 @@ public class TradeSelectServiceImpl implements TradeSelectService {
     }
 
     @Override
-    public List<DirectionAndGroupEnquiryPostResult> selectDirectionAndGroupEnquiryPost(String operatorCode, String subjectMatterCode, Date beginTime, Date endTime, String flowType) {
+    public List<DirectionAndGroupEnquiryPostResult> selectDirectionAndGroupEnquiryPost(String operatorCode, String subjectMatterCode, Timestamp beginTime, Timestamp endTime, String flowType) {
         List<DirectionEnquiryPost> directionEnquiryPostList = directionEnquiryPostMapper.selectList(null);
         List<GroupEnquiryPost> groupEnquiryList = groupEnquiryPostMapper.selectList(null);
         List<DirectionAndGroupEnquiryPostResult> list = new ArrayList<>();
@@ -165,7 +165,7 @@ public class TradeSelectServiceImpl implements TradeSelectService {
     }
 
     @Override
-    public List<DirectionAndGroupDoneRecordResult> selectDirectionAndGroupDoneRecord(String clientId, String subjectMatterCode, Date beginTime, Date endTime, String flowType) {
+    public List<DirectionAndGroupDoneRecordResult> selectDirectionAndGroupDoneRecord(String clientId, String subjectMatterCode, Timestamp beginTime, Timestamp endTime, String flowType) {
         List<DirectionDoneRecord> directionDoneRecordList = directionDoneRecordMapper.selectList(null);
         List<GroupDoneRecord> groupDoneRecordList = groupDoneRecordMapper.selectList(null);
         List<DirectionAndGroupDoneRecordResult> list = new ArrayList<>();
@@ -205,7 +205,7 @@ public class TradeSelectServiceImpl implements TradeSelectService {
     }
 
     @Override
-    public List<AuctionRequest> selectAuctionRequest(String operatorCode, String subjectMatterCode, Date beginTime, Date endTime) {
+    public List<AuctionRequest> selectAuctionRequest(String operatorCode, String subjectMatterCode, Timestamp beginTime, Timestamp endTime) {
         QueryWrapper query = new QueryWrapper<AuctionRequest>();
 
         query.eq("operator_code",operatorCode);
@@ -223,7 +223,7 @@ public class TradeSelectServiceImpl implements TradeSelectService {
     }
 
     @Override
-    public List<AuctionDoneRecord> selectAuctionDoneRecord(String clientId, String subjectMatterCode, Date beginTime, Date endTime) {
+    public List<AuctionDoneRecord> selectAuctionDoneRecord(String clientId, String subjectMatterCode, Timestamp beginTime, Timestamp endTime) {
         QueryWrapper query = new QueryWrapper<AuctionDoneRecord>()
                 .eq("request_client",clientId).or().eq("purchaser_client",clientId);
 

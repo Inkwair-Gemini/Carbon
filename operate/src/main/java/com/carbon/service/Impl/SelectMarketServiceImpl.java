@@ -15,10 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import java.sql.Timestamp;
 @Service
 public class SelectMarketServiceImpl implements SelectMarketService {
     @Autowired
@@ -31,7 +31,7 @@ public class SelectMarketServiceImpl implements SelectMarketService {
     ListingDoneRecordMapper listingDoneRecordMapper;
 
     @Override
-    public List<AuctionDoneRecord> selectAuctionDoneRecord(String subjectMatterCode, Date beginTime, Date endTime) {
+    public List<AuctionDoneRecord> selectAuctionDoneRecord(String subjectMatterCode, Timestamp beginTime, Timestamp endTime) {
         QueryWrapper query = new QueryWrapper<AuctionDoneRecord>();
 
         if(StringUtils.isNotEmpty(subjectMatterCode))
@@ -46,7 +46,7 @@ public class SelectMarketServiceImpl implements SelectMarketService {
         return auctionDoneRecordMapper.selectList(query);
     }
     @Override
-    public List<DirectionDoneRecord> selectDirectionDoneRecord(String subjectMatterCode, Date beginTime, Date endTime){
+    public List<DirectionDoneRecord> selectDirectionDoneRecord(String subjectMatterCode, Timestamp beginTime, Timestamp endTime){
         QueryWrapper query = new QueryWrapper<DirectionDoneRecord>();
 
         if(StringUtils.isNotEmpty(subjectMatterCode))
@@ -61,7 +61,7 @@ public class SelectMarketServiceImpl implements SelectMarketService {
         return directionDoneRecordMapper.selectList(query);
     }
     @Override
-    public List<GroupDoneRecord> selectGroupDoneRecord(String subjectMatterCode, Date beginTime, Date endTime){
+    public List<GroupDoneRecord> selectGroupDoneRecord(String subjectMatterCode, Timestamp beginTime, Timestamp endTime){
         QueryWrapper query = new QueryWrapper<GroupDoneRecord>();
 
         if(StringUtils.isNotEmpty(subjectMatterCode))
@@ -76,7 +76,7 @@ public class SelectMarketServiceImpl implements SelectMarketService {
         return groupDoneRecordMapper.selectList(query);
     }
     @Override
-    public List<ListingDoneRecord> selectListingDoneRecord(String subjectMatterCode, Date beginTime, Date endTime) {
+    public List<ListingDoneRecord> selectListingDoneRecord(String subjectMatterCode, Timestamp beginTime, Timestamp endTime) {
         QueryWrapper query = new QueryWrapper<ListingDoneRecord>();
 
         if(StringUtils.isNotEmpty(subjectMatterCode))
