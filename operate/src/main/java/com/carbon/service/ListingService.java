@@ -22,6 +22,10 @@ public interface ListingService{
     List<ListingPost> selectEntrustInfo(String clientId);
     // 当前成交查询
     List<ListingDoneRecord> selectBargainInfo(String clientId);
+    // 查询买方挂牌
+    List<ListingPost> selectPurchaserListing();
+    // 查询卖方挂牌
+    List<ListingPost> selectSellerListing();
     // 挂牌撤销
     boolean cancelListing(String listingId);
     // 闭市自动撤销委托

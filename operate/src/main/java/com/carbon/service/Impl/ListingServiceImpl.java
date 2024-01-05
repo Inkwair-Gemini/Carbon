@@ -248,6 +248,36 @@ public class ListingServiceImpl implements ListingService {
     }
 
     @Override
+    public List<ListingPost> selectPurchaserListing() {
+        QueryWrapper query = new QueryWrapper<ListingPost>();
+        query.eq("flow_type","买入");
+        query.eq("status","待交易");
+        Timestamp temp = new Timestamp(System.currentTimeMillis());
+        //把temp设为当天的0点
+        temp.setHours(0);
+        temp.setMinutes(0);
+        temp.setSeconds(0);
+        query.ge("time",temp);
+        List listingPostList=ListingPostMapper.selectList(query);
+        return listingPostList;
+    }
+
+    @Override
+    public List<ListingPost> selectSellerListing() {
+        QueryWrapper query = new QueryWrapper<ListingPost>();
+        query.eq("flow_type","卖出");
+        query.eq("status","待交易");
+        Timestamp temp = new Timestamp(System.currentTimeMillis());
+        //把temp设为当天的0点
+        temp.setHours(0);
+        temp.setMinutes(0);
+        temp.setSeconds(0);
+        query.ge("time",temp);
+        List listingPostList=ListingPostMapper.selectList(query);
+        return listingPostList;
+    }
+
+    @Override
     public boolean cancelListing(String listingId) {
         UpdateWrapper update = new UpdateWrapper<ListingPost>();
         update.eq("id",listingId);

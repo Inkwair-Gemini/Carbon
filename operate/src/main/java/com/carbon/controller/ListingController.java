@@ -138,4 +138,25 @@ public class ListingController {
         }
     }
 
+    @GetMapping("/selectPurchaser")
+    public Result SelectPurchaserListing(){
+        try {
+            List<ListingPost> listingPostList = ListingService.selectPurchaserListing();
+            return Result.ok(listingPostList);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.fail();
+        }
+    }
+
+    @GetMapping("/selectSeller")
+    public Result SelectSellerListing(){
+        try {
+            List<ListingPost> listingPostList = ListingService.selectSellerListing();
+            return Result.ok(listingPostList);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.fail();
+        }
+    }
 }
