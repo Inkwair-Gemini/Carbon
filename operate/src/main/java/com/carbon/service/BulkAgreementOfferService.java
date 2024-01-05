@@ -17,7 +17,7 @@ public interface BulkAgreementOfferService {
     boolean cancelDirectionOffer(String directionPostId);
     boolean cancelGroupOffer(String groupPostId);
     //报价查询
-    List selectOfferInfo();
+    List selectOfferInfo(String operatorCode);
     //成交查询
-    List selectBargainInfo();
+    List selectBargainInfo(String operatorCode);
 }

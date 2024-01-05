@@ -266,17 +266,21 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
     }
 
     @Override
-    public List selectOfferInfo() {
+    public List selectOfferInfo(String operatorCode) {
         //  1.查询报价记录
-        List<DirectionPost> directionPostList = directionPostMapper.selectList(null);
+        QueryWrapper<DirectionPost> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("operator_code", operatorCode);
+        List<DirectionPost> directionPostList = directionPostMapper.selectList(queryWrapper);
         //  2.返回报价记录
         return directionPostList;
     }
 
     @Override
-    public List selectBargainInfo() {
+    public List selectBargainInfo(String OperatorCode) {
         //  1.查询成交记录
-        List<DirectionDoneRecord> bargainList = directionDoneRecordMapper.selectList(null);
+        QueryWrapper<DirectionDoneRecord> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("operator_code", OperatorCode);
+        List<DirectionDoneRecord> bargainList = directionDoneRecordMapper.selectList(queryWrapper);
         //  2.返回成交记录
         return bargainList;
     }
