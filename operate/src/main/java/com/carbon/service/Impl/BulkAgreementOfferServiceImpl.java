@@ -1,7 +1,7 @@
 package com.carbon.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.carbon.StockUtils.BulkStockUtils;
+import com.carbon.utils.BulkStockUtils;
 import com.carbon.input.DirectionPost;
 import com.carbon.input.GroupPost;
 import com.carbon.mapper.*;

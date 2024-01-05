@@ -49,7 +49,7 @@ public class QuotaServiceImpl implements QuotaService {
         List<ClientRegisterQuota> clientRegisterQuota = clientRegisterQuotaMapper.selectByMap(clientRegisterQuotamap);
 
         Map<String,Object> clientTradeQuotamap=new HashMap<>();
-        clientTradeQuotamap.put("quota_quota_account_id",accountId);
+        clientTradeQuotamap.put("quota_account_id",accountId);
         clientTradeQuotamap.put("subject_matter_code",subjectMatterCode);
         List<ClientTradeQuota> clientTradeQuota = clientTradeQuotaMapper.selectByMap(clientTradeQuotamap);
 

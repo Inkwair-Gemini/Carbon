@@ -12,6 +12,9 @@ import java.io.Serializable;
 //资金账户
 public class CapitalAccount implements Serializable {
     private String id;
+
+    private String clientId;
+
     private String password;
     //账户类型
     private String accountType;
