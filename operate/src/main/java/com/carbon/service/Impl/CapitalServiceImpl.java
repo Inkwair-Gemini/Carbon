@@ -49,7 +49,7 @@ public class CapitalServiceImpl implements CapitalService {
 
         //2.申请状态的判定
 
-        if(capitalTransferPost.getType()=="入"){
+        if(capitalTransferPost.getType()=="转入"){
             if(bankAccount.getCapital()>= capitalTransferPost.getActualAmount()){
                 depositAndWithdrawalRequestRecord.setRequestState("成功");
                 depositAndWithdrawalRequestRecord.setDescription("无");
@@ -58,7 +58,7 @@ public class CapitalServiceImpl implements CapitalService {
                 depositAndWithdrawalRequestRecord.setDescription("银行余额不足");
             }
         }
-        if(capitalTransferPost.getType()=="出"){
+        if(capitalTransferPost.getType()=="转出"){
             if(capitalAccount.getAvailableCapital()>= capitalTransferPost.getActualAmount()){
                 depositAndWithdrawalRequestRecord.setRequestState("成功");
                 depositAndWithdrawalRequestRecord.setDescription("无");
