@@ -12,12 +12,13 @@ public interface BulkAgreementOfferService {
     //群组报价
     void groupOffer(GroupPost groupPost );
     //修改委托
-    DirectionPost modifyOffer(String id);
+    DirectionPost modifyDirectionOffer(String id);
+    GroupPost modifyGroupOffer(String id);
     //撤销委托
     boolean cancelDirectionOffer(String directionPostId);
     boolean cancelGroupOffer(String groupPostId);
     //报价查询
-    List selectOfferInfo();
+    List selectOfferInfo(String operatorCode);
     //成交查询
-    List selectBargainInfo();
+    List selectBargainInfo(String operatorCode);
 }
