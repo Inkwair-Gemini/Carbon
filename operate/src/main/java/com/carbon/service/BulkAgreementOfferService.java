@@ -7,6 +7,10 @@ import java.util.List;
 
 //大宗协议报价控制类
 public interface BulkAgreementOfferService {
+    //定向报价买入
+    void directionBuy(DirectionPost directionPost);
+    //定向报价卖出
+    void directionSell(DirectionPost directionPost);
     //定向报价
     void directionOffer(DirectionPost directionPost);
     //群组报价
