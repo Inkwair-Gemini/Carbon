@@ -154,7 +154,7 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
     }
 
     @Override
-    public DirectionPost modifyOffer(String directionPostId) {
+    public DirectionPost modifyDirectionOffer(String directionPostId) {
         String operatorCode = directionPostMapper.selectById(directionPostId).getOperatorCode();
         ClientOperator clientOperator = clientOperatorMapper.selectById(operatorCode);
         Client client = clientMapper.selectById(clientOperator.getClientId());
@@ -189,6 +189,11 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
             }
         }
         return directionPost;
+    }
+
+    @Override
+    public GroupPost modifyGroupOffer(String id) {
+
     }
 
 
