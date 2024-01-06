@@ -56,10 +56,10 @@ public class BulkAgreementController {
     }
 
     //查询大宗协议定向报价记录
-    @GetMapping("/selectDirectionOffer/{clientId}")
-    public Result SelectDirectionOffer(@PathVariable String clientId){
+    @GetMapping("/selectDirectionOffer/{operatorCode}")
+    public Result SelectDirectionOffer(@PathVariable String operatorCode){
         try{
-            List<DirectionPost> directionPosts=bulkAgreementOfferService.selectDirectionOfferInfo(clientId);
+            List<DirectionPost> directionPosts=bulkAgreementOfferService.selectDirectionOfferInfo(operatorCode);
             return Result.ok(directionPosts);
         }catch (Exception e){
             e.printStackTrace();
@@ -68,10 +68,10 @@ public class BulkAgreementController {
     }
 
     //查询大宗协议群组报价记录
-    @GetMapping("/selectGroupOffer/{clientId}")
-    public Result SelectGroupOffer(@PathVariable String clientId){
+    @GetMapping("/selectGroupOffer/{operatorCode}")
+    public Result SelectGroupOffer(@PathVariable String operatorCode){
         try{
-            List<GroupPost> groupPosts=bulkAgreementOfferService.selectGroupOfferInfo(clientId);
+            List<GroupPost> groupPosts=bulkAgreementOfferService.selectGroupOfferInfo(operatorCode);
             return Result.ok(groupPosts);
         }catch (Exception e){
             e.printStackTrace();
@@ -107,8 +107,8 @@ public class BulkAgreementController {
     @PostMapping("/deleteDirectionOffer/{directionPostId}")
     public Result DeleteDirectionOffer(@PathVariable String directionPostId){
         try{
-            bulkAgreementOfferService.cancelDirectionOffer(directionPostId);
-            return  Result.ok();
+            boolean a = bulkAgreementOfferService.cancelDirectionOffer(directionPostId);
+            return  Result.ok(a);
         }catch (Exception e){
             e.printStackTrace();
             return Result.fail();
@@ -119,8 +119,8 @@ public class BulkAgreementController {
     @PostMapping("/deleteGroupOffer/{groupPostId}")
     public Result DeleteGroupOffer(@PathVariable String groupPostId){
         try{
-            bulkAgreementOfferService.cancelGroupOffer(groupPostId);
-            return  Result.ok();
+            boolean a = bulkAgreementOfferService.cancelGroupOffer(groupPostId);
+            return  Result.ok(a);
         }catch (Exception e){
             e.printStackTrace();
             return Result.fail();
@@ -270,3 +270,4 @@ public class BulkAgreementController {
         }
     }
 }
+

@@ -126,6 +126,18 @@ public class ListingController {
         }
     }
 
+    // 历史委托查询
+    @PostMapping("history_entrustInfo")
+    public Result SelectEntrustInfo(@RequestBody String clientId,@RequestBody Timestamp start,@RequestBody Timestamp end){
+        try {
+            List<ListingPost> listingPostList = ListingService.selectEntrustInfo(clientId,start,end);
+            return Result.ok(listingPostList);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.fail();
+        }
+    }
+
     // 成交查询
     @GetMapping("/bargainInfo/{clientId}")
     public Result SelectBargainInfo(@PathVariable String clientId){
@@ -138,4 +150,39 @@ public class ListingController {
         }
     }
 
+    // 历史成交查询
+    @PostMapping("/history_bargainInfo")
+    public Result SelectBargainInfo(@RequestBody String clientId,@RequestBody Timestamp start,@RequestBody Timestamp end){
+        try {
+            List<ListingDoneRecord> listingDoneList = ListingService.selectBargainInfo(clientId,start,end);
+            return Result.ok(listingDoneList);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.fail();
+        }
+    }
+
+    // 查询当前买方挂牌
+    @GetMapping("/selectPurchaser")
+    public Result SelectPurchaserListing(){
+        try {
+            List<ListingPost> listingPostList = ListingService.selectPurchaserListing();
+            return Result.ok(listingPostList);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.fail();
+        }
+    }
+
+    // 查询当前卖方挂牌
+    @GetMapping("/selectSeller")
+    public Result SelectSellerListing(){
+        try {
+            List<ListingPost> listingPostList = ListingService.selectSellerListing();
+            return Result.ok(listingPostList);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.fail();
+        }
+    }
 }

@@ -15,6 +15,7 @@ import java.util.Date;
 public class AuctionPost implements Serializable {
     private String id;
     private Timestamp time;
+    private String auctionQuotaId;
     private String subjectMatterCode;
     private String subjectMatterName;
     private Double price;

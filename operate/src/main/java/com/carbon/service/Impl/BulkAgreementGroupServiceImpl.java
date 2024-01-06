@@ -63,13 +63,13 @@ public class BulkAgreementGroupServiceImpl implements BulkAgreementGroupService 
             groupClientQueryWrapper.eq("group_id", groupId);
             groupClientMapper.delete(groupClientQueryWrapper);
 
-            QueryWrapper<Group> groupQueryWrapper = new QueryWrapper<>();
-            groupQueryWrapper.eq("id", groupId);
-            groupMapper.delete(groupQueryWrapper);
-
             Timestamp timestamp=new Timestamp(System.currentTimeMillis());
             group.setUpdateTime(timestamp);
             groupMapper.updateById(group);
+
+            QueryWrapper<Group> groupQueryWrapper = new QueryWrapper<>();
+            groupQueryWrapper.eq("id", groupId);
+            groupMapper.delete(groupQueryWrapper);
         }
     }
     @Override

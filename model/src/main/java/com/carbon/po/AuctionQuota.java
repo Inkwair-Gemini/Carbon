@@ -20,7 +20,7 @@ public class AuctionQuota implements Serializable {
     private String subjectMatterName; // 标的物名称
     private Double price; // 委托价格
     private Double amount; // 委托数量
-    private String totalBalance; // 总价
+    private Double totalBalance; // 总价
     private String clientId;
     // 剩余时间
     private String status; // 状态

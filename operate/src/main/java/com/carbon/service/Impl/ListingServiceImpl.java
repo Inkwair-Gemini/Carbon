@@ -45,8 +45,8 @@ public class ListingServiceImpl implements ListingService {
         listingDoneRecord.setDealAmount(delistingPost.getAmount());
         listingDoneRecord.setDealBalance(listingPost.getPrice()* delistingPost.getAmount());
         //只保留数字
-        String listingClient=listingPost.getOperatorCode().replaceAll("[^0-9]","");
-        String delistingClient=delistingPost.getOperatorCode().replaceAll("[^0-9]","");
+        String listingClient=listingPost.getQuotaAccount().replaceAll("[^0-9]","");
+        String delistingClient=delistingPost.getQuotaAccount().replaceAll("[^0-9]","");
         listingDoneRecord.setListingClient(listingClient);
         listingDoneRecord.setDelistingClient(delistingClient);
         return listingDoneRecord;
@@ -226,10 +226,32 @@ public class ListingServiceImpl implements ListingService {
         temp.setMinutes(0);
         temp.setSeconds(0);
         QueryWrapper query = new QueryWrapper<ListingPost>();
-        query.eq("operator_code",clientId);
-        query.eq("status","待交易");
+        query.eq("quata_account","z"+clientId);
         query.ge("time",temp);
         List listingPostList=ListingPostMapper.selectList(query);
+
+        QueryWrapper query2 = new QueryWrapper<ListingPost>();
+        query2.eq("quata_account","q"+clientId);
+        query2.ge("time",temp);
+        //合并集合
+        listingPostList.addAll(ListingPostMapper.selectList(query));
+        return listingPostList;
+    }
+
+    @Override
+    public List<ListingPost> selectEntrustInfo(String clientId,Timestamp start,Timestamp end) {
+        QueryWrapper query = new QueryWrapper<ListingPost>();
+        query.eq("quata_account","z"+clientId);
+        query.ge("time",start);
+        query.le("time",end);
+        List listingPostList=ListingPostMapper.selectList(query);
+
+        QueryWrapper query2 = new QueryWrapper<ListingPost>();
+        query2.eq("quata_account","q"+clientId);
+        query.ge("time",start);
+        query.le("time",end);
+        //合并集合
+        listingPostList.addAll(ListingPostMapper.selectList(query));
         return listingPostList;
     }
 
@@ -240,11 +262,51 @@ public class ListingServiceImpl implements ListingService {
         temp.setHours(0);
         temp.setMinutes(0);
         temp.setSeconds(0);
-        QueryWrapper query = new QueryWrapper<ListingPost>();
-        query.eq("listing_client",clientId);
+        QueryWrapper<ListingDoneRecord> query = new QueryWrapper<ListingDoneRecord>();
+        query.eq("listing_client", clientId).or().eq("delisting_client",clientId);
         query.ge("time",temp);
         List listingDoneList=ListingDoneRecordMapper.selectList(query);
         return listingDoneList;
+    }
+
+    @Override
+    public List<ListingDoneRecord> selectBargainInfo(String clientId,Timestamp start,Timestamp end) {
+        QueryWrapper<ListingDoneRecord> query = new QueryWrapper<ListingDoneRecord>();
+        query.eq("listing_client", clientId).or().eq("delisting_client",clientId);
+        query.ge("time",start);
+        query.le("time",end);
+        List listingDoneList=ListingDoneRecordMapper.selectList(query);
+        return listingDoneList;
+    }
+
+    @Override
+    public List<ListingPost> selectPurchaserListing() {
+        QueryWrapper query = new QueryWrapper<ListingPost>();
+        query.eq("flow_type","买入");
+        query.eq("status","待交易");
+        Timestamp temp = new Timestamp(System.currentTimeMillis());
+        //把temp设为当天的0点
+        temp.setHours(0);
+        temp.setMinutes(0);
+        temp.setSeconds(0);
+        query.ge("time",temp);
+        List listingPostList=ListingPostMapper.selectList(query);
+        return listingPostList;
+    }
+
+    @Override
+    public List<ListingPost> selectSellerListing() {
+        QueryWrapper query = new QueryWrapper<ListingPost>();
+        query.eq("flow_type","卖出");
+        query.eq("status","待交易");
+        Timestamp temp = new Timestamp(System.currentTimeMillis());
+        //把temp设为当天的0点
+        temp.setHours(0);
+        temp.setMinutes(0);
+        temp.setSeconds(0);
+        query.ge("time",temp);
+        List listingPostList=ListingPostMapper.selectList(query);
+        return listingPostList;
     }
 
     @Override

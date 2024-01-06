@@ -1,11 +1,10 @@
 package com.carbon.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.carbon.utils.BulkStockUtils;
 import com.carbon.input.DirectionPost;
 import com.carbon.input.GroupPost;
-import com.carbon.input.ListingPost;
 import com.carbon.mapper.*;
-import com.carbon.output.DirectionAndGroupPostResult;
 import com.carbon.po.*;
 import com.carbon.service.BulkAgreementOfferService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,6 +28,10 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
     @Autowired
     private ClientOperatorMapper clientOperatorMapper;
     @Autowired
+    private ClientTradeQuotaMapper clientTradeQuotaMapper;
+    @Autowired
+    private GroupPostMapper groupPostMapper;
+    @Autowired
     private CapitalAccountMapper capitalAccountMapper;
     @Autowired
     private QuotaAccountMapper quotaAccountMapper;
@@ -39,147 +43,334 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
     private ClientRegisterQuotaMapper clientRegisterQuotaMapper;
     @Autowired
     private DirectionDoneRecordMapper directionDoneRecordMapper;
-
-    @Override
-    public void directionBuy(DirectionPost directionPost) {
-
-    }
-
-    @Override
-    public void directionSell(DirectionPost directionPost) {
-        ClientOperator clientOperator = clientOperatorMapper.selectById(directionPost.getOperatorCode());
-        Client client = clientMapper.selectById(clientOperator.getClientId());
-        QuotaAccount quotaAccount = quotaAccountMapper.selectById(client.getQuotaAccountId());
-        CapitalAccount capitalAccount = capitalAccountMapper.selectById(client.getCapitalAccountId());
-        boolean isEnough = false;
-        //todo 1.查询当前客户的当前标的物的登记配额
-        QueryWrapper<ClientRegisterQuota> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("client_id", client.getId()).eq("subject_matter_code", directionPost.getSubjectMatterCode());
-        ClientRegisterQuota clientRegisterQuota = clientRegisterQuotaMapper.selectOne(queryWrapper);
-        //todo 2.判断是否有足够的登记配额
-        if (clientRegisterQuota.getAmount() >= directionPost.getAmount()) {
-            isEnough = true;
-        }
-        //todo 3.涨跌幅幅度限制，大宗协议30%
-        LocalDate localDate = LocalDate.now();
-        LocalDate yesterday = localDate.minusDays(1);
-        Timestamp beginTime = Timestamp.valueOf(yesterday.atStartOfDay());
-        Timestamp endTime = Timestamp.valueOf(yesterday.atTime(23, 59, 59));
-        QueryWrapper<DirectionDoneRecord>directionDoneRecordQueryWrapper=new QueryWrapper<>();
-        //todo 3.1.查询昨日成交记录
-        directionDoneRecordQueryWrapper.eq("subject_matter_code",directionPost.getSubjectMatterCode()).between("time",beginTime,endTime);
-    }
+    @Autowired
+    private GroupDoneRecordMapper groupDoneRecordMapper;
+    @Autowired
+    private GroupClientMapper groupClientMapper;
 
     @Override
     public void directionOffer(DirectionPost directionPost) {
         ClientOperator clientOperator = clientOperatorMapper.selectById(directionPost.getOperatorCode());
         Client client = clientMapper.selectById(clientOperator.getClientId());
-        QuotaAccount quotaAccount = quotaAccountMapper.selectById(client.getQuotaAccountId());
         CapitalAccount capitalAccount = capitalAccountMapper.selectById(client.getCapitalAccountId());
-        String flowtype = directionPost.getFlowType();
+        ClientTradeQuota clientTradeQuota = new ClientTradeQuota();
         boolean isEnough = false;
-        Boolean isWithinRange = false;
-
-        //todo 1.判断买卖方向
-        if (flowtype.equals("卖出")) {
-            //todo 1.1 判断是否有足够的配额
-
-        } else if (flowtype.equals("买入")) {
-            //todo 1.2 判断是否有足够的资金
+        //1.判断买卖方向
+        if (directionPost.getFlowType().equals("买入")) {
+            // 1.1.判断是否有足够的资金
+            double availableCapital = capitalAccount.getCapital();
+            if (availableCapital >= directionPost.getAmount() * directionPost.getPrice()) {
+                isEnough = true;
+            }
+        } else if (directionPost.getFlowType().equals("卖出")) {
+            // 1.2.判断是否有足够的可用交易配额
+            QueryWrapper<ClientTradeQuota> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("quota_account_id", client.getQuotaAccountId()).eq("subject_matter_code", directionPost.getSubjectMatterCode());
+            clientTradeQuota = clientTradeQuotaMapper.selectOne(queryWrapper);
+            if (clientTradeQuota.getAvailableQuotaAmount() >= directionPost.getAmount()) {
+                isEnough = true;
+            }
         }
 
-        CapitalAccount capitalAccount = capitalAccountMapper.selectById(directionPost.getAccount());
-        QuotaAccount quotaAccount = quotaAccountMapper.selectById(directionPost.getQuotaAccountId);
-        //todo 1.判断是否有足够的配额
-        boolean isEnoughQuota = quotaAccount.getQuota() >= directionPost.getQuota();
-        //todo 2.判断是否有足够的资金
-        boolean isEnoughCapital = capitalAccount.getCapital() >= directionPost.getCapital();
-        //todo 3.提交定向报价
-        if (isEnoughQuota && isEnoughCapital) {
-            //todo 3.1.冻结部分配额
-            quotaAccount.setQuota(quotaAccount.getQuota() - directionPost.getQuota());
-            //todo 3.2.冻结部分资金
-            capitalAccount.setCapital(capitalAccount.getCapital() - directionPost.getCapital());
-            //todo 3.3.更新配额账户
-            quotaDao.updateQuotaAccount(quotaAccount);
-            //todo 3.4.更新资金账户
-            capitalDao.updateCapitalAccount(capitalAccount);
-            //todo 3.5.提交定向报价
-            //todo 3.6.更新定向报价记录
+        //  2.涨跌幅幅度限制，大宗协议30%
+        LocalDate localDate = LocalDate.now();
+        LocalDate yesterday = localDate.minusDays(1);
+        Timestamp beginTime = Timestamp.valueOf(yesterday.atStartOfDay());
+        Timestamp endTime = Timestamp.valueOf(yesterday.atTime(23, 59, 59));
+        QueryWrapper<DirectionDoneRecord> directionDoneRecordQueryWrapper = new QueryWrapper<>();
+        //  2.1.查询昨日收盘价
+        directionDoneRecordQueryWrapper.eq("subject_matter_code", directionPost.getSubjectMatterCode()).between("time", beginTime, endTime);
+        List<DirectionDoneRecord> directionDoneRecordList = directionDoneRecordMapper.selectList(directionDoneRecordQueryWrapper);
+        Double closingPrice = BulkStockUtils.getDirectionClosingPrice(directionDoneRecordList);
+        //  2.2.计算开价范围
+        Double[] closingPriceRange = BulkStockUtils.getClosingPriceRange(closingPrice);
+        //  2.3.判断是否在开价范围内
+        boolean isInPriceRange = directionPost.getPrice() >= closingPriceRange[0] && directionPost.getPrice() <= closingPriceRange[1];
+
+        //  3.提交定向报价
+        if (directionPost.getFlowType().equals("买入") && isEnough && isInPriceRange) {
+            // 1.1.1.冻结部分资金
+            capitalAccount.setAvailableCapital(capitalAccount.getAvailableCapital() - directionPost.getAmount() * directionPost.getPrice());
+            capitalAccount.setUnavailableCapital(capitalAccount.getUnavailableCapital() + directionPost.getAmount() * directionPost.getPrice());
+            // 1.1.2.更新资金账户
+            capitalAccountMapper.updateById(capitalAccount);
+        } else if (directionPost.getFlowType().equals("卖出") && isEnough && isInPriceRange) {
+            // 1.2.1.冻结部分交易配额
+            clientTradeQuota.setAvailableQuotaAmount(clientTradeQuota.getAvailableQuotaAmount() - directionPost.getAmount());
+            clientTradeQuota.setUnavailableQuotaAmount(clientTradeQuota.getUnavailableQuotaAmount() + directionPost.getAmount());
+            // 1.2.2.更新交易配额
+            clientTradeQuotaMapper.updateById(clientTradeQuota);
         }
+        directionPostMapper.insert(directionPost);
     }
 
     @Override
     public void groupOffer(GroupPost groupPost) {
-        ClientOperator clientOperator = clientOperatorDao.selectClientOperatorById(String clientOperatorId);
-        CapitalAccount capitalAccount = capitalDao.selectCapitalAccount(clientOperator.getAccountId());
-        QuotaAccount quotaAccount = quotaDao.selectQuotaAccount(clientOperator.getAccountId());
-        //todo 1.判断是否有足够的配额
-        boolean isEnoughQuota = quotaAccount.getQuota() >= groupPost.getQuota();
-        //todo 2.判断是否有足够的资金
-        boolean isEnoughCapital = capitalAccount.getCapital() >= groupPost.getCapital();
-
-    }
-
-    @Override
-    public void modifyOffer() {
-        //todo 1.判断报价交易状态
-        DirectionPost directionPost = directionPostDao.selectDirectionPostById(String directionPostId);
-        if (directionPost.getStatus().equals("已成交")) {
-            //todo 1.1.报价已成交，无法修改
-        } else if (directionPost.getStatus().equals("已撤销")) {
-            //todo 1.2.报价已撤销，无法修改
-        } else {
-            //todo 1.3.报价未成交，可以修改
-            //todo 1.3.1.撤销原报价单，生成新报价单
-            directionPostDao.deleteDirectionPost(String directionPostId);
-            directionPostDao.insertDirectionPost(directionPost);
-            //todo 1.3.2.解冻原配额,冻结新配额
-            QuotaAccount quotaAccount = quotaDao.selectQuotaAccount(directionPost.getAccountId());
-            quotaAccount.setQuota(quotaAccount.getQuota() + directionPost.getQuota());
-            quotaAccount.setQuota(quotaAccount.getQuota() - NewDirectionPost.getQuota());
-            //todo 1.3.3.解冻原资金,冻结新资金
-            CapitalAccount capitalAccount = capitalDao.selectCapitalAccount(directionPost.getAccountId());
-            capitalAccount.setCapital(capitalAccount.getCapital() + directionPost.getCapital());
-            capitalAccount.setCapital(capitalAccount.getCapital() - NewDirectionPost.getCapital());
-        }
-    }
-
-    @Override
-    public void cancelOffer() {
-        //todo 1.判断报价交易状态
-        DirectionPost directionPost = directionPostDao.selectDirectionPostById(String directionPostId);
-        if (directionPost.getStatus().equals("已成交")) {
-            //todo 1.1.报价已成交，无法撤销
-        } else if (directionPost.getStatus().equals("已撤销")) {
-            //todo 1.2.报价已撤销，无法撤销
-        } else {
-            //todo 1.3.报价未成交，可以撤销
-            //todo 1.3.1.撤销报价
-            directionPostDao.deleteDirectionPost(String directionPostId);
-            //todo 1.3.2.解冻配额
-            QuotaAccount quotaAccount = quotaDao.selectQuotaAccount(directionPost.getAccountId());
-            quotaAccount.setQuota(quotaAccount.getQuota() + directionPost.getQuota());
-            //todo 1.3.3.解冻资金
-            CapitalAccount capitalAccount = capitalDao.selectCapitalAccount(directionPost.getAccountId());
-            capitalAccount.setCapital(capitalAccount.getCapital() + directionPost.getCapital());
+        ClientOperator clientOperator = clientOperatorMapper.selectById(groupPost.getOperatorCode());
+        Client client = clientMapper.selectById(clientOperator.getClientId());
+        CapitalAccount capitalAccount = capitalAccountMapper.selectById(client.getCapitalAccountId());
+        ClientTradeQuota clientTradeQuota = new ClientTradeQuota();
+        boolean isEnough = false;
+        //1.判断买卖方向
+        if (groupPost.getFlowType().equals("买入")) {
+            // 1.1.判断是否有足够的资金
+            double availableCapital = capitalAccount.getCapital();
+            if (availableCapital >= groupPost.getAmount() * groupPost.getPrice()) {
+                isEnough = true;
+            }
+        } else if (groupPost.getFlowType().equals("卖出")) {
+            // 1.2.判断是否有足够的登记配额
+            QueryWrapper<ClientTradeQuota> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("client_id", client.getId()).eq("subject_matter_code", groupPost.getSubjectMatterCode());
+            clientTradeQuota = clientTradeQuotaMapper.selectOne(queryWrapper);
+            if (clientTradeQuota.getAmount() >= groupPost.getAmount()) {
+                isEnough = true;
+            }
         }
 
+        //  2.涨跌幅幅度限制，大宗协议30%
+        LocalDate localDate = LocalDate.now();
+        LocalDate yesterday = localDate.minusDays(1);
+        Timestamp beginTime = Timestamp.valueOf(yesterday.atStartOfDay());
+        Timestamp endTime = Timestamp.valueOf(yesterday.atTime(23, 59, 59));
+        QueryWrapper<GroupDoneRecord> groupDoneRecordQueryWrapper = new QueryWrapper<>();
+        //  2.1.查询昨日收盘价
+        groupDoneRecordQueryWrapper.eq("subject_matter_code", groupPost.getSubjectMatterCode()).between("time", beginTime, endTime);
+        List<GroupDoneRecord> groupDoneRecordList = groupDoneRecordMapper.selectList(groupDoneRecordQueryWrapper);
+        Double closingPrice = BulkStockUtils.getGroupClosingPrice(groupDoneRecordList);
+        //  2.2.计算开价范围
+        Double[] closingPriceRange = BulkStockUtils.getClosingPriceRange(closingPrice);
+        //  2.3.判断是否在开价范围内
+        boolean isInPriceRange = groupPost.getPrice() >= closingPriceRange[0] && groupPost.getPrice() <= closingPriceRange[1];
+
+        //  3.提交群组报价
+        if (groupPost.getFlowType().equals("买入") && isEnough && isInPriceRange) {
+            // 1.1.1.冻结部分资金
+            capitalAccount.setAvailableCapital(capitalAccount.getAvailableCapital() - groupPost.getAmount() * groupPost.getPrice());
+            capitalAccount.setUnavailableCapital(capitalAccount.getUnavailableCapital() + groupPost.getAmount() * groupPost.getPrice());
+            // 1.1.2.更新资金账户
+            capitalAccountMapper.updateById(capitalAccount);
+        } else if (groupPost.getFlowType().equals("卖出") && isEnough && isInPriceRange) {
+            // 1.2.1.冻结部分登记配额
+            clientTradeQuota.setAmount(clientTradeQuota.getAmount() - groupPost.getAmount());
+            // 1.2.2.更新登记配额
+            clientTradeQuotaMapper.updateById(clientTradeQuota);
+        }
+        groupPostMapper.insert(groupPost);
     }
 
     @Override
-    public List selectOfferInfo() {
-        //todo 1.查询报价记录
-        List<DirectionPost> directionPostList = directionPostDao.selectDirectionPost();
-        //todo 2.返回报价记录
-        return directionPostList;
+    public DirectionPost modifyDirectionOffer(String directionPostId) {
+        String operatorCode = directionPostMapper.selectById(directionPostId).getOperatorCode();
+        ClientOperator clientOperator = clientOperatorMapper.selectById(operatorCode);
+        Client client = clientMapper.selectById(clientOperator.getClientId());
+        CapitalAccount capitalAccount = capitalAccountMapper.selectById(client.getCapitalAccountId());
+        ClientTradeQuota clientTradeQuota = new ClientTradeQuota();
+        //  1.判断报价交易状态
+        DirectionPost directionPost = directionPostMapper.selectById(directionPostId);
+        if (directionPost.getStatus().equals("已成交") || directionPost.getStatus().equals("已撤销")) {
+            //  1.1.报价已成交，无法修改
+            return null;
+        } else if (directionPost.getStatus().equals("未成交")) {
+            //  1.3.报价未成交，可以修改
+            //  1.3.1.撤销原报价单，更新原报价单状态
+            directionPost.setStatus("已撤销");
+            directionPostMapper.updateById(directionPost);
+            if (directionPost.getFlowType().equals("买入")) {
+                //  1.3.3.解冻原资金
+                capitalAccount.setUnavailableCapital(capitalAccount.getUnavailableCapital() - directionPost.getAmount() * directionPost.getPrice());
+                capitalAccount.setAvailableCapital(capitalAccount.getAvailableCapital() + directionPost.getAmount() * directionPost.getPrice());
+                //  1.3.3.更新资金账户
+                capitalAccountMapper.updateById(capitalAccount);
+            } else if (directionPost.getFlowType().equals("卖出")) {
+                //  1.3.2.解冻原配额,冻结新配额
+                //  1.3.2.解冻配额
+                QueryWrapper<ClientTradeQuota> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("quota_account_id", client.getQuotaAccountId()).eq("subject_matter_code", directionPost.getSubjectMatterCode());
+                clientTradeQuota = clientTradeQuotaMapper.selectOne(queryWrapper);
+                clientTradeQuota.setAvailableQuotaAmount(clientTradeQuota.getAvailableQuotaAmount() + directionPost.getAmount());
+                clientTradeQuota.setUnavailableQuotaAmount(clientTradeQuota.getUnavailableQuotaAmount() - directionPost.getAmount());
+                //  1.3.3.更新配额账户
+                clientTradeQuotaMapper.updateById(clientTradeQuota);
+            }
+        }
+        return directionPost;
     }
 
     @Override
-    public List selectBargainInfo() {
-        //todo 1.查询成交记录
-        List<Bargain> bargainList = bargainDao.selectBargain();
-        //todo 2.返回成交记录
+    public GroupPost modifyGroupOffer(String groupPostId) {
+        String operatorCode = groupPostMapper.selectById(groupPostId).getOperatorCode();
+        ClientOperator clientOperator = clientOperatorMapper.selectById(operatorCode);
+        Client client = clientMapper.selectById(clientOperator.getClientId());
+        CapitalAccount capitalAccount = capitalAccountMapper.selectById(client.getCapitalAccountId());
+        ClientTradeQuota clientTradeQuota = new ClientTradeQuota();
+        //  1.判断报价交易状态
+        GroupPost groupPost = groupPostMapper.selectById(groupPostId);
+        if (groupPost.getStatus().equals("已成交") || groupPost.getStatus().equals("已撤销")) {
+            //  1.1.报价已成交，无法修改
+            return null;
+        } else if (groupPost.getStatus().equals("未成交")) {
+            //  1.3.报价未成交，可以修改
+            //  1.3.1.撤销原报价单，更新报价记录
+            groupPost.setStatus("已撤销");
+            groupPostMapper.updateById(groupPost);
+            if (groupPost.getStatus().equals("买入")) {
+                //  1.3.3.解冻原资金
+                capitalAccount.setUnavailableCapital(capitalAccount.getUnavailableCapital() - groupPost.getAmount() * groupPost.getPrice());
+                capitalAccount.setAvailableCapital(capitalAccount.getAvailableCapital() + groupPost.getAmount() * groupPost.getPrice());
+                //  1.3.3.更新资金账户
+                capitalAccountMapper.updateById(capitalAccount);
+            } else if (groupPost.getStatus().equals("卖出")) {
+
+                //  1.3.2.解冻原配额,冻结新配额
+                //  1.3.2.解冻配额
+                QueryWrapper<ClientTradeQuota> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("client_id", client.getId()).eq("subject_matter_code", groupPost.getSubjectMatterCode());
+                clientTradeQuota = clientTradeQuotaMapper.selectOne(queryWrapper);
+                clientTradeQuota.setAmount(clientTradeQuota.getAmount() + groupPost.getAmount());
+                //  1.3.3.更新配额账户
+                clientTradeQuotaMapper.updateById(clientTradeQuota);
+            }
+        }
+        return groupPost;
+    }
+
+
+    @Override
+    public boolean cancelDirectionOffer(String directionPostId) {
+        DirectionPost directionPost = directionPostMapper.selectById(directionPostId);
+        ClientOperator clientOperator = clientOperatorMapper.selectById(directionPost.getOperatorCode());
+        Client client = clientMapper.selectById(clientOperator.getClientId());
+        CapitalAccount capitalAccount = capitalAccountMapper.selectById(client.getCapitalAccountId());
+        boolean isCancel = false;
+        ClientTradeQuota clientTradeQuota = new ClientTradeQuota();
+        //  1.判断报价交易状态
+        if (directionPost.getStatus().equals("已成交") || directionPost.getStatus().equals("已撤销")) {
+            //  1.1.报价已成交，无法撤销
+            return false;
+        } else if (directionPost.getStatus().equals("未成交")) {
+            //  1.3.报价未成交，可以撤销
+            //  1.3.1.撤销报价
+            isCancel = true;
+            directionPostMapper.deleteById(directionPost.getId());
+            //判断买卖方向
+            if (directionPost.getFlowType().equals("买入")) {
+                //  1.3.2.解冻资金
+                capitalAccount.setUnavailableCapital(capitalAccount.getUnavailableCapital() - directionPost.getAmount() * directionPost.getPrice());
+                capitalAccount.setAvailableCapital(capitalAccount.getAvailableCapital() + directionPost.getAmount() * directionPost.getPrice());
+                //  1.3.3.更新资金账户
+                capitalAccountMapper.updateById(capitalAccount);
+            } else if (directionPost.getFlowType().equals("卖出")) {
+                //  1.3.2.解冻配额
+                QueryWrapper<ClientTradeQuota> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("client_id", client.getId()).eq("subject_matter_code", directionPost.getSubjectMatterCode());
+                clientTradeQuota = clientTradeQuotaMapper.selectOne(queryWrapper);
+                clientTradeQuota.setAmount(clientTradeQuota.getAmount() + directionPost.getAmount());
+                //  1.3.3.更新配额账户
+                clientTradeQuotaMapper.updateById(clientTradeQuota);
+            }
+        }
+        return isCancel;
+    }
+
+    @Override
+    public boolean cancelGroupOffer(String groupPostId) {
+        GroupPost groupPost = groupPostMapper.selectById(groupPostId);
+        ClientOperator clientOperator = clientOperatorMapper.selectById(groupPost.getOperatorCode());
+        Client client = clientMapper.selectById(clientOperator.getClientId());
+        CapitalAccount capitalAccount = capitalAccountMapper.selectById(client.getCapitalAccountId());
+        ClientTradeQuota clientTradeQuota = new ClientTradeQuota();
+        boolean isCancel = false;
+        //  1.判断报价交易状态
+        if (groupPost.getStatus().equals("已成交") || groupPost.getStatus().equals("已撤销")) {
+            //  1.1.报价已成交，无法撤销
+            return false;
+        } else if (groupPost.getStatus().equals("未成交")) {
+            //  1.3.报价未成交，可以撤销
+            //  1.3.1.撤销报价
+            groupPostMapper.deleteById(groupPost.getId());
+            isCancel = true;
+            //判断买卖方向
+            if (groupPost.getFlowType().equals("买入")) {
+                //  1.3.2.解冻资金
+                capitalAccount.setUnavailableCapital(capitalAccount.getUnavailableCapital() - groupPost.getAmount() * groupPost.getPrice());
+                capitalAccount.setAvailableCapital(capitalAccount.getAvailableCapital() + groupPost.getAmount() * groupPost.getPrice());
+                //  1.3.3.更新资金账户
+                capitalAccountMapper.updateById(capitalAccount);
+            } else if (groupPost.getFlowType().equals("卖出")) {
+                //  1.3.2.解冻配额
+                QueryWrapper<ClientTradeQuota> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("client_id", client.getId()).eq("subject_matter_code", groupPost.getSubjectMatterCode());
+                clientTradeQuota = clientTradeQuotaMapper.selectOne(queryWrapper);
+                //  1.3.3.更新配额账户
+                clientTradeQuotaMapper.updateById(clientTradeQuota);
+            }
+        }
+        return isCancel;
+    }
+
+    @Override
+    public List<DirectionPost> selectDirectionOfferInfo(String operatorCode) {
+        ClientOperator clientOperator=clientOperatorMapper.selectById(operatorCode);
+        //  1.查询报价记录
+        //操作员发出方的报价记录
+        QueryWrapper<DirectionPost> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("operator_code", operatorCode);
+        List<DirectionPost> directionPostList1 = directionPostMapper.selectList(queryWrapper1);
+        //作为接收方的报价记录
+        QueryWrapper<DirectionPost> queryWrapper2 = new QueryWrapper<>();
+        queryWrapper2.eq("direction_id", clientOperator.getClientId());
+        List<DirectionPost> directionPostList2 = directionPostMapper.selectList(queryWrapper2);
+        //  2.返回报价记录
+        //合并记录
+        directionPostList1.addAll(directionPostList2);
+        return directionPostList1;
+    }
+
+    @Override
+    public List<GroupPost> selectGroupOfferInfo(String operatorCode){
+        //获取客户所在的所有群组id
+        ClientOperator clientOperator=clientOperatorMapper.selectById(operatorCode);
+        QueryWrapper<GroupClient> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("client_id",clientOperator.getClientId());
+        List<GroupClient> groupClients=groupClientMapper.selectList(queryWrapper);
+
+        //创建一个空的List来存储所有的GroupPost
+        List<GroupPost> groupPostList = new ArrayList<>();
+
+        //遍历groupClients，根据每个groupId查询GroupPost
+        for(GroupClient groupClient : groupClients){
+            QueryWrapper<GroupPost> queryWrapper1 = new QueryWrapper<>();
+            queryWrapper1.eq("group_id", groupClient.getGroupId());
+            List<GroupPost> posts = groupPostMapper.selectList(queryWrapper1);
+            groupPostList.addAll(posts);
+        }
+
+        return groupPostList;
+
+    }
+
+    @Override
+    public List<DirectionDoneRecord> selectDirectionBargainInfo(String operatorCode) {
+        ClientOperator clientOperator=clientOperatorMapper.selectById(operatorCode);
+        String clientId=clientOperator.getClientId();
+        //  1.查询成交记录
+        QueryWrapper<DirectionDoneRecord> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("listing_client", clientId).or().eq("delisting_client",clientId);
+        List<DirectionDoneRecord> bargainList = directionDoneRecordMapper.selectList(queryWrapper);
+        //  2.返回成交记录
+        return bargainList;
+    }
+
+    @Override
+    public List<GroupDoneRecord> selectGroupBargainInfo(String operatorCode){
+        ClientOperator clientOperator=clientOperatorMapper.selectById(operatorCode);
+        String clientId=clientOperator.getClientId();
+        //  1.查询成交记录
+        QueryWrapper<GroupDoneRecord> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("listing_client", clientId).or().eq("delisting_client",clientId);
+        List<GroupDoneRecord> bargainList = groupDoneRecordMapper.selectList(queryWrapper);
+        //  2.返回成交记录
         return bargainList;
     }
 }

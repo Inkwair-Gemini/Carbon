@@ -20,4 +20,8 @@ public interface QuotaService {
     List<QuotaTransferRecord> SelectTransferRecord(String clientId);
     //查询配额交易流水
     List<QuotaTradeRecord> selectQuotaTradeRecord(String clientId);
+    //新增转入转出流水
+    void addQuotaTransferRecord(QuotaTransferRecord quotaTransferRecord);
+    //新增配额交易流水
+    void addQuotaTradeRecord(QuotaTradeRecord quotaTradeRecord);
 }
