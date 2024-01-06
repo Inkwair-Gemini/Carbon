@@ -24,4 +24,6 @@ public interface QuotaService {
     void addQuotaTransferRecord(QuotaTransferRecord quotaTransferRecord);
     //新增配额交易流水
     void addQuotaTradeRecord(QuotaTradeRecord quotaTradeRecord);
+    //配额转让
+    void quotaTransfer(String fromQuotaAccountId,String toQuotaAccountId,Double amount,String subjectMatterCode);
 }

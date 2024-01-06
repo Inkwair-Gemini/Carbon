@@ -125,12 +125,40 @@ public class QuotaServiceImpl implements QuotaService {
         List<QuotaTradeRecord> list = quotaTradeRecordMapper.selectByMap(map);
         return list;
     }
-    //新增转入转出流水
+    @Override
     public void addQuotaTransferRecord(QuotaTransferRecord quotaTransferRecord){
         quotaTransferRecordMapper.insert(quotaTransferRecord);
     };
-    //新增配额交易流水
+    @Override
     public void addQuotaTradeRecord(QuotaTradeRecord quotaTradeRecord){
         quotaTradeRecordMapper.insert(quotaTradeRecord);
+    };
+    @Override
+    public void quotaTransfer(String fromQuotaAccountId,String toQuotaAccountId,Double amount,String subjectMatterCode){
+        //1.获取账户有关标的物的交易配额
+        Map<String,Object> fromClientTradeQuotamap=new HashMap<>();
+        fromClientTradeQuotamap.put("quota_account_id",fromQuotaAccountId);
+        fromClientTradeQuotamap.put("subject_matter_code",subjectMatterCode);
+        List<ClientTradeQuota> fromClientTradeQuota = clientTradeQuotaMapper.selectByMap(fromClientTradeQuotamap);
+
+        Map<String,Object> toClientTradeQuotamap=new HashMap<>();
+        toClientTradeQuotamap.put("quota_account_id",fromQuotaAccountId);
+        toClientTradeQuotamap.put("subject_matter_code",subjectMatterCode);
+        List<ClientTradeQuota> toClientTradeQuota = clientTradeQuotaMapper.selectByMap(toClientTradeQuotamap);
+        //2.修改账户配额
+        fromClientTradeQuota.get(0).setAmount(fromClientTradeQuota.get(0).getAmount() - amount);
+        toClientTradeQuota.get(0).setAmount(toClientTradeQuota.get(0).getAmount() - amount);
+
+        //3.更新账户
+        UpdateWrapper<ClientTradeQuota> fromClientTradeQuotaUpdateWrapper = new UpdateWrapper<>();
+        fromClientTradeQuotaUpdateWrapper.eq("quota_account_id", fromQuotaAccountId);
+        fromClientTradeQuotaUpdateWrapper.eq("subject_matter_code",subjectMatterCode);
+        clientTradeQuotaMapper.update(fromClientTradeQuota.get(0), fromClientTradeQuotaUpdateWrapper);
+
+        UpdateWrapper<ClientTradeQuota> toClientTradeQuotaUpdateWrapper = new UpdateWrapper<>();
+        toClientTradeQuotaUpdateWrapper.eq("quota_account_id", toQuotaAccountId);
+        toClientTradeQuotaUpdateWrapper.eq("subject_matter_code",subjectMatterCode);
+        clientTradeQuotaMapper.update(fromClientTradeQuota.get(0), toClientTradeQuotaUpdateWrapper);
+
     };
 }

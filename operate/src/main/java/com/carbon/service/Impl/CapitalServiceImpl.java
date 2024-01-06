@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 
@@ -29,6 +26,8 @@ public class CapitalServiceImpl implements CapitalService {
     private BankAccountMapper bankAccountMapper;
     @Autowired
     private CapitalTransferPostMapper capitalTransferPostMapper;
+    @Autowired
+    private ClientOperatorMapper clientOperatorMapper;
 
     @Override
     public void DepositAndWithdrawalRequestRecord(CapitalTransferPost capitalTransferPost,String initiator){
@@ -131,28 +130,71 @@ public class CapitalServiceImpl implements CapitalService {
 
     @Override
     public CapitalAccount selectCapitalAccount(String accountId) {
-
         return capitalAccountMapper.selectById(accountId);
     }
 
     @Override
-    public List<CapitalTradeRecord> selectCapitalTradeRecord(String operatorCode) {
-        Map<String,Object> map=new HashMap<>();
-        map.put("operator_code",operatorCode);
-        return capitalTradeRecordMapper.selectByMap(map);
+    public List<CapitalTradeRecord> selectCapitalTradeRecord(String clientId) {
+        //1.获取客户操作员
+        Map<String,Object> clientOperatormap=new HashMap<>();
+        clientOperatormap.put("client_id",clientId);
+        List<ClientOperator> clientOperators = clientOperatorMapper.selectByMap(clientOperatormap);
+        List<CapitalTradeRecord> capitalTradeRecords = new ArrayList<>();
+        //2.获取所有操作员的记录
+        for(int i=0;i<clientOperators.size();i++){
+            Map<String,Object> map=new HashMap<>();
+            map.put("operator_code",clientOperators.get(i).getId());
+            capitalTradeRecords.addAll(capitalTradeRecordMapper.selectByMap(map));
+        }
+
+        return capitalTradeRecords;
     }
 
     @Override
-    public List<DepositAndWithdrawalRecord> selectDepositAndWithdrawalRecord(String operatorCode) {
-        Map<String,Object> map=new HashMap<>();
-        map.put("operator_code",operatorCode);
-        return depositAndWithdrawalRecordMapper.selectByMap(map);
+    public List<DepositAndWithdrawalRecord> selectDepositAndWithdrawalRecord(String clientId) {
+        //1.获取客户操作员
+        Map<String,Object> clientOperatormap=new HashMap<>();
+        clientOperatormap.put("client_id",clientId);
+        List<ClientOperator> clientOperators = clientOperatorMapper.selectByMap(clientOperatormap);
+        //2.获取所有操作员的记录
+        List<DepositAndWithdrawalRecord> depositAndWithdrawalRecords = new ArrayList<>();
+        for(int i=0;i<clientOperators.size();i++){
+            Map<String,Object> map=new HashMap<>();
+            map.put("operator_code",clientOperators.get(i).getId());
+            depositAndWithdrawalRecords.addAll(depositAndWithdrawalRecordMapper.selectByMap(map));
+        }
+        return depositAndWithdrawalRecords;
     }
 
     @Override
-    public List<DepositAndWithdrawalRequestRecord> selectDepositAndWithdrawalRequestRecord(String operatorCode) {
-        Map<String,Object> map=new HashMap<>();
-        map.put("operator_code",operatorCode);
-        return depositAndWithdrawalRequestRecordMapper.selectByMap(map);
+    public List<DepositAndWithdrawalRequestRecord> selectDepositAndWithdrawalRequestRecord(String clientId) {
+        //1.获取客户操作员
+        Map<String,Object> clientOperatormap=new HashMap<>();
+        clientOperatormap.put("client_id",clientId);
+        List<ClientOperator> clientOperators = clientOperatorMapper.selectByMap(clientOperatormap);
+        List<DepositAndWithdrawalRequestRecord> depositAndWithdrawalRequestRecords = new ArrayList<>();
+        //2.获取所有操作员记录
+        for(int i=0;i<clientOperators.size();i++){
+            Map<String,Object> map=new HashMap<>();
+            map.put("operator_code",clientOperators.get(i).getId());
+            depositAndWithdrawalRequestRecords.addAll(depositAndWithdrawalRequestRecordMapper.selectByMap(map));
+        }
+        return depositAndWithdrawalRequestRecords;
     }
+    @Override
+    public void capitalTransfer(String fromCapitalAccountId,String toCapitalAccountId ,Double amount){
+        //1.获取账户
+        CapitalAccount fromCapitalAccount = capitalAccountMapper.selectById(fromCapitalAccountId);
+        CapitalAccount toCapitalAccount = capitalAccountMapper.selectById(toCapitalAccountId);
+
+        //2.修改账户金额
+        fromCapitalAccount.setCapital(fromCapitalAccount.getCapital() - amount);
+        fromCapitalAccount.setUnavailableCapital(fromCapitalAccount.getUnavailableCapital() - amount);
+        toCapitalAccount.setCapital(toCapitalAccount.getCapital() + amount);
+        toCapitalAccount.setAvailableCapital(toCapitalAccount.getAvailableCapital() + amount);
+
+        //3.更新账户
+        capitalAccountMapper.updateById(fromCapitalAccount);
+        capitalAccountMapper.updateById(toCapitalAccount);
+    };
 }

@@ -20,9 +20,11 @@ public interface CapitalService {
     //查询资金账户
     CapitalAccount selectCapitalAccount(String accountId);
     //查询资金交易流水
-    List<CapitalTradeRecord> selectCapitalTradeRecord(String operatorCode);
+    List<CapitalTradeRecord> selectCapitalTradeRecord(String ClientId);
     //查询出入金记录
-    List<DepositAndWithdrawalRecord> selectDepositAndWithdrawalRecord(String operatorCode);
+    List<DepositAndWithdrawalRecord> selectDepositAndWithdrawalRecord(String ClientId);
     //查询出入金申请记录
-    List<DepositAndWithdrawalRequestRecord> selectDepositAndWithdrawalRequestRecord(String operatorCode);
+    List<DepositAndWithdrawalRequestRecord> selectDepositAndWithdrawalRequestRecord(String ClientId);
+    //资金转让
+    void capitalTransfer(String fromCapitalAccountId,String toCapitalAccountId,Double amount);
 }
