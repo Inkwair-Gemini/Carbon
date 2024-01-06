@@ -203,22 +203,6 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
             //  1.3.1.撤销报价
             isCancel = true;
             directionPostMapper.deleteById(directionPost.getId());
-//            //判断买卖方向
-//            if (directionPost.getFlowType().equals("买入")) {
-//                //  1.3.2.解冻资金
-//                capitalAccount.setUnavailableCapital(capitalAccount.getUnavailableCapital() - directionPost.getAmount() * directionPost.getPrice());
-//                capitalAccount.setAvailableCapital(capitalAccount.getAvailableCapital() + directionPost.getAmount() * directionPost.getPrice());
-//                //  1.3.3.更新资金账户
-//                capitalAccountMapper.updateById(capitalAccount);
-//            } else if (directionPost.getFlowType().equals("卖出")) {
-//                //  1.3.2.解冻配额
-//                QueryWrapper<ClientTradeQuota> queryWrapper = new QueryWrapper<>();
-//                queryWrapper.eq("client_id", client.getId()).eq("subject_matter_code", directionPost.getSubjectMatterCode());
-//                clientTradeQuota = clientTradeQuotaMapper.selectOne(queryWrapper);
-//                clientTradeQuota.setAmount(clientTradeQuota.getAmount() + directionPost.getAmount());
-//                //  1.3.3.更新配额账户
-//                clientTradeQuotaMapper.updateById(clientTradeQuota);
-//            }
         }
         return isCancel;
     }

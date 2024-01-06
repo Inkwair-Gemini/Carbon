@@ -28,6 +28,8 @@ import java.util.List;
 @Service
 public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryService {
     @Autowired
+    private GroupMapper groupMapper;
+    @Autowired
     private ClientOperatorMapper clientOperatorMapper;
     @Autowired
     private ClientMapper clientMapper;
@@ -51,6 +53,8 @@ public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryServ
     private ClientTradeQuotaMapper clientTradeQuotaMapper;
     @Autowired
     private DirectionDoneRecordMapper directionDoneRecordMapper;
+    @Autowired
+    private GroupClientMapper groupClientMapper;
 
     @Override
     public boolean sendDirectionOfferEnquiry(DirectionEnquiryPost directionEnquiryPost) {
@@ -172,6 +176,7 @@ public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryServ
         Client client = clientMapper.selectById(clientOperator.getClientId());
         CapitalAccount capitalAccount = capitalAccountMapper.selectById(client.getCapitalAccountId());
         ClientTradeQuota clientTradeQuota = new ClientTradeQuota();
+        DirectionDoneRecord directionDoneRecord = new DirectionDoneRecord();
         boolean isEnough = false;
         //1.判断买卖方向
         if (directionEnquiryPost.getFlowType().equals("买入")) {
@@ -223,13 +228,39 @@ public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryServ
             directionEnquiryPostMapper.insert(directionEnquiryPost);
             isDone = true;
         }
+        if (isDone){
+            // 生成成交记录
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            directionDoneRecord.setTime(timestamp);
+            directionDoneRecord.setSubjectMatterCode(directionEnquiryPost.getSubjectMatterCode());
+            directionDoneRecord.setSubjectMatterName(directionEnquiryPost.getSubjectMatterName());
+            directionDoneRecord.setFlowType(directionEnquiryPost.getFlowType());
+            QueryWrapper<DirectionPost> queryWrapper1 = new QueryWrapper<>();
+
+            queryWrapper1.eq("group_id", group.getId());
+            List<GroupPost> posts = groupPostMapper.selectList(queryWrapper1);
+            GroupPost groupPost = posts.get(0);
+            groupDoneRecord.setFirstPrice(groupPost.getPrice());
+            groupDoneRecord.setFirstAmount(groupPost.getAmount());
+
+            groupDoneRecord.setFinallyAmount(groupEnquiryPost.getAmount());
+            groupDoneRecord.setFinallyPrice(groupEnquiryPost.getPrice());
+            groupDoneRecord.setFinallyBalance(groupEnquiryPost.getAmount() * groupEnquiryPost.getPrice());
+            groupDoneRecord.setListingClient(group.getGroupMaster());
+            groupDoneRecord.setDelistingClient(client.getId());
+            groupDoneRecordMapper.insert(groupDoneRecord);
+        }
     }
 
     @Override
     public void makeGroupBargain(GroupEnquiryPost groupEnquiryPost) {
         ClientOperator clientOperator = clientOperatorMapper.selectById(groupEnquiryPost.getOperatorCode());
         Client client = clientMapper.selectById(clientOperator.getClientId());
+        Group group = groupMapper.selectById(groupEnquiryPost.getGroupId());
+        GroupClient groupClient = groupClientMapper.selectById(groupEnquiryPost.getGroupId());
         CapitalAccount capitalAccount = capitalAccountMapper.selectById(client.getCapitalAccountId());
+        GroupDoneRecord groupDoneRecord = new GroupDoneRecord();
+
         ClientTradeQuota clientTradeQuota = new ClientTradeQuota();
         boolean isEnough = false;
         //1.判断买卖方向
@@ -281,6 +312,29 @@ public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryServ
             clientTradeQuotaMapper.updateById(clientTradeQuota);
             groupEnquiryPostMapper.insert(groupEnquiryPost);
             isDone = true;
+        }
+        if (isDone) {
+            // 生成成交记录
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            groupDoneRecord.setTime(timestamp);
+            groupDoneRecord.setGroupId(groupEnquiryPost.getGroupId());
+            groupDoneRecord.setSubjectMatterCode(groupEnquiryPost.getSubjectMatterCode());
+            groupDoneRecord.setSubjectMatterName(groupEnquiryPost.getSubjectMatterName());
+            groupDoneRecord.setFlowType(groupEnquiryPost.getFlowType());
+            QueryWrapper<GroupPost> queryWrapper1 = new QueryWrapper<>();
+
+            queryWrapper1.eq("group_id", group.getId());
+            List<GroupPost> posts = groupPostMapper.selectList(queryWrapper1);
+            GroupPost groupPost = posts.get(0);
+            groupDoneRecord.setFirstPrice(groupPost.getPrice());
+            groupDoneRecord.setFirstAmount(groupPost.getAmount());
+
+            groupDoneRecord.setFinallyAmount(groupEnquiryPost.getAmount());
+            groupDoneRecord.setFinallyPrice(groupEnquiryPost.getPrice());
+            groupDoneRecord.setFinallyBalance(groupEnquiryPost.getAmount() * groupEnquiryPost.getPrice());
+            groupDoneRecord.setListingClient(group.getGroupMaster());
+            groupDoneRecord.setDelistingClient(client.getId());
+            groupDoneRecordMapper.insert(groupDoneRecord);
         }
     }
 }
