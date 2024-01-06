@@ -10,9 +10,9 @@ import java.util.List;
 //大宗协议报价控制类
 public interface BulkAgreementOfferService {
     //定向报价
-    void directionOffer(DirectionPost directionPost);
+    boolean directionOffer(DirectionPost directionPost);
     //群组报价
-    void groupOffer(GroupPost groupPost );
+    boolean groupOffer(GroupPost groupPost );
     //修改委托
     DirectionPost modifyDirectionOffer(String id);
     GroupPost modifyGroupOffer(String id);
