@@ -202,34 +202,34 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
         CapitalAccount capitalAccount = capitalAccountMapper.selectById(client.getCapitalAccountId());
         ClientRegisterQuota clientRegisterQuota = new ClientRegisterQuota();
         //  1.判断报价交易状态
-        DirectionPost directionPost = directionPostMapper.selectById(directionPostId);
-        if (directionPost.getStatus().equals("已成交") || directionPost.getStatus().equals("已撤销")) {
+        GroupPost groupPost = groupPostMapper.selectById(groupPostId);
+        if (groupPost.getStatus().equals("已成交") || groupPost.getStatus().equals("已撤销")) {
             //  1.1.报价已成交，无法修改
             return null;
-        } else if (directionPost.getStatus().equals("未成交")) {
+        } else if (groupPost.getStatus().equals("未成交")) {
             //  1.3.报价未成交，可以修改
             //  1.3.1.撤销原报价单，更新报价记录
-            directionPost.setStatus("已撤销");
-            directionPostMapper.updateById(directionPost);
-            if (directionPost.getStatus().equals("买入")) {
+            groupPost.setStatus("已撤销");
+            groupPostMapper.updateById(groupPost);
+            if (groupPost.getStatus().equals("买入")) {
                 //  1.3.3.解冻原资金
-                capitalAccount.setUnavailableCapital(capitalAccount.getUnavailableCapital() - directionPost.getAmount() * directionPost.getPrice());
-                capitalAccount.setAvailableCapital(capitalAccount.getAvailableCapital() + directionPost.getAmount() * directionPost.getPrice());
+                capitalAccount.setUnavailableCapital(capitalAccount.getUnavailableCapital() - groupPost.getAmount() * groupPost.getPrice());
+                capitalAccount.setAvailableCapital(capitalAccount.getAvailableCapital() + groupPost.getAmount() * groupPost.getPrice());
                 //  1.3.3.更新资金账户
                 capitalAccountMapper.updateById(capitalAccount);
-            } else if (directionPost.getStatus().equals("卖出")) {
+            } else if (groupPost.getStatus().equals("卖出")) {
 
                 //  1.3.2.解冻原配额,冻结新配额
                 //  1.3.2.解冻配额
                 QueryWrapper<ClientRegisterQuota> queryWrapper = new QueryWrapper<>();
-                queryWrapper.eq("client_id", client.getId()).eq("subject_matter_code", directionPost.getSubjectMatterCode());
+                queryWrapper.eq("client_id", client.getId()).eq("subject_matter_code", groupPost.getSubjectMatterCode());
                 clientRegisterQuota = clientRegisterQuotaMapper.selectOne(queryWrapper);
-                clientRegisterQuota.setAmount(clientRegisterQuota.getAmount() + directionPost.getAmount());
+                clientRegisterQuota.setAmount(clientRegisterQuota.getAmount() + groupPost.getAmount());
                 //  1.3.3.更新配额账户
                 clientRegisterQuotaMapper.updateById(clientRegisterQuota);
             }
         }
-        return directionPost;
+        return groupPost;
     }
 
 
