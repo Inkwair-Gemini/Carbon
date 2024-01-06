@@ -1,13 +1,17 @@
 package com.carbon.service.Impl;
 
+import com.carbon.input.DirectionEnquiryPost;
 import com.carbon.input.DirectionPost;
 import com.carbon.input.GroupEnquiryPost;
 import com.carbon.input.GroupPost;
 import com.carbon.mapper.*;
+import com.carbon.po.DirectionDoneRecord;
 import com.carbon.po.Group;
 import com.carbon.service.BulkAgreementEnquiryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @projectName: Carbon
@@ -33,17 +37,50 @@ public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryServ
     private GroupPostMapper groupPostMapper;
     @Autowired
     private GroupDoneRecordMapper groupDoneRecordMapper;
+    @Autowired
+    private DirectionEnquiryPostMapper directionEnquiryPostMapper;
 
     @Override
-    public void sendOfferEnquiry(GroupEnquiryPost groupEnquiryPost) {
-        //todo 1.提交洽谈出价
-        groupEnquiryPostMapper.insert(groupEnquiryPost);
-        //todo 2.更新洽谈出价记录
-        groupPostMapper.insert(groupEnquiryPost);
+    public void sendDirectionOfferEnquiry(DirectionEnquiryPost directionEnquiryPost) {
+        //todo 判断资金或者配额是否足够
+
+        boolean isEnough =false;
+        if(isEnough){
+            //提交洽谈出价
+            directionEnquiryPostMapper.insert(directionEnquiryPost);
+        }
+
     }
 
     @Override
-    public void makeBargain(GroupEnquiryPost groupEnquiryPost) {
+    public void sendGroupOfferEnquiry(GroupEnquiryPost groupEnquiryPost) {
+        //todo 判断资金或者配额是否足够
+
+        boolean isEnough =false;
+        if(isEnough) {
+            //提交洽谈出价
+            groupEnquiryPostMapper.insert(groupEnquiryPost);
+        }
+    }
+
+    @Override
+    public List<DirectionEnquiryPost> selectDirectionOfferEnquiry(String operatorCode) {
+
+    }
+
+    @Override
+    public List<GroupEnquiryPost> selectGroupOfferEnquiry(String operatorCode) {
+
+
+    }
+
+    @Override
+    public void makeDirectionBargain(DirectionEnquiryPost directionEnquiryPost) {
+
+    }
+
+    @Override
+    public void makeGroupBargain(GroupEnquiryPost groupEnquiryPost) {
         //todo 1.判断询价交易状态
         //todo 2.判断是否有足够的配额
         boolean isEnoughQuota = quotaAccount.getQuota() >= groupPost.get();
