@@ -1,6 +1,7 @@
 package com.carbon.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.carbon.Utils.StringUtils;
 import com.carbon.mapper.*;
 import com.carbon.po.*;
 import com.carbon.service.QuotaService;
@@ -22,21 +23,28 @@ public class QuotaServiceImpl implements QuotaService {
     private QuotaTransferRecordMapper quotaTransferRecordMapper;
     @Autowired
     private QuotaTradeRecordMapper quotaTradeRecordMapper;
-
     @Override
     public List<ClientTradeQuota> SelectClientTradeQuota(String QuotaAccountId, String subjectMatterCode) {
         Map<String,Object> map=new HashMap<>();
-        map.put("quota_account_id",QuotaAccountId);
-        List<ClientTradeQuota> list = clientTradeQuotaMapper.selectByMap(map);
-        return list;
+        if(StringUtils.isNotEmpty(QuotaAccountId)){
+            map.put("quota_account_id",QuotaAccountId);
+        }
+        if(StringUtils.isNotEmpty(subjectMatterCode)){
+            map.put("subject_matter_code",subjectMatterCode);
+        }
+        return  clientTradeQuotaMapper.selectByMap(map);
     }
 
     @Override
     public List<ClientRegisterQuota> SelectClientRegisterQuota(String clientId, String subjectMatterCode) {
         Map<String,Object> map=new HashMap<>();
-        map.put("client_id",clientId);
-        List<ClientRegisterQuota> list = clientRegisterQuotaMapper.selectByMap(map);
-        return list;
+        if(StringUtils.isNotEmpty(clientId)){
+            map.put("client_id",clientId);
+        }
+        if(StringUtils.isNotEmpty(subjectMatterCode)){
+            map.put("subject_matter_code",subjectMatterCode);
+        }
+        return clientRegisterQuotaMapper.selectByMap(map);
     }
 
     @Override
@@ -117,4 +125,12 @@ public class QuotaServiceImpl implements QuotaService {
         List<QuotaTradeRecord> list = quotaTradeRecordMapper.selectByMap(map);
         return list;
     }
+    //新增转入转出流水
+    public void addQuotaTransferRecord(QuotaTransferRecord quotaTransferRecord){
+        quotaTransferRecordMapper.insert(quotaTransferRecord);
+    };
+    //新增配额交易流水
+    public void addQuotaTradeRecord(QuotaTradeRecord quotaTradeRecord){
+        quotaTradeRecordMapper.insert(quotaTradeRecord);
+    };
 }
