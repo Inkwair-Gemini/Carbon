@@ -27,6 +27,8 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
     @Autowired
     private ClientOperatorMapper clientOperatorMapper;
     @Autowired
+    private ClientTradeQuotaMapper clientTradeQuotaMapper;
+    @Autowired
     private GroupPostMapper groupPostMapper;
     @Autowired
     private CapitalAccountMapper capitalAccountMapper;
@@ -48,7 +50,7 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
         ClientOperator clientOperator = clientOperatorMapper.selectById(directionPost.getOperatorCode());
         Client client = clientMapper.selectById(clientOperator.getClientId());
         CapitalAccount capitalAccount = capitalAccountMapper.selectById(client.getCapitalAccountId());
-        ClientRegisterQuota clientRegisterQuota = new ClientRegisterQuota();
+        ClientTradeQuota clientTradeQuota = new ClientTradeQuota();
         boolean isEnough = false;
         //1.判断买卖方向
         if (directionPost.getFlowType().equals("买入")) {
@@ -58,11 +60,11 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
                 isEnough = true;
             }
         } else if (directionPost.getFlowType().equals("卖出")) {
-            // 1.2.判断是否有足够的登记配额
-            QueryWrapper<ClientRegisterQuota> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("client_id", client.getId()).eq("subject_matter_code", directionPost.getSubjectMatterCode());
-            clientRegisterQuota = clientRegisterQuotaMapper.selectOne(queryWrapper);
-            if (clientRegisterQuota.getAmount() >= directionPost.getAmount()) {
+            // 1.2.判断是否有足够的可用交易配额
+            QueryWrapper<ClientTradeQuota> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("quota_account_id", client.getQuotaAccountId()).eq("subject_matter_code", directionPost.getSubjectMatterCode());
+            clientTradeQuota = clientTradeQuotaMapper.selectOne(queryWrapper);
+            if (clientTradeQuota.getAvailableQuotaAmount() >= directionPost.getAmount()) {
                 isEnough = true;
             }
         }
@@ -90,10 +92,11 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
             // 1.1.2.更新资金账户
             capitalAccountMapper.updateById(capitalAccount);
         } else if (directionPost.getFlowType().equals("卖出") && isEnough && isInPriceRange) {
-            // 1.2.1.冻结部分登记配额
-            clientRegisterQuota.setAmount(clientRegisterQuota.getAmount() - directionPost.getAmount());
-            // 1.2.2.更新登记配额
-            clientRegisterQuotaMapper.updateById(clientRegisterQuota);
+            // 1.2.1.冻结部分交易配额
+            clientTradeQuota.setAvailableQuotaAmount(clientTradeQuota.getAvailableQuotaAmount() - directionPost.getAmount());
+            clientTradeQuota.setUnavailableQuotaAmount(clientTradeQuota.getUnavailableQuotaAmount() + directionPost.getAmount());
+            // 1.2.2.更新交易配额
+            clientTradeQuotaMapper.updateById(clientTradeQuota);
         }
         directionPostMapper.insert(directionPost);
     }
@@ -159,6 +162,44 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
         ClientOperator clientOperator = clientOperatorMapper.selectById(operatorCode);
         Client client = clientMapper.selectById(clientOperator.getClientId());
         CapitalAccount capitalAccount = capitalAccountMapper.selectById(client.getCapitalAccountId());
+        ClientTradeQuota clientTradeQuota = new ClientTradeQuota();
+        //  1.判断报价交易状态
+        DirectionPost directionPost = directionPostMapper.selectById(directionPostId);
+        if (directionPost.getStatus().equals("已成交") || directionPost.getStatus().equals("已撤销")) {
+            //  1.1.报价已成交，无法修改
+            return null;
+        } else if (directionPost.getStatus().equals("未成交")) {
+            //  1.3.报价未成交，可以修改
+            //  1.3.1.撤销原报价单，更新原报价单状态
+            directionPost.setStatus("已撤销");
+            directionPostMapper.updateById(directionPost);
+            if (directionPost.getFlowType().equals("买入")) {
+                //  1.3.3.解冻原资金
+                capitalAccount.setUnavailableCapital(capitalAccount.getUnavailableCapital() - directionPost.getAmount() * directionPost.getPrice());
+                capitalAccount.setAvailableCapital(capitalAccount.getAvailableCapital() + directionPost.getAmount() * directionPost.getPrice());
+                //  1.3.3.更新资金账户
+                capitalAccountMapper.updateById(capitalAccount);
+            } else if (directionPost.getFlowType().equals("卖出")) {
+                //  1.3.2.解冻原配额,冻结新配额
+                //  1.3.2.解冻配额
+                QueryWrapper<ClientTradeQuota> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("quota_account_id", client.getQuotaAccountId()).eq("subject_matter_code", directionPost.getSubjectMatterCode());
+                clientTradeQuota = clientTradeQuotaMapper.selectOne(queryWrapper);
+                clientTradeQuota.setAvailableQuotaAmount(clientTradeQuota.getAvailableQuotaAmount() + directionPost.getAmount());
+                clientTradeQuota.setUnavailableQuotaAmount(clientTradeQuota.getUnavailableQuotaAmount() - directionPost.getAmount());
+                //  1.3.3.更新配额账户
+                clientTradeQuotaMapper.updateById(clientTradeQuota);
+            }
+        }
+        return directionPost;
+    }
+
+    @Override
+    public GroupPost modifyGroupOffer(String groupPostId) {
+        String operatorCode = groupPostMapper.selectById(groupPostId).getOperatorCode();
+        ClientOperator clientOperator = clientOperatorMapper.selectById(operatorCode);
+        Client client = clientMapper.selectById(clientOperator.getClientId());
+        CapitalAccount capitalAccount = capitalAccountMapper.selectById(client.getCapitalAccountId());
         ClientRegisterQuota clientRegisterQuota = new ClientRegisterQuota();
         //  1.判断报价交易状态
         DirectionPost directionPost = directionPostMapper.selectById(directionPostId);
@@ -189,11 +230,6 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
             }
         }
         return directionPost;
-    }
-
-    @Override
-    public GroupPost modifyGroupOffer(String id) {
-
     }
 
 
