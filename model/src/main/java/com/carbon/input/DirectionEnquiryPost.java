@@ -19,8 +19,9 @@ public class DirectionEnquiryPost implements Serializable {
     private String subjectMatterCode; // 标的物代码
     private String subjectMatterName; // 标的物名称
     private String flowType;
-    private String price;
-    private String amount;
+    private double price;
+    private double amount;
+    private String directionPostId; // DriectionPostId
     private String directionClient; // 定向客户
     private String operatorCode; // 操作员代码
 }

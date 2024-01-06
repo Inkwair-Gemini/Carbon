@@ -9,9 +9,9 @@ import java.util.List;
 //大宗协议询价控制类
 public interface BulkAgreementEnquiryService {
     //定向报价洽谈出价
-    void sendDirectionOfferEnquiry(DirectionEnquiryPost directionEnquiryPost);
+    boolean sendDirectionOfferEnquiry(DirectionEnquiryPost directionEnquiryPost);
     //群组报价洽谈出价
-    void sendGroupOfferEnquiry(GroupEnquiryPost groupEnquiryPost);
+    boolean sendGroupOfferEnquiry(GroupEnquiryPost groupEnquiryPost);
     //查询定向报价洽谈记录
     List<DirectionEnquiryPost> selectDirectionOfferEnquiry(String operatorCode);
     //查询群组报价洽谈记录
