@@ -2,6 +2,8 @@ package com.carbon.service;
 
 import com.carbon.input.DirectionPost;
 import com.carbon.input.GroupPost;
+import com.carbon.po.DirectionDoneRecord;
+import com.carbon.po.GroupDoneRecord;
 
 import java.util.List;
 
@@ -17,8 +19,12 @@ public interface BulkAgreementOfferService {
     //撤销委托
     boolean cancelDirectionOffer(String directionPostId);
     boolean cancelGroupOffer(String groupPostId);
-    //报价查询
-    List selectOfferInfo(String operatorCode);
-    //成交查询
-    List selectBargainInfo(String operatorCode);
+    //定向报价查询
+    List<DirectionPost> selectDirectionOfferInfo(String operatorCode);
+    //群组报价查询
+    List<GroupPost> selectGroupOfferInfo(String operatorCode);
+    //定向成交查询
+    List<DirectionDoneRecord> selectDirectionBargainInfo(String operatorCode);
+    //群组成交查询
+    List<GroupDoneRecord> selectGroupBargainInfo(String operatorCode);
 }

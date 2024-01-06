@@ -262,8 +262,8 @@ public class ListingServiceImpl implements ListingService {
         temp.setHours(0);
         temp.setMinutes(0);
         temp.setSeconds(0);
-        QueryWrapper query = new QueryWrapper<ListingPost>();
-        query.eq("listing_client",clientId);
+        QueryWrapper<ListingDoneRecord> query = new QueryWrapper<ListingDoneRecord>();
+        query.eq("listing_client", clientId).or().eq("delisting_client",clientId);
         query.ge("time",temp);
         List listingDoneList=ListingDoneRecordMapper.selectList(query);
         return listingDoneList;
@@ -271,8 +271,8 @@ public class ListingServiceImpl implements ListingService {
 
     @Override
     public List<ListingDoneRecord> selectBargainInfo(String clientId,Timestamp start,Timestamp end) {
-        QueryWrapper query = new QueryWrapper<ListingPost>();
-        query.eq("listing_client",clientId);
+        QueryWrapper<ListingDoneRecord> query = new QueryWrapper<ListingDoneRecord>();
+        query.eq("listing_client", clientId).or().eq("delisting_client",clientId);
         query.ge("time",start);
         query.le("time",end);
         List listingDoneList=ListingDoneRecordMapper.selectList(query);

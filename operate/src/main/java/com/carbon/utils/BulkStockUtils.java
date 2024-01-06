@@ -1,6 +1,7 @@
 package com.carbon.utils;
 
 import com.carbon.po.DirectionDoneRecord;
+import com.carbon.po.GroupDoneRecord;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
  * @date: 2024/1/5 16:09
  */
 public class BulkStockUtils {
-    public static Double getClosingPrice(List<DirectionDoneRecord> results) {
+    public static Double getDirectionClosingPrice(List<DirectionDoneRecord> results) {
         // 检查结果列表是否为空
         if (results == null || results.isEmpty()) {
             return null;
@@ -21,6 +22,19 @@ public class BulkStockUtils {
 
         // 获取最后一个结果，即收盘时的结果
         DirectionDoneRecord lastResult = results.get(results.size() - 1);
+
+        // 返回收盘价
+        return lastResult.getFinallyPrice();
+    }
+
+    public static Double getGroupClosingPrice(List<GroupDoneRecord> results) {
+        // 检查结果列表是否为空
+        if (results == null || results.isEmpty()) {
+            return null;
+        }
+
+        // 获取最后一个结果，即收盘时的结果
+        GroupDoneRecord lastResult = results.get(results.size() - 1);
 
         // 返回收盘价
         return lastResult.getFinallyPrice();
