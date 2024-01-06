@@ -30,6 +30,8 @@ public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryServ
     @Autowired
     private GroupMapper groupMapper;
     @Autowired
+    private DirectionPostMapper directionPostMapper;
+    @Autowired
     private ClientOperatorMapper clientOperatorMapper;
     @Autowired
     private ClientMapper clientMapper;
@@ -235,20 +237,19 @@ public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryServ
             directionDoneRecord.setSubjectMatterCode(directionEnquiryPost.getSubjectMatterCode());
             directionDoneRecord.setSubjectMatterName(directionEnquiryPost.getSubjectMatterName());
             directionDoneRecord.setFlowType(directionEnquiryPost.getFlowType());
-            QueryWrapper<DirectionPost> queryWrapper1 = new QueryWrapper<>();
-
-            queryWrapper1.eq("group_id", group.getId());
-            List<GroupPost> posts = groupPostMapper.selectList(queryWrapper1);
-            GroupPost groupPost = posts.get(0);
-            groupDoneRecord.setFirstPrice(groupPost.getPrice());
-            groupDoneRecord.setFirstAmount(groupPost.getAmount());
-
-            groupDoneRecord.setFinallyAmount(groupEnquiryPost.getAmount());
-            groupDoneRecord.setFinallyPrice(groupEnquiryPost.getPrice());
-            groupDoneRecord.setFinallyBalance(groupEnquiryPost.getAmount() * groupEnquiryPost.getPrice());
-            groupDoneRecord.setListingClient(group.getGroupMaster());
-            groupDoneRecord.setDelistingClient(client.getId());
-            groupDoneRecordMapper.insert(groupDoneRecord);
+            QueryWrapper<DirectionPost> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("id", directionEnquiryPost.getDirectionPostId());
+            List<DirectionPost> directionPostList = directionPostMapper.selectList(queryWrapper);
+            DirectionPost directionPost = directionPostList.get(0);
+            directionDoneRecord.setFirstPrice(directionPost.getPrice());
+            directionDoneRecord.setFirstAmount(directionPost.getAmount());
+            directionDoneRecord.setFinallyAmount(directionEnquiryPost.getAmount());
+            directionDoneRecord.setFinallyPrice(directionEnquiryPost.getPrice());
+            directionDoneRecord.setFinallyBalance(directionEnquiryPost.getAmount() * directionEnquiryPost.getPrice());
+            ClientOperator clientOperator1 = clientOperatorMapper.selectById(directionPost.getOperatorCode());
+            directionDoneRecord.setListingClient(clientOperator1.getClientId());
+            directionDoneRecord.setDelistingClient(client.getId());
+            directionDoneRecordMapper.insert(directionDoneRecord);
         }
     }
 

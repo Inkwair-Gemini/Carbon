@@ -14,11 +14,19 @@ import org.springframework.scheduling.annotation.Scheduled;
 @Component
 public class ScheduledTasks {
     @Scheduled(cron = "0 0 16 * * ?")
-    public void test(){
+    public void ListingDoneRecordTask(){
         System.out.println("定时任务");
     }
     @Scheduled(cron = "0 0 16 * * ?")
-    public void test1(){
+    public void DirectionDoneRecordTask(){
+        System.out.println("定时任务");
+    }
+    @Scheduled(cron = "0 0 16 * * ?")
+    public void GroupDoneRecordTask(){
+        System.out.println("定时任务");
+    }
+    @Scheduled(cron = "0 0 16 * * ?")
+    public void GroupClientTask(){
         System.out.println("定时任务");
     }
 }
