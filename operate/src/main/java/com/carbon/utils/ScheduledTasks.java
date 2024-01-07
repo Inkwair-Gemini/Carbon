@@ -1,10 +1,15 @@
 package com.carbon.utils;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.carbon.input.DirectionPost;
+import com.carbon.input.GroupPost;
+import com.carbon.input.ListingPost;
 import com.carbon.mapper.*;
 import com.carbon.po.*;
 import com.carbon.service.BulkAgreementEnquiryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.scheduling.annotation.Scheduled;
 
@@ -18,10 +23,11 @@ import java.util.List;
  * @package: com.carbon.utils
  * @className: ScheduledTasks
  * @author: Doctor.H
- * @description: TODO
+ * @description: 定时任务
  * @date: 2024/1/6 19:14
  */
 @Component
+@Async
 public class ScheduledTasks {
     @Autowired
     private BulkAgreementEnquiryService bulkAgreementEnquiryService;
@@ -37,6 +43,12 @@ public class ScheduledTasks {
     private DirectionDoneRecordMapper directionDoneRecordMapper;
     @Autowired
     private GroupDoneRecordMapper groupDoneRecordMapper;
+    @Autowired
+    private ListingPostMapper listingPostMapper;
+    @Autowired
+    private DirectionPostMapper directionPostMapper;
+    @Autowired
+    private GroupPostMapper groupPostMapper;
 
     @Scheduled(cron = "0 0 16 * * ?")
     public void ListingDoneRecordTask() {
@@ -184,6 +196,23 @@ public class ScheduledTasks {
         LocalDate localDate = LocalDate.now();
         Timestamp beginTime = Timestamp.valueOf(localDate.atStartOfDay());
         Timestamp endTime = Timestamp.valueOf(localDate.atTime(23, 59, 59));
-
+        //挂牌交易系统撤单
+        UpdateWrapper<ListingPost> listingPostUpdateWrapper = new UpdateWrapper<>();
+        listingPostUpdateWrapper.between("time", beginTime, endTime);
+        listingPostUpdateWrapper.eq("status", "未成交");
+        listingPostUpdateWrapper.set("status", "已撤单");
+        listingPostMapper.update(null, listingPostUpdateWrapper);
+        //定向交易系统撤单
+        UpdateWrapper<DirectionPost> directionPostUpdateWrapper = new UpdateWrapper<>();
+        directionPostUpdateWrapper.between("time", beginTime, endTime);
+        directionPostUpdateWrapper.eq("status", "未成交");
+        directionPostUpdateWrapper.set("status", "已撤单");
+        directionPostMapper.update(null, directionPostUpdateWrapper);
+        //大宗协议交易系统撤单
+        UpdateWrapper<GroupPost> groupPostUpdateWrapper = new UpdateWrapper<>();
+        groupPostUpdateWrapper.between("time", beginTime, endTime);
+        groupPostUpdateWrapper.eq("status", "未成交");
+        groupPostUpdateWrapper.set("status", "已撤单");
+        groupPostMapper.update(null, groupPostUpdateWrapper);
     }
 }
