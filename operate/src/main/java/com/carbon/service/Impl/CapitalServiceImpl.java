@@ -182,19 +182,27 @@ public class CapitalServiceImpl implements CapitalService {
         return depositAndWithdrawalRequestRecords;
     }
     @Override
-    public void capitalTransfer(String fromCapitalAccountId,String toCapitalAccountId ,Double amount){
+    public void capitalTransfer(String listingCapitalAccountId,String delistingCapitalAccountId ,Double amount,String flowType){
         //1.获取账户
-        CapitalAccount fromCapitalAccount = capitalAccountMapper.selectById(fromCapitalAccountId);
-        CapitalAccount toCapitalAccount = capitalAccountMapper.selectById(toCapitalAccountId);
+        CapitalAccount listingCapitalAccount = capitalAccountMapper.selectById(listingCapitalAccountId);
+        CapitalAccount delistingCapitalAccount = capitalAccountMapper.selectById(delistingCapitalAccountId);
 
         //2.修改账户金额
-        fromCapitalAccount.setCapital(fromCapitalAccount.getCapital() - amount);
-        fromCapitalAccount.setUnavailableCapital(fromCapitalAccount.getUnavailableCapital() - amount);
-        toCapitalAccount.setCapital(toCapitalAccount.getCapital() + amount);
-        toCapitalAccount.setAvailableCapital(toCapitalAccount.getAvailableCapital() + amount);
+        if(flowType.equals("买入")){
+            listingCapitalAccount.setCapital(listingCapitalAccount.getCapital() - amount);
+            listingCapitalAccount.setUnavailableCapital(listingCapitalAccount.getUnavailableCapital() - amount);
+            delistingCapitalAccount.setCapital(delistingCapitalAccount.getCapital() + amount);
+            delistingCapitalAccount.setAvailableCapital(delistingCapitalAccount.getAvailableCapital() + amount);
+        }else{
+            listingCapitalAccount.setCapital(listingCapitalAccount.getCapital() + amount);
+            listingCapitalAccount.setUnavailableCapital(listingCapitalAccount.getUnavailableCapital() + amount);
+            delistingCapitalAccount.setCapital(delistingCapitalAccount.getCapital() - amount);
+            delistingCapitalAccount.setAvailableCapital(delistingCapitalAccount.getAvailableCapital() - amount);
+        }
+
 
         //3.更新账户
-        capitalAccountMapper.updateById(fromCapitalAccount);
-        capitalAccountMapper.updateById(toCapitalAccount);
+        capitalAccountMapper.updateById(listingCapitalAccount);
+        capitalAccountMapper.updateById(delistingCapitalAccount);
     };
 }

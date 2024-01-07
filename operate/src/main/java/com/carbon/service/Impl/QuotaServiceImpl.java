@@ -134,31 +134,40 @@ public class QuotaServiceImpl implements QuotaService {
         quotaTradeRecordMapper.insert(quotaTradeRecord);
     };
     @Override
-    public void quotaTransfer(String fromQuotaAccountId,String toQuotaAccountId,Double amount,String subjectMatterCode){
+    public void quotaTransfer(String listingQuotaAccountId,String delistingQuotaAccountId,Double amount,String subjectMatterCode,String flowType){
         //1.获取账户有关标的物的交易配额
-        Map<String,Object> fromClientTradeQuotamap=new HashMap<>();
-        fromClientTradeQuotamap.put("quota_account_id",fromQuotaAccountId);
-        fromClientTradeQuotamap.put("subject_matter_code",subjectMatterCode);
-        List<ClientTradeQuota> fromClientTradeQuota = clientTradeQuotaMapper.selectByMap(fromClientTradeQuotamap);
+        Map<String,Object> listingClientTradeQuotamap=new HashMap<>();
+        listingClientTradeQuotamap.put("quota_account_id",listingQuotaAccountId);
+        listingClientTradeQuotamap.put("subject_matter_code",subjectMatterCode);
+        List<ClientTradeQuota> listingClientTradeQuota = clientTradeQuotaMapper.selectByMap(listingClientTradeQuotamap);
 
-        Map<String,Object> toClientTradeQuotamap=new HashMap<>();
-        toClientTradeQuotamap.put("quota_account_id",fromQuotaAccountId);
-        toClientTradeQuotamap.put("subject_matter_code",subjectMatterCode);
-        List<ClientTradeQuota> toClientTradeQuota = clientTradeQuotaMapper.selectByMap(toClientTradeQuotamap);
+        Map<String,Object> delistingClientTradeQuotamap=new HashMap<>();
+        delistingClientTradeQuotamap.put("quota_account_id",delistingQuotaAccountId);
+        delistingClientTradeQuotamap.put("subject_matter_code",subjectMatterCode);
+        List<ClientTradeQuota> delistingClientTradeQuota = clientTradeQuotaMapper.selectByMap(delistingClientTradeQuotamap);
+
         //2.修改账户配额
-        fromClientTradeQuota.get(0).setAmount(fromClientTradeQuota.get(0).getAmount() - amount);
-        toClientTradeQuota.get(0).setAmount(toClientTradeQuota.get(0).getAmount() - amount);
+        if(flowType.equals("卖出")){
+            //卖出挂牌
+            listingClientTradeQuota.get(0).setAmount(listingClientTradeQuota.get(0).getAmount() - amount);
+            delistingClientTradeQuota.get(0).setAmount(delistingClientTradeQuota.get(0).getAmount() + amount);
+        } else{
+            //买入挂牌
+            listingClientTradeQuota.get(0).setAmount(listingClientTradeQuota.get(0).getAmount() + amount);
+            delistingClientTradeQuota.get(0).setAmount(delistingClientTradeQuota.get(0).getAmount() - amount);
+        }
+
 
         //3.更新账户
-        UpdateWrapper<ClientTradeQuota> fromClientTradeQuotaUpdateWrapper = new UpdateWrapper<>();
-        fromClientTradeQuotaUpdateWrapper.eq("quota_account_id", fromQuotaAccountId);
-        fromClientTradeQuotaUpdateWrapper.eq("subject_matter_code",subjectMatterCode);
-        clientTradeQuotaMapper.update(fromClientTradeQuota.get(0), fromClientTradeQuotaUpdateWrapper);
+        UpdateWrapper<ClientTradeQuota> listingClientTradeQuotaUpdateWrapper = new UpdateWrapper<>();
+        listingClientTradeQuotaUpdateWrapper.eq("quota_account_id", listingQuotaAccountId);
+        listingClientTradeQuotaUpdateWrapper.eq("subject_matter_code",subjectMatterCode);
+        clientTradeQuotaMapper.update(listingClientTradeQuota.get(0), listingClientTradeQuotaUpdateWrapper);
 
-        UpdateWrapper<ClientTradeQuota> toClientTradeQuotaUpdateWrapper = new UpdateWrapper<>();
-        toClientTradeQuotaUpdateWrapper.eq("quota_account_id", toQuotaAccountId);
-        toClientTradeQuotaUpdateWrapper.eq("subject_matter_code",subjectMatterCode);
-        clientTradeQuotaMapper.update(fromClientTradeQuota.get(0), toClientTradeQuotaUpdateWrapper);
+        UpdateWrapper<ClientTradeQuota> delistingClientTradeQuotaUpdateWrapper = new UpdateWrapper<>();
+        delistingClientTradeQuotaUpdateWrapper.eq("quota_account_id", delistingQuotaAccountId);
+        delistingClientTradeQuotaUpdateWrapper.eq("subject_matter_code",subjectMatterCode);
+        clientTradeQuotaMapper.update(delistingClientTradeQuota.get(0), delistingClientTradeQuotaUpdateWrapper);
 
     };
 }

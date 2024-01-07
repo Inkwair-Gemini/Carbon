@@ -26,5 +26,5 @@ public interface CapitalService {
     //查询出入金申请记录
     List<DepositAndWithdrawalRequestRecord> selectDepositAndWithdrawalRequestRecord(String ClientId);
     //资金转让
-    void capitalTransfer(String fromCapitalAccountId,String toCapitalAccountId,Double amount);
+    void capitalTransfer(String listingCapitalAccountId,String delistingCapitalAccountId,Double amount,String flowType);
 }
