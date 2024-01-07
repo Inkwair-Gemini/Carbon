@@ -6,11 +6,9 @@ import com.carbon.input.DelistingPost;
 import com.carbon.input.ListingPost;
 import com.carbon.mapper.*;
 import com.carbon.output.SelectPositionInfoResult;
-import com.carbon.po.CapitalAccount;
-import com.carbon.po.ClientTradeQuota;
-import com.carbon.po.DirectionDoneRecord;
-import com.carbon.po.ListingDoneRecord;
+import com.carbon.po.*;
 import com.carbon.service.ListingService;
+import com.carbon.utils.ClientIdUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,8 +43,17 @@ public class ListingServiceImpl implements ListingService {
         listingDoneRecord.setDealAmount(delistingPost.getAmount());
         listingDoneRecord.setDealBalance(listingPost.getPrice()* delistingPost.getAmount());
         //只保留数字
-        String listingClient=listingPost.getQuotaAccount().replaceAll("[^0-9]","");
-        String delistingClient=delistingPost.getQuotaAccount().replaceAll("[^0-9]","");
+        ClientIdUtils clientIdUtils=new ClientIdUtils();
+        String listingClient;
+        String delistingClient;
+        if(listingPost.getQuotaAccount().charAt(0)=='q')
+            listingClient=clientIdUtils.getIdByQuotaAccountId(listingPost.getQuotaAccount());
+        else
+            listingClient=clientIdUtils.getIdByCapitalAccountId(listingPost.getQuotaAccount());
+        if(delistingPost.getQuotaAccount().charAt(0)=='q')
+            delistingClient=clientIdUtils.getIdByQuotaAccountId(delistingPost.getQuotaAccount());
+        else
+            delistingClient=clientIdUtils.getIdByCapitalAccountId(delistingPost.getQuotaAccount());
         listingDoneRecord.setListingClient(listingClient);
         listingDoneRecord.setDelistingClient(delistingClient);
         return listingDoneRecord;
@@ -209,10 +216,16 @@ public class ListingServiceImpl implements ListingService {
     @Override
     public SelectPositionInfoResult selectPositionInfo(String clientId) {
         SelectPositionInfoResult result = new SelectPositionInfoResult();
-        result.setCapitalAccount(CapitalAccountMapper.selectById("z"+clientId));
-        result.setQuotaAccount(QuotaAccountMapper.selectById("q"+clientId));
+        QueryWrapper query2 = new QueryWrapper<CapitalAccount>();
+        query2.eq("client_id",clientId);
+        CapitalAccount capitalAccount = CapitalAccountMapper.selectOne(query2);
+        result.setCapitalAccount(capitalAccount);
+        QueryWrapper query3 = new QueryWrapper<QuotaAccount>();
+        query3.eq("client_id",clientId);
+        QuotaAccount quotaAccount = QuotaAccountMapper.selectOne(query3);
+        result.setQuotaAccount(quotaAccount);
         QueryWrapper query = new QueryWrapper<ClientTradeQuota>();
-        query.eq("account_id","q"+clientId);
+        query.eq("account_id",quotaAccount.getId());
         List list=ClientTradeQuotaMapper.selectList(query);
         result.setQuotaList(list);
         return result;
@@ -221,37 +234,37 @@ public class ListingServiceImpl implements ListingService {
     @Override
     public List<ListingPost> selectEntrustInfo(String clientId) {
         Timestamp temp = new Timestamp(System.currentTimeMillis());
+        QueryWrapper query2 = new QueryWrapper<CapitalAccount>();
+        query2.eq("client_id",clientId);
+        CapitalAccount capitalAccount = CapitalAccountMapper.selectOne(query2);
+        QueryWrapper query3 = new QueryWrapper<QuotaAccount>();
+        query3.eq("client_id",clientId);
+        QuotaAccount quotaAccount = QuotaAccountMapper.selectOne(query3);
         //把temp设为当天的0点
         temp.setHours(0);
         temp.setMinutes(0);
         temp.setSeconds(0);
-        QueryWrapper query = new QueryWrapper<ListingPost>();
-        query.eq("quata_account","z"+clientId);
+        QueryWrapper<ListingPost> query = new QueryWrapper<>();
+        query.eq("quata_account",capitalAccount.getId()).or().eq("quota_account",quotaAccount.getId());
         query.ge("time",temp);
         List listingPostList=ListingPostMapper.selectList(query);
-
-        QueryWrapper query2 = new QueryWrapper<ListingPost>();
-        query2.eq("quata_account","q"+clientId);
-        query2.ge("time",temp);
-        //合并集合
-        listingPostList.addAll(ListingPostMapper.selectList(query));
         return listingPostList;
     }
 
     @Override
     public List<ListingPost> selectEntrustInfo(String clientId,Timestamp start,Timestamp end) {
-        QueryWrapper query = new QueryWrapper<ListingPost>();
-        query.eq("quata_account","z"+clientId);
+        QueryWrapper query2 = new QueryWrapper<CapitalAccount>();
+        query2.eq("client_id",clientId);
+        CapitalAccount capitalAccount = CapitalAccountMapper.selectOne(query2);
+        QueryWrapper query3 = new QueryWrapper<QuotaAccount>();
+        query3.eq("client_id",clientId);
+        QuotaAccount quotaAccount = QuotaAccountMapper.selectOne(query3);
+
+        QueryWrapper<ListingPost> query = new QueryWrapper<>();
+        query.eq("quata_account", capitalAccount.getId()).or().eq("quota_account",quotaAccount.getId());
         query.ge("time",start);
         query.le("time",end);
         List listingPostList=ListingPostMapper.selectList(query);
-
-        QueryWrapper query2 = new QueryWrapper<ListingPost>();
-        query2.eq("quata_account","q"+clientId);
-        query.ge("time",start);
-        query.le("time",end);
-        //合并集合
-        listingPostList.addAll(ListingPostMapper.selectList(query));
         return listingPostList;
     }
 
