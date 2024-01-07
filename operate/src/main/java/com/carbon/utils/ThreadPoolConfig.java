@@ -12,7 +12,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @package: com.carbon.utils
  * @className: ThreadPoolConfig
  * @author: Doctor.H
- * @description: TODO
+ * @description: 线程池配置
  * @date: 2024/1/7 10:46
  */
 @Configuration
