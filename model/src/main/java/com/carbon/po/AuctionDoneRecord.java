@@ -17,6 +17,7 @@ public class AuctionDoneRecord implements Serializable{
     private Timestamp time;
     private String subjectMatterCode;
     private String subjectMatterName;
+    private Double amount;//数量
     private Double finallyBalance; // 最终报价金额
     private String requestClient; // 卖方客户
     private String purchaserClient; // 买方客户

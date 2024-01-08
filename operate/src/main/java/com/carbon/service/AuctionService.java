@@ -20,6 +20,6 @@ public interface AuctionService {
     //寻找最高报价单
     AuctionPost selectHighestOffer(List<AuctionPost> auctionPosts);
     //结算尾款
-    void finishPay(AuctionQuota auctionQuota, AuctionPost auctionPost);
+    boolean finishPay(AuctionQuota auctionQuota);
 
 }

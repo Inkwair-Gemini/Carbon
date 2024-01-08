@@ -78,14 +78,8 @@ public class AuctionController {
     @PostMapping("/finishPay")
     public Result FinishPay(@RequestBody AuctionQuota auctionQuota){
         try{
-            //判断是否有人出价
-            List<AuctionPost> auctionPosts=auctionService.selectOffer(auctionQuota.getId());
-            if(auctionPosts.size()!=0){//有人出价
-                //寻找出价最高的报价单
-                AuctionPost highAuctionPost = auctionService.selectHighestOffer(auctionPosts);
-                auctionService.finishPay(auctionQuota,highAuctionPost);
-            }
-            return Result.ok();
+            boolean a = auctionService.finishPay(auctionQuota);
+            return Result.ok(a);
         }catch (Exception e){
             e.printStackTrace();
             return Result.fail();

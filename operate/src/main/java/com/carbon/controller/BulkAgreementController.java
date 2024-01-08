@@ -32,7 +32,6 @@ public class BulkAgreementController {
     //大宗协议定向报价
     @PostMapping("/directionOffer")
     public Result DirectionOffer(@RequestBody DirectionPost directionPost){
-        // todo 事务管理
         try{
             bulkAgreementOfferService.directionOffer(directionPost);
             return Result.ok();
@@ -45,7 +44,6 @@ public class BulkAgreementController {
     //大宗协议群组报价
     @PostMapping("/groupOffer")
     public Result GroupOffer(@RequestBody GroupPost groupPost){
-        // todo 事务处理
         try{
             bulkAgreementOfferService.groupOffer(groupPost);
             return Result.ok();
@@ -193,6 +191,30 @@ public class BulkAgreementController {
         try{
             bulkAgreementEnquiryService.sendGroupOfferEnquiry(groupEnquiryPost);
             return Result.ok();
+        }catch(Exception e){
+            e.printStackTrace();
+            return Result.fail();
+        }
+    }
+
+    //查询大宗协议定向报价洽谈
+    @GetMapping("/selectDirectionEnquiry/{operatorCode}")
+    public Result SelectDirectionEnquiry(@PathVariable String operatorCode){
+        try{
+            List<DirectionEnquiryPost> directionEnquiryPosts = bulkAgreementEnquiryService.selectDirectionOfferEnquiry(operatorCode);
+            return Result.ok(directionEnquiryPosts);
+        }catch(Exception e){
+            e.printStackTrace();
+            return Result.fail();
+        }
+    }
+
+    //查询大宗协议群组报价洽谈
+    @PostMapping("/selectGroupEnquiry/{operatorCode}")
+    public Result SelectGroupEnquiry(@PathVariable String operatorCode){
+        try{
+            List<GroupEnquiryPost> groupEnquiryPosts = bulkAgreementEnquiryService.selectGroupOfferEnquiry(operatorCode);
+            return Result.ok(groupEnquiryPosts);
         }catch(Exception e){
             e.printStackTrace();
             return Result.fail();
