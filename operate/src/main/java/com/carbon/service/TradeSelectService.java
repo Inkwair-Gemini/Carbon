@@ -23,5 +23,5 @@ public interface TradeSelectService {
     //单向竞价交易请求查询
     List<AuctionRequest> selectAuctionRequest(String operatorCode,String subjectMatterCode, Timestamp beginTime, Timestamp endTime);
     //单向竞价交易成交查询
-    List<AuctionDoneRecord> selectAuctionDoneRecord(String clientId,String subjectMatterCode, Timestamp beginTime, Timestamp endTime);
+    List<AuctionDoneRecord> selectAuctionDoneRecord(String clientId, String subjectMatterCode, Timestamp beginTime, Timestamp endTime);
 }

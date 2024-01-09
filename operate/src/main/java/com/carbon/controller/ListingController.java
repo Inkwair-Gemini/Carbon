@@ -2,7 +2,6 @@ package com.carbon.controller;
 
 import com.carbon.input.Listing.DelistingPost;
 import com.carbon.input.Listing.ListingPost;
-import com.carbon.output.SelectPositionInfoResult;
 import com.carbon.po.Listing.ListingDoneRecord;
 import com.carbon.result.Result;
 import com.carbon.service.ListingService;
@@ -112,19 +111,19 @@ public class ListingController {
         }
     }
 
-    // 持仓查询
-    //传入客户Id
-    //返回SelectPositionInfoResult
-    @GetMapping("/positionInfo/{clientId}")
-    public Result SelectPositionInfo(@PathVariable String clientId){
-        try {
-            SelectPositionInfoResult result = ListingService.selectPositionInfo(clientId);
-            return Result.ok(result);
-        }catch (Exception e){
-            e.printStackTrace();
-            return Result.fail();
-        }
-    }
+//    // 持仓查询
+//    //传入客户Id
+//    //返回SelectPositionInfoResult
+//    @GetMapping("/positionInfo/{clientId}")
+//    public Result SelectPositionInfo(@PathVariable String clientId){
+//        try {
+//            SelectPositionInfoResult result = ListingService.selectPositionInfo(clientId);
+//            return Result.ok(result);
+//        }catch (Exception e){
+//            e.printStackTrace();
+//            return Result.fail();
+//        }
+//    }
 
     // 委托查询
     //传入客户Id

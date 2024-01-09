@@ -3,7 +3,6 @@ package com.carbon.service;
 import com.carbon.input.Auction.AuctionPost;
 import com.carbon.input.Auction.AuctionRequest;
 import com.carbon.po.Auction.AuctionQuota;
-
 import java.util.List;
 
 public interface AuctionService {

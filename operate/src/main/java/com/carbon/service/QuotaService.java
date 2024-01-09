@@ -2,8 +2,8 @@ package com.carbon.service;
 
 import com.carbon.po.Quota.ClientRegisterQuota;
 import com.carbon.po.Quota.ClientTradeQuota;
-import com.carbon.po.Quota.QuotaTransferRecord;
 import com.carbon.po.Quota.QuotaTradeRecord;
+import com.carbon.po.Quota.QuotaTransferRecord;
 
 import java.util.List;
 

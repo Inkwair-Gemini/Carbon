@@ -2,7 +2,6 @@ package com.carbon.service.Impl;
 
 import com.carbon.input.CapitalAndQuota.CapitalTransferPost;
 import com.carbon.mapper.*;
-import com.carbon.po.*;
 import com.carbon.po.Capital.*;
 import com.carbon.po.User.ClientOperator;
 import com.carbon.service.CapitalService;

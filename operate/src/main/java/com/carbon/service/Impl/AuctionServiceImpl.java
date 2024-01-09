@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.carbon.input.Auction.AuctionPost;
 import com.carbon.input.Auction.AuctionRequest;
 import com.carbon.mapper.*;
-import com.carbon.po.*;
 import com.carbon.po.Auction.AuctionClient;
 import com.carbon.po.Auction.AuctionDoneRecord;
 import com.carbon.po.Auction.AuctionQuota;
@@ -16,7 +15,6 @@ import com.carbon.po.User.ClientOperator;
 import com.carbon.service.AuctionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.List;
@@ -94,7 +92,6 @@ public class AuctionServiceImpl implements AuctionService {
             auctionQuota.setPrice(auctionRequest.getPrice());
             auctionQuota.setAmount(auctionRequest.getAmount());
             auctionQuota.setTotalBalance(auctionRequest.getPrice()*auctionRequest.getAmount());
-            auctionQuota.setRecentPrice(auctionRequest.getPrice()*auctionRequest.getAmount());
             //todo 添加未来发布时间、状态
             //获取当前时间
             Calendar calendar = Calendar.getInstance();
@@ -165,9 +162,6 @@ public class AuctionServiceImpl implements AuctionService {
         if(isEnoughCapital && isHigh){
             //提交洽谈出价
             auctionPostMapper.insert(auctionPost);
-            //更新单向竞价商品最新价格
-            auctionQuota.setRecentPrice(auctionPost.getPrice());
-            auctionQuotaMapper.updateById(auctionQuota);
         }
     }
 

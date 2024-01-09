@@ -1,5 +1,4 @@
 package com.carbon.service.Impl;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.carbon.Utils.StringUtils;
 import com.carbon.input.Auction.AuctionRequest;
@@ -14,8 +13,8 @@ import com.carbon.output.BulkAgreement.DirectionAndGroupEnquiryPostResult;
 import com.carbon.output.BulkAgreement.DirectionAndGroupPostResult;
 import com.carbon.po.Auction.AuctionDoneRecord;
 import com.carbon.po.BulkAgreement.DirectionDoneRecord;
-import com.carbon.po.BulkAgreement.GroupDoneRecord;
 import com.carbon.po.Listing.ListingDoneRecord;
+import com.carbon.po.BulkAgreement.GroupDoneRecord;
 import com.carbon.service.TradeSelectService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
