@@ -6,6 +6,7 @@ import com.carbon.input.GroupEnquiryPost;
 import com.carbon.input.GroupPost;
 import com.carbon.mapper.GroupClientMapper;
 import com.carbon.mapper.GroupMapper;
+import com.carbon.po.Client;
 import com.carbon.po.DirectionDoneRecord;
 import com.carbon.po.Group;
 import com.carbon.po.GroupDoneRecord;
@@ -30,11 +31,13 @@ public class BulkAgreementController {
     BulkAgreementEnquiryService bulkAgreementEnquiryService;
 
     //大宗协议定向报价
+    //接收定向报价表单directionPost
+    //返回ok(boolean)
     @PostMapping("/directionOffer")
     public Result DirectionOffer(@RequestBody DirectionPost directionPost){
         try{
-            bulkAgreementOfferService.directionOffer(directionPost);
-            return Result.ok();
+            boolean a=bulkAgreementOfferService.directionOffer(directionPost);
+            return Result.ok(a);
         }catch (Exception e){
             e.printStackTrace();
             return Result.fail();
@@ -42,11 +45,13 @@ public class BulkAgreementController {
     }
 
     //大宗协议群组报价
+    //接收群组报价表单groupPost
+    //返回ok(boolean)
     @PostMapping("/groupOffer")
     public Result GroupOffer(@RequestBody GroupPost groupPost){
         try{
-            bulkAgreementOfferService.groupOffer(groupPost);
-            return Result.ok();
+            boolean a=bulkAgreementOfferService.groupOffer(groupPost);
+            return Result.ok(a);
         }catch (Exception e){
             e.printStackTrace();
             return Result.fail();
@@ -54,6 +59,8 @@ public class BulkAgreementController {
     }
 
     //查询大宗协议定向报价记录
+    //接收操作员代码operatorCode
+    //返回List<DirectionPost>
     @GetMapping("/selectDirectionOffer/{operatorCode}")
     public Result SelectDirectionOffer(@PathVariable String operatorCode){
         try{
@@ -66,6 +73,8 @@ public class BulkAgreementController {
     }
 
     //查询大宗协议群组报价记录
+    //接收操作员代码operatorCode
+    //返回List<GroupPost>
     @GetMapping("/selectGroupOffer/{operatorCode}")
     public Result SelectGroupOffer(@PathVariable String operatorCode){
         try{
@@ -78,6 +87,9 @@ public class BulkAgreementController {
     }
 
     //修改大宗协议定向报价信息
+    //接收大宗协议定向报价表单ID
+    //返回修改前的directionPost
+    //返回值未空表示修改失败
     @PostMapping("/modifyDirectionOffer/{directionPostId}")
     public Result ModifyDirectionOffer(@PathVariable String directionPostId){
         try{
@@ -90,6 +102,9 @@ public class BulkAgreementController {
     }
 
     //修改大宗协议群组报价信息
+    //接收群组报价表单ID
+    //返回修改前的群组报价表单
+    //返回未空表示修改失败
     @PostMapping("/modifyGroupOffer/{groupPostId}")
     public Result ModifyGroupOffer(@PathVariable String groupPostId){
         try{
@@ -102,6 +117,8 @@ public class BulkAgreementController {
     }
 
     //撤销大宗协议定向报价信息
+    //接收大宗协议定向报价表单ID
+    //返回ok(boolean)
     @PostMapping("/deleteDirectionOffer/{directionPostId}")
     public Result DeleteDirectionOffer(@PathVariable String directionPostId){
         try{
@@ -114,6 +131,8 @@ public class BulkAgreementController {
     }
 
     //撤销大宗协议群组报价信息
+    //接收群组报价表单ID
+    //返回ok(boolean)
     @PostMapping("/deleteGroupOffer/{groupPostId}")
     public Result DeleteGroupOffer(@PathVariable String groupPostId){
         try{
@@ -126,6 +145,8 @@ public class BulkAgreementController {
     }
 
     //大宗协议定向报价成交
+    //接收定向洽谈表单
+    //返回ok
     @PostMapping("/directionDone")
     public Result MakeDirectionBargain(@RequestBody DirectionEnquiryPost directionEnquiryPost){
         try{
@@ -138,6 +159,8 @@ public class BulkAgreementController {
     }
 
     //大宗协议群组报价成交
+    //接收群组洽谈表单
+    //返回ok
     @PostMapping("/groupDone")
     public Result MakeGroupBargain(@RequestBody GroupEnquiryPost groupEnquiryPost){
         try{
@@ -150,6 +173,8 @@ public class BulkAgreementController {
     }
 
     //查询大宗协议定向报价成交记录
+    //接收客户号
+    //返回List<DirectionDoneRecord>
     @GetMapping("/selectDirectionDoneRecord/{clientId}")
     public Result SelectDirectionDoneRecord(@PathVariable String clientId){
         try{
@@ -162,6 +187,8 @@ public class BulkAgreementController {
     }
 
     //查询大宗协议群组报价成交记录
+    //接收客户号
+    //返回List<GroupDoneRecord>
     @GetMapping("/selectGroupDoneRecord/{clientId}")
     public Result SelectGroupDoneRecord(@PathVariable String clientId){
         try{
@@ -174,11 +201,13 @@ public class BulkAgreementController {
     }
 
     //大宗协议定向报价洽谈
+    //接收定向报价洽谈表单
+    //返回ok(boolean)
     @PostMapping("/directionEnquiry")
     public Result SendDirectionEnquiry(@RequestBody DirectionEnquiryPost directionEnquiryPost){
         try{
-            bulkAgreementEnquiryService.sendDirectionOfferEnquiry(directionEnquiryPost);
-            return Result.ok();
+            boolean a=bulkAgreementEnquiryService.sendDirectionOfferEnquiry(directionEnquiryPost);
+            return Result.ok(a);
         }catch(Exception e){
             e.printStackTrace();
             return Result.fail();
@@ -186,6 +215,8 @@ public class BulkAgreementController {
     }
 
     //大宗协议群组报价洽谈
+    //接收群组报价洽谈表单
+    //返回ok(boolean)
     @PostMapping("/groupEnquiry")
     public Result SendGroupEnquiry(@RequestBody GroupEnquiryPost groupEnquiryPost){
         try{
@@ -198,6 +229,8 @@ public class BulkAgreementController {
     }
 
     //查询大宗协议定向报价洽谈
+    //接收操作员代码
+    //返回List<DirectionEnquiryPost>
     @GetMapping("/selectDirectionEnquiry/{operatorCode}")
     public Result SelectDirectionEnquiry(@PathVariable String operatorCode){
         try{
@@ -210,6 +243,8 @@ public class BulkAgreementController {
     }
 
     //查询大宗协议群组报价洽谈
+    //接收操作员代码
+    //返回List<GroupEnquiryPost>
     @PostMapping("/selectGroupEnquiry/{operatorCode}")
     public Result SelectGroupEnquiry(@PathVariable String operatorCode){
         try{
@@ -222,6 +257,8 @@ public class BulkAgreementController {
     }
 
     //查询与自己相关的群组
+    //接收客户号
+    //返回List<Group>
     @GetMapping("/selectGroup/{clientId}")
     public Result SelectGroup(@PathVariable String clientId){
         try{
@@ -234,6 +271,8 @@ public class BulkAgreementController {
     }
 
     //新建群组
+    //接收群名与客户号
+    //返回ok
     @PostMapping("/createGroup/{groupName}/{clientId}")
     public Result CreateGroup(@PathVariable String groupName,@PathVariable String clientId){
         try{
@@ -246,6 +285,8 @@ public class BulkAgreementController {
     }
 
     //编辑群组
+    //接收群号、新群名、客户号
+    //返回ok
     @PostMapping("/modifyGroup/{groupId}/{newGroupName}/{clientId}")
     public Result ModifyGroup(@PathVariable String groupId,@PathVariable String newGroupName,@PathVariable String clientId){
         try{
@@ -258,6 +299,8 @@ public class BulkAgreementController {
     }
 
     //删除群组
+    //接收群号、客户号
+    //返回ok
     @PostMapping("/deleteGroup/{groupId}/{clientId}")
     public Result DeleteGroup(@PathVariable String groupId,@PathVariable String clientId){
         try{
@@ -270,6 +313,8 @@ public class BulkAgreementController {
     }
 
     //添加成员
+    //接收群号、新成员姓名、客户号
+    //返回ok
     @PostMapping("/addMember/{groupId}/{memberName}/{clientId}")
     public Result AddMember(@PathVariable String groupId,@PathVariable String memberName,@PathVariable String clientId){
         try{
@@ -281,12 +326,27 @@ public class BulkAgreementController {
         }
     }
     //删除成员
+    //接收群号、新成员姓名、客户号
+    //返回ok
     @PostMapping("/deleteMember/{groupId}/{memberName}/{clientId}")
     public Result DeleteMember(@PathVariable String groupId,@PathVariable String memberName,@PathVariable String clientId){
         try{
             bulkAgreementGroupService.deleteMember(groupId,memberName,clientId);
             return Result.ok();
         }catch(Exception e){
+            e.printStackTrace();
+            return Result.fail();
+        }
+    }
+    //查询群组内成员信息
+    //接收群号
+    //返回List<Group>
+    @GetMapping("/selectClient/{groupId}")
+    public Result SelectClient(@PathVariable String groupId){
+        try{
+            List<Client> clients=bulkAgreementGroupService.selectGroupClient(groupId);
+            return Result.ok(clients);
+        }catch (Exception e){
             e.printStackTrace();
             return Result.fail();
         }
