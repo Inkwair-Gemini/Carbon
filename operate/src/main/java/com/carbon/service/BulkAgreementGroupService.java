@@ -1,6 +1,5 @@
 package com.carbon.service;
-
-import com.carbon.po.Client;
+import com.carbon.po.User.Client;
 
 import java.util.List;
 
