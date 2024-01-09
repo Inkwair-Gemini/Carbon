@@ -17,6 +17,8 @@ public class AuctionController {
     AuctionService auctionService;
 
     //申请拍卖物品
+    //接收单向竞价拍卖申请表单
+    //返回ok
     @PostMapping("/requestAuction")
     public Result RequestAuction(@RequestBody AuctionRequest auctionRequest){
         try{
@@ -28,6 +30,8 @@ public class AuctionController {
         }
     }
     //参加拍卖
+    //接收单向竞价商品ID、客户操作员号
+    //返回ok
     @PostMapping("/joinAuction/{auctionQuotaId}/{clientOperatorCode}")
     public Result JoinAuction(@PathVariable String auctionQuotaId,@PathVariable String clientOperatorCode){
         try{
@@ -39,6 +43,8 @@ public class AuctionController {
         }
     }
     //离开拍卖
+    //接收单向竞价商品号、客户操作员号
+    //返回ok
     @PostMapping("/leaveAuction/{auctionQuotaId}/{clientOperatorCode}")
     public Result LeaveAuction(@PathVariable String auctionQuotaId,@PathVariable String clientOperatorCode){
         try{
@@ -50,6 +56,8 @@ public class AuctionController {
         }
     }
     //提交竞价
+    //接收单向竞价表单
+    //返回ok
     @PostMapping("/submitOffer")
     public Result SubmitOffer(@RequestBody AuctionPost auctionPost){
         try{
@@ -62,6 +70,8 @@ public class AuctionController {
     }
 
     //查询竞价记录
+    //接收单向竞价商品ID
+    //返回List<AuctionPost>
     @GetMapping("/selectOffer/{auctionQuotaId}")
     public Result SelectOffer(@PathVariable String auctionQuotaId){
         try{
@@ -74,6 +84,8 @@ public class AuctionController {
     }
 
     //完成单向竞价
+    //接收单项竞价商品信息
+    //返回ok(boolean)
     @PostMapping("/finishPay")
     public Result FinishPay(@RequestBody AuctionQuota auctionQuota){
         try{

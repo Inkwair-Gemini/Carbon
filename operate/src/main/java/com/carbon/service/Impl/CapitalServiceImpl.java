@@ -30,13 +30,12 @@ public class CapitalServiceImpl implements CapitalService {
     private ClientOperatorMapper clientOperatorMapper;
 
     @Override
-    public void DepositAndWithdrawalRequestRecord(CapitalTransferPost capitalTransferPost,String initiator){
+    public void DepositAndWithdrawalRequestRecord(CapitalTransferPost capitalTransferPost){
         //1.创建转入转出资金申请记录类来存储信息
         DepositAndWithdrawalRequestRecord depositAndWithdrawalRequestRecord = new DepositAndWithdrawalRequestRecord();
 
         Timestamp currentTimestamp = new Timestamp(new Date().getTime());
         depositAndWithdrawalRequestRecord.setTime(currentTimestamp);//时间
-        depositAndWithdrawalRequestRecord.setInitiator(initiator);//发起员
         String capitalAccountId=capitalTransferPost.getCapitalAccount();
         CapitalAccount capitalAccount = capitalAccountMapper.selectById(capitalAccountId);
         String bankAccountId = capitalAccount.getBindBankAccount();

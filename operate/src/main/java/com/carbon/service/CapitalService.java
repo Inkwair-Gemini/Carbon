@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface CapitalService {
     //出入金申请记录
-    void DepositAndWithdrawalRequestRecord(CapitalTransferPost capitalTransferPost,String initiator);
+    void DepositAndWithdrawalRequestRecord(CapitalTransferPost capitalTransferPost);
     //出入金记录
     void DepositAndWithdrawalRecord(CapitalTransferPost capitalTransferPost,String operatorCode);
     //转入交易资金
