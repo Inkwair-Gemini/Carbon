@@ -21,14 +21,6 @@ import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.List;
 
-/**
- * @projectName: Carbon
- * @package: com.carbon.service.Impl
- * @className: AuctionServiceImpl
- * @author: Doctor.H
- * @description: 单向竞价业务实现
- * @date: 2023/12/27 19:44
- */
 @Service
 public class AuctionServiceImpl implements AuctionService {
     @Autowired

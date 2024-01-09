@@ -1,7 +1,6 @@
 package com.carbon.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.carbon.mapper.AnnouncementMapper;
 import com.carbon.mapper.TipsMapper;
 import com.carbon.po.Tips;
 import com.carbon.service.MessageService;
@@ -14,8 +13,7 @@ import java.util.List;
 public class MessageServiceImpl implements MessageService {
     @Autowired
     TipsMapper tipsMapper;
-    @Autowired
-    AnnouncementMapper announcementMapper;
+
     @Override
     public void sendTips(Tips tips) {
         tipsMapper.insert(tips);

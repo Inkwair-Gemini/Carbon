@@ -1,0 +1,38 @@
+server:
+  port: 8800
+#mysql
+spring:
+  application:
+    name: spring-security
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/mybatisdb?allowPublicKeyRetrieval=true&serverTimezone=GMT%2B8&useSSL=false&characterEncoding=utf-8
+    username: root
+    password: admin
+  data:
+    #redis
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+      timeout: 5000
+      password:
+      jedis:
+        pool:
+          max-active: 20 #最大连接数
+          max-wait: -1  #最大阻塞等待时间(负数表示没有限制)
+          max-idle: 5 #最大空闲
+          min-idle: 0 #最小空闲
+#mybatis-plus
+mybatis-plus:
+  global-config:
+    db-config:
+      # 全局默认主键类型
+      id-type: assign_id
+      # 表名是否使用驼峰转下划线命名,只对表名生效。 默认true
+      table-underline: true
+  configuration:
+    cache-enabled: true
+    mapUnderscoreToCamelCase: true # 开启驼峰命名转换法
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 配置日志

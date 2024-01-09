@@ -22,15 +22,6 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.List;
-
-/**
- * @projectName: Carbon
- * @package: com.carbon.service.Impl
- * @className: BulkAgreementEnquiryServiceImpl
- * @author: Doctor.H
- * @description: 大宗协议询价业务实现
- * @date: 2023/12/27 21:42
- */
 @Service
 public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryService {
     @Autowired
