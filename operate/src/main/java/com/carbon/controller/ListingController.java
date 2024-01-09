@@ -19,6 +19,8 @@ public class ListingController {
     ListingService ListingService;
 
     // 买方挂牌
+    //传入客户Id，标的物代码，标的物名称，账户类型，库存账号，委托价格，委托数量，操作员代码
+    //返回ok
     @PostMapping("/purchaser")
     public Result ListingPurchaser(@RequestBody ListingPost listingPost){
         listingPost.setTime(new Timestamp(System.currentTimeMillis()));
@@ -37,6 +39,8 @@ public class ListingController {
     }
 
     // 卖方挂牌
+    //传入客户Id，标的物代码，标的物名称，账户类型，库存账号，委托价格，委托数量，操作员代码
+    //返回ok
     @PostMapping("/seller")
     public Result ListingSeller(@RequestBody ListingPost listingPost){
         listingPost.setTime(new Timestamp(System.currentTimeMillis()));
@@ -55,6 +59,8 @@ public class ListingController {
     }
 
     // 买方摘牌
+    //传入客户Id，挂牌表单Id，账户类型，库存账号，摘牌数量，操作员代码
+    //返回ok
     @PostMapping("/depurchaser")
     public Result DelistingPurchaser(@RequestBody DelistingPost delistingPost){
         delistingPost.setTime(new Timestamp(System.currentTimeMillis()));
@@ -72,6 +78,8 @@ public class ListingController {
     }
 
     // 卖方摘牌
+    //传入客户Id，挂牌表单Id，账户类型，库存账号，摘牌数量，操作员代码
+    //返回ok
     @PostMapping("/deseller")
     public Result DelistingSeller(@RequestBody DelistingPost delistingPost){
         delistingPost.setTime(new Timestamp(System.currentTimeMillis()));
@@ -89,6 +97,8 @@ public class ListingController {
     }
 
     // 挂牌撤销
+    //传入挂牌表单Id
+    //返回ok
     @PostMapping("/cancel")
     public Result CancelListing(@RequestBody String listingId){
         try {
@@ -103,6 +113,8 @@ public class ListingController {
     }
 
     // 持仓查询
+    //传入客户Id
+    //返回SelectPositionInfoResult
     @GetMapping("/positionInfo/{clientId}")
     public Result SelectPositionInfo(@PathVariable String clientId){
         try {
@@ -115,6 +127,8 @@ public class ListingController {
     }
 
     // 委托查询
+    //传入客户Id
+    //返回List<ListingPost>
     @GetMapping("/entrustInfo/{clientId}")
     public Result SelectEntrustInfo(@PathVariable String clientId){
         try {
@@ -127,6 +141,8 @@ public class ListingController {
     }
 
     // 历史委托查询
+    //传入客户Id，开始时间，结束时间
+    //返回List<ListingPost>
     @PostMapping("history_entrustInfo")
     public Result SelectEntrustInfo(@RequestBody String clientId,@RequestBody Timestamp start,@RequestBody Timestamp end){
         try {
@@ -139,6 +155,8 @@ public class ListingController {
     }
 
     // 成交查询
+    //传入客户Id
+    //返回List<ListingDoneRecord>
     @GetMapping("/bargainInfo/{clientId}")
     public Result SelectBargainInfo(@PathVariable String clientId){
         try {
@@ -151,6 +169,8 @@ public class ListingController {
     }
 
     // 历史成交查询
+    //传入客户Id，开始时间，结束时间
+    //返回List<ListingDoneRecord>
     @PostMapping("/history_bargainInfo")
     public Result SelectBargainInfo(@RequestBody String clientId,@RequestBody Timestamp start,@RequestBody Timestamp end){
         try {
@@ -163,6 +183,7 @@ public class ListingController {
     }
 
     // 查询当前买方挂牌
+    //返回List<ListingPost>
     @GetMapping("/selectPurchaser")
     public Result SelectPurchaserListing(){
         try {
@@ -175,6 +196,7 @@ public class ListingController {
     }
 
     // 查询当前卖方挂牌
+    //返回List<ListingPost>
     @GetMapping("/selectSeller")
     public Result SelectSellerListing(){
         try {
