@@ -15,7 +15,7 @@ import java.util.Date;
 public class DepositAndWithdrawalRequestRecord implements Serializable {
     private String id;
     private Timestamp time;
-    private String initiator; // 发起员
+    private String account; // 资金账号
     private String bindBank; // 银行
     private String bankAccountId; // 银行账户Id
     private String type; // 出/入

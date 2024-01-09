@@ -14,4 +14,8 @@ public class BankAccount {
     private String bank;
     //资金余额
     private Double capital;
+    //支付密码
+    private String password;
+    //预留手机号
+    private String phoneNumber;
 }
