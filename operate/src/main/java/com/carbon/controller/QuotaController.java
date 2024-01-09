@@ -1,8 +1,8 @@
 package com.carbon.controller;
 
-import com.carbon.input.QuotaTransferPost;
-import com.carbon.po.ClientRegisterQuota;
-import com.carbon.po.ClientTradeQuota;
+import com.carbon.input.CapitalAndQuota.QuotaTransferPost;
+import com.carbon.po.Quota.ClientRegisterQuota;
+import com.carbon.po.Quota.ClientTradeQuota;
 import com.carbon.po.QuotaTradeRecord;
 import com.carbon.po.QuotaTransferRecord;
 import com.carbon.result.Result;

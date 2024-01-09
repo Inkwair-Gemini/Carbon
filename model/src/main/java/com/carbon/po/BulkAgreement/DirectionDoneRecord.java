@@ -1,0 +1,29 @@
+package com.carbon.po.BulkAgreement;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+import java.sql.Timestamp;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+
+// 定向报价成交记录
+public class DirectionDoneRecord implements Serializable {
+    private String id;
+    private Timestamp time;
+    private String subjectMatterCode;
+    private String subjectMatterName;
+    private String flowType;
+    private Double firstPrice; // 单价
+    private Double firstAmount; // 数量
+    private Double firstBalance; // 初始报价金额
+    private Double finallyPrice;
+    private Double finallyAmount;
+    private Double finallyBalance; // 最终报价金额
+    private String listingClient; // 挂牌方
+    private String delistingClient; // 摘牌方
+}

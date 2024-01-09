@@ -3,7 +3,7 @@ package com.carbon.service;
 import com.carbon.po.Report;
 
 import java.util.Date;
-
+// cut
 public interface ReportService {
     // 生成报表
     public Report createReport();

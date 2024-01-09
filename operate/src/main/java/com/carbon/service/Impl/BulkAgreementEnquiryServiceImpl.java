@@ -1,18 +1,20 @@
 package com.carbon.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.carbon.input.DirectionEnquiryPost;
-import com.carbon.input.DirectionPost;
-import com.carbon.input.GroupEnquiryPost;
-import com.carbon.input.GroupPost;
+import com.carbon.input.BulkAgreement.DirectionEnquiryPost;
+import com.carbon.input.BulkAgreement.DirectionPost;
+import com.carbon.input.BulkAgreement.GroupEnquiryPost;
+import com.carbon.input.BulkAgreement.GroupPost;
 import com.carbon.mapper.*;
 import com.carbon.po.*;
+import com.carbon.po.BulkAgreement.DirectionDoneRecord;
+import com.carbon.po.Capital.CapitalAccount;
+import com.carbon.po.Quota.ClientTradeQuota;
 import com.carbon.service.BulkAgreementEnquiryService;
 import com.carbon.utils.BulkStockUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.List;

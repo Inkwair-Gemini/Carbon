@@ -2,30 +2,25 @@ package com.carbon.utils;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.carbon.input.DirectionPost;
-import com.carbon.input.GroupPost;
-import com.carbon.input.ListingPost;
+import com.carbon.input.BulkAgreement.DirectionPost;
+import com.carbon.input.BulkAgreement.GroupPost;
+import com.carbon.input.Listing.ListingPost;
 import com.carbon.mapper.*;
 import com.carbon.po.*;
+import com.carbon.po.BulkAgreement.DirectionDoneRecord;
+import com.carbon.po.Capital.CapitalAccount;
+import com.carbon.po.Listing.ListingDoneRecord;
+import com.carbon.po.Quota.ClientTradeQuota;
 import com.carbon.service.BulkAgreementEnquiryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- * @projectName: Carbon
- * @package: com.carbon.utils
- * @className: ScheduledTasks
- * @author: Doctor.H
- * @description: 定时任务
- * @date: 2024/1/6 19:14
- */
 @Component
 @Async
 public class ScheduledTasks {

@@ -1,6 +1,5 @@
 package com.carbon.service;
 
-import com.carbon.po.Announcement;
 import com.carbon.po.Tips;
 
 import java.util.List;

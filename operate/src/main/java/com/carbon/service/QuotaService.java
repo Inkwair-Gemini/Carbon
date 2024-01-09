@@ -1,7 +1,7 @@
 package com.carbon.service;
 
-import com.carbon.po.ClientRegisterQuota;
-import com.carbon.po.ClientTradeQuota;
+import com.carbon.po.Quota.ClientRegisterQuota;
+import com.carbon.po.Quota.ClientTradeQuota;
 import com.carbon.po.QuotaTradeRecord;
 import com.carbon.po.QuotaTransferRecord;
 

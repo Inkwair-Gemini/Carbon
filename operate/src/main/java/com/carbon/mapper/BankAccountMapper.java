@@ -1,7 +1,7 @@
 package com.carbon.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.carbon.po.BankAccount;
+import com.carbon.po.Capital.BankAccount;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

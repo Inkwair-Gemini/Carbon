@@ -1,8 +1,8 @@
 package com.carbon.service;
 
-import com.carbon.input.DirectionPost;
-import com.carbon.input.GroupPost;
-import com.carbon.po.DirectionDoneRecord;
+import com.carbon.input.BulkAgreement.DirectionPost;
+import com.carbon.input.BulkAgreement.GroupPost;
+import com.carbon.po.BulkAgreement.DirectionDoneRecord;
 import com.carbon.po.GroupDoneRecord;
 
 import java.util.List;
