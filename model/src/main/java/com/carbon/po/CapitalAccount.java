@@ -22,7 +22,7 @@ public class CapitalAccount implements Serializable {
     private Double capital;
     //可用资金
     private Double availableCapital;
-    //可出资金
+    //冻结资金
     private Double unavailableCapital;
     //银行账户Id
     private String bindBankAccount;
