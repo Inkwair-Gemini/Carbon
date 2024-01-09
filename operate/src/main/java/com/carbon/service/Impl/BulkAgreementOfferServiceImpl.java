@@ -2,8 +2,12 @@ package com.carbon.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.carbon.po.BulkAgreement.DirectionDoneRecord;
+import com.carbon.po.BulkAgreement.GroupClient;
+import com.carbon.po.BulkAgreement.GroupDoneRecord;
 import com.carbon.po.Capital.CapitalAccount;
 import com.carbon.po.Quota.ClientTradeQuota;
+import com.carbon.po.User.Client;
+import com.carbon.po.User.ClientOperator;
 import com.carbon.utils.BulkStockUtils;
 import com.carbon.input.BulkAgreement.DirectionPost;
 import com.carbon.input.BulkAgreement.GroupPost;

@@ -8,8 +8,13 @@ import com.carbon.input.BulkAgreement.GroupPost;
 import com.carbon.mapper.*;
 import com.carbon.po.*;
 import com.carbon.po.BulkAgreement.DirectionDoneRecord;
+import com.carbon.po.BulkAgreement.Group;
+import com.carbon.po.BulkAgreement.GroupClient;
+import com.carbon.po.BulkAgreement.GroupDoneRecord;
 import com.carbon.po.Capital.CapitalAccount;
 import com.carbon.po.Quota.ClientTradeQuota;
+import com.carbon.po.User.Client;
+import com.carbon.po.User.ClientOperator;
 import com.carbon.service.BulkAgreementEnquiryService;
 import com.carbon.utils.BulkStockUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +23,6 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.List;
-
-/**
- * @projectName: Carbon
- * @package: com.carbon.service.Impl
- * @className: BulkAgreementEnquiryServiceImpl
- * @author: Doctor.H
- * @description: 大宗协议询价业务实现
- * @date: 2023/12/27 21:42
- */
 @Service
 public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryService {
     @Autowired

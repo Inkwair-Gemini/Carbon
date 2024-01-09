@@ -6,6 +6,8 @@ import com.carbon.mapper.*;
 import com.carbon.po.*;
 import com.carbon.po.Quota.ClientRegisterQuota;
 import com.carbon.po.Quota.ClientTradeQuota;
+import com.carbon.po.Quota.QuotaTradeRecord;
+import com.carbon.po.Quota.QuotaTransferRecord;
 import com.carbon.service.QuotaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

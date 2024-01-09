@@ -1,7 +1,7 @@
 package com.carbon.utils;
 
 import com.carbon.po.BulkAgreement.DirectionDoneRecord;
-import com.carbon.po.GroupDoneRecord;
+import com.carbon.po.BulkAgreement.GroupDoneRecord;
 
 import java.util.List;
 
