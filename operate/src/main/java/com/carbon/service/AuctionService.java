@@ -3,11 +3,15 @@ package com.carbon.service;
 import com.carbon.input.Auction.AuctionPost;
 import com.carbon.input.Auction.AuctionRequest;
 import com.carbon.po.Auction.AuctionQuota;
+
+import java.sql.Timestamp;
 import java.util.List;
 
 public interface AuctionService {
     //申请拍卖
     void requestAuction(AuctionRequest auctionRequest);
+    //
+    List<AuctionQuota> selectAuctionQuota();
     //参加拍卖
     void joinAuction(String auctionQuotaId,String clientOperatorCode);
     //离开拍卖

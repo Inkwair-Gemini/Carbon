@@ -29,6 +29,21 @@ public class AuctionController {
             return Result.fail();
         }
     }
+
+    //查询当天所有单向竞价商品
+    //无接收
+    //返回List<AuctionQuota>
+    @GetMapping("/selectAuctionQuota")
+    public Result SelectAuctionQuota(){
+        try{
+            List<AuctionQuota> auctionQuotas=auctionService.selectAuctionQuota();
+            return Result.ok(auctionQuotas);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.fail();
+        }
+    }
+
     //参加拍卖
     //接收单向竞价商品ID、客户操作员号
     //返回ok

@@ -8,6 +8,7 @@ import com.carbon.po.Auction.AuctionClient;
 import com.carbon.po.Auction.AuctionDoneRecord;
 import com.carbon.po.Auction.AuctionQuota;
 import com.carbon.po.Capital.CapitalAccount;
+import com.carbon.po.Listing.ListingDoneRecord;
 import com.carbon.po.Quota.ClientTradeQuota;
 import com.carbon.po.Quota.QuotaAccount;
 import com.carbon.po.User.Client;
@@ -16,6 +17,7 @@ import com.carbon.service.AuctionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.List;
 
@@ -108,7 +110,17 @@ public class AuctionServiceImpl implements AuctionService {
 
         }
     }
-
+    @Override
+    public  List<AuctionQuota> selectAuctionQuota(){
+        LocalDate localDate = LocalDate.now();
+        Timestamp beginTime = Timestamp.valueOf(localDate.atStartOfDay());
+        Timestamp endTime = Timestamp.valueOf(localDate.atTime(23, 59, 59));
+        QueryWrapper<AuctionQuota> queryWrapper = new QueryWrapper<>();
+        queryWrapper.between("time", beginTime, endTime);
+        //queryWrapper.eq("status","未成交");
+        List<AuctionQuota> auctionQuotas=auctionQuotaMapper.selectList(queryWrapper);
+        return auctionQuotas;
+    }
     @Override
     public void joinAuction(String auctionQuotaId,String clientOperatorCode) {
         ClientOperator clientOperator = clientOperatorMapper.selectById(clientOperatorCode);
@@ -225,8 +237,12 @@ public class AuctionServiceImpl implements AuctionService {
                 return true;
             }else
                 return false;
-        }else
+        }else{
+            //更新单向竞价商品状态
+            auctionQuota.setStatus("已结束");
+            auctionQuotaMapper.updateById(auctionQuota);
             return false;
+        }
     }
 
 }
