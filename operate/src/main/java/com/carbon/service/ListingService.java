@@ -2,7 +2,6 @@ package com.carbon.service;
 
 import com.carbon.input.Listing.DelistingPost;
 import com.carbon.input.Listing.ListingPost;
-import com.carbon.output.SelectPositionInfoResult;
 import com.carbon.po.Listing.ListingDoneRecord;
 
 import java.sql.Timestamp;
@@ -18,7 +17,7 @@ public interface ListingService{
     // 卖方摘牌
     boolean sellerDelisting(DelistingPost delistingPost);
     // 当前持仓查询
-    SelectPositionInfoResult selectPositionInfo(String clientId);
+//    SelectPositionInfoResult selectPositionInfo(String clientId);
     // 当前委托查询
     List<ListingPost> selectEntrustInfo(String clientId);
     // 历史委托查询
