@@ -270,10 +270,10 @@ public class BulkAgreementController {
     }
 
     //添加成员
-    @PostMapping("/addMember/{groupId}/{memberId}/{clientId}")
-    public Result AddMember(@PathVariable String groupId,@PathVariable String memberId,@PathVariable String clientId){
+    @PostMapping("/addMember/{groupId}/{memberName}/{clientId}")
+    public Result AddMember(@PathVariable String groupId,@PathVariable String memberName,@PathVariable String clientId){
         try{
-            bulkAgreementGroupService.addMember(groupId,memberId,clientId);
+            bulkAgreementGroupService.addMember(groupId,memberName,clientId);
             return Result.ok();
         }catch(Exception e){
             e.printStackTrace();
@@ -281,10 +281,10 @@ public class BulkAgreementController {
         }
     }
     //删除成员
-    @PostMapping("/deleteMember/{groupId}/{memberId}/{clientId}")
-    public Result DeleteMember(@PathVariable String groupId,@PathVariable String memberId,@PathVariable String clientId){
+    @PostMapping("/deleteMember/{groupId}/{memberName}/{clientId}")
+    public Result DeleteMember(@PathVariable String groupId,@PathVariable String memberName,@PathVariable String clientId){
         try{
-            bulkAgreementGroupService.deleteMember(groupId,memberId,clientId);
+            bulkAgreementGroupService.deleteMember(groupId,memberName,clientId);
             return Result.ok();
         }catch(Exception e){
             e.printStackTrace();
