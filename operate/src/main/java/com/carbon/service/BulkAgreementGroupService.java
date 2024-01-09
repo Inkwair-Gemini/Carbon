@@ -13,7 +13,7 @@ public interface BulkAgreementGroupService {
     //删除群组
     void deleteGroup(String groupId,String clientId);
     //添加成员
-    void addMember(String groupId,String memberId,String clientId);
+    void addMember(String groupId,String memberName,String clientId);
     //删除成员
-    void deleteMember(String groupId,String memberId,String clientId);
+    void deleteMember(String groupId,String memberName,String clientId);
 }

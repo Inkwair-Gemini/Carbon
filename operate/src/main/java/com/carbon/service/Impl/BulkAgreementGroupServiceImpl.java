@@ -1,8 +1,10 @@
 package com.carbon.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.carbon.mapper.ClientMapper;
 import com.carbon.mapper.GroupClientMapper;
 import com.carbon.mapper.GroupMapper;
+import com.carbon.po.Client;
 import com.carbon.po.Group;
 import com.carbon.po.GroupClient;
 import com.carbon.service.BulkAgreementGroupService;
@@ -15,6 +17,8 @@ import java.util.List;
 
 @Service
 public class BulkAgreementGroupServiceImpl implements BulkAgreementGroupService {
+    @Autowired
+    ClientMapper clientMapper;
     @Autowired
     GroupMapper groupMapper;
     @Autowired
@@ -73,10 +77,13 @@ public class BulkAgreementGroupServiceImpl implements BulkAgreementGroupService 
         }
     }
     @Override
-    public void addMember(String groupId,String memberId,String clientId){
+    public void addMember(String groupId,String memberName,String clientId){
         Group group=groupMapper.selectById(groupId);
+        QueryWrapper<Client> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("name", memberName);
+        Client member= clientMapper.selectOne(queryWrapper);
         if(group.getGroupMaster().equals(clientId)){
-            GroupClient groupClient=new GroupClient(groupId,memberId);
+            GroupClient groupClient=new GroupClient(groupId,member.getId());
             groupClientMapper.insert(groupClient);
 
             Timestamp timestamp=new Timestamp(System.currentTimeMillis());
@@ -85,12 +92,15 @@ public class BulkAgreementGroupServiceImpl implements BulkAgreementGroupService 
         }
     }
     @Override
-    public void deleteMember(String groupId,String memberId,String clientId){
+    public void deleteMember(String groupId,String memberName,String clientId){
         Group group=groupMapper.selectById(groupId);
+        QueryWrapper<Client> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("name", memberName);
+        Client member= clientMapper.selectOne(queryWrapper);
         if(group.getGroupMaster().equals(clientId)) {
-            QueryWrapper<GroupClient> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("group_id", groupId).eq("client_id", memberId);
-            groupClientMapper.delete(queryWrapper);
+            QueryWrapper<GroupClient> queryWrapper1 = new QueryWrapper<>();
+            queryWrapper1.eq("group_id", groupId).eq("client_id", member.getId());
+            groupClientMapper.delete(queryWrapper1);
 
             Timestamp timestamp=new Timestamp(System.currentTimeMillis());
             group.setUpdateTime(timestamp);
