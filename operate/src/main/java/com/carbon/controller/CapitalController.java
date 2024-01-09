@@ -1,7 +1,10 @@
 package com.carbon.controller;
 
-import com.carbon.input.CapitalTransferPost;
-import com.carbon.po.*;
+import com.carbon.input.CapitalAndQuota.CapitalTransferPost;
+import com.carbon.po.Capital.CapitalAccount;
+import com.carbon.po.Capital.CapitalTradeRecord;
+import com.carbon.po.Capital.DepositAndWithdrawalRecord;
+import com.carbon.po.Capital.DepositAndWithdrawalRequestRecord;
 import com.carbon.result.Result;
 import com.carbon.service.CapitalService;
 import org.springframework.beans.factory.annotation.Autowired;

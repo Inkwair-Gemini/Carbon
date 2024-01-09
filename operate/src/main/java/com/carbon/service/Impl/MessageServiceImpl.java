@@ -3,7 +3,6 @@ package com.carbon.service.Impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.carbon.mapper.AnnouncementMapper;
 import com.carbon.mapper.TipsMapper;
-import com.carbon.po.Announcement;
 import com.carbon.po.Tips;
 import com.carbon.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +20,10 @@ public class MessageServiceImpl implements MessageService {
     public void sendTips(Tips tips) {
         tipsMapper.insert(tips);
     }
-    @Override
-    public void postAnnounce(Announcement announcement) {
-        announcementMapper.insert(announcement);
-    }
+//    @Override
+//    public void postAnnounce(Announcement announcement) {
+//        announcementMapper.insert(announcement);
+//    }
     @Override
     public List<Tips> getTips(String accountId){
         QueryWrapper<Tips> queryWrapper = new QueryWrapper<>();

@@ -1,15 +1,14 @@
 package com.carbon.service;
 
-import com.carbon.input.AuctionRequest;
-import com.carbon.input.ListingPost;
-import com.carbon.output.DirectionAndGroupDoneRecordResult;
-import com.carbon.output.DirectionAndGroupEnquiryPostResult;
-import com.carbon.output.DirectionAndGroupPostResult;
+import com.carbon.input.Auction.AuctionRequest;
+import com.carbon.input.Listing.ListingPost;
+import com.carbon.output.BulkAgreement.DirectionAndGroupDoneRecordResult;
+import com.carbon.output.BulkAgreement.DirectionAndGroupEnquiryPostResult;
+import com.carbon.output.BulkAgreement.DirectionAndGroupPostResult;
 import com.carbon.po.AuctionDoneRecord;
-import com.carbon.po.ListingDoneRecord;
+import com.carbon.po.Listing.ListingDoneRecord;
 import java.util.List;
 import java.sql.Timestamp;
-
 public interface TradeSelectService {
     //挂牌交易历史委托 标的物 日期 方向
     List<ListingPost> selectListingPost(String operatorCode, String subjectMatterCode, Timestamp beginTime, Timestamp endTime, String flowType);

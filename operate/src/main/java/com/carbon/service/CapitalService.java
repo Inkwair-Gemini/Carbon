@@ -1,10 +1,10 @@
 package com.carbon.service;
 
-import com.carbon.input.CapitalTransferPost;
-import com.carbon.po.CapitalAccount;
-import com.carbon.po.CapitalTradeRecord;
-import com.carbon.po.DepositAndWithdrawalRecord;
-import com.carbon.po.DepositAndWithdrawalRequestRecord;
+import com.carbon.input.CapitalAndQuota.CapitalTransferPost;
+import com.carbon.po.Capital.CapitalAccount;
+import com.carbon.po.Capital.CapitalTradeRecord;
+import com.carbon.po.Capital.DepositAndWithdrawalRecord;
+import com.carbon.po.Capital.DepositAndWithdrawalRequestRecord;
 
 import java.util.List;
 

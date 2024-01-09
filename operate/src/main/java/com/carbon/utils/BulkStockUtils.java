@@ -1,17 +1,12 @@
 package com.carbon.utils;
 
-import com.carbon.po.DirectionDoneRecord;
+import com.carbon.po.BulkAgreement.DirectionDoneRecord;
 import com.carbon.po.GroupDoneRecord;
 
 import java.util.List;
 
 /**
- * @projectName: Carbon
- * @package: com.carbon.StockUtils
- * @className: BulkStockUtils
- * @author: Doctor.H
- * @description:  大宗交易工具类
- * @date: 2024/1/5 16:09
+ * 大宗交易工具类
  */
 public class BulkStockUtils {
     public static Double getDirectionClosingPrice(List<DirectionDoneRecord> results) {

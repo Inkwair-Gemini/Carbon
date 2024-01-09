@@ -7,14 +7,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.ThreadPoolExecutor;
 
-/**
- * @projectName: Carbon
- * @package: com.carbon.utils
- * @className: ThreadPoolConfig
- * @author: Doctor.H
- * @description: 线程池配置
- * @date: 2024/1/7 10:46
- */
 @Configuration
 public class ThreadPoolConfig {
     static int cpuNums = Runtime.getRuntime().availableProcessors();

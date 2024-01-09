@@ -7,16 +7,14 @@ import com.carbon.mapper.DirectionDoneRecordMapper;
 import com.carbon.mapper.GroupDoneRecordMapper;
 import com.carbon.mapper.ListingDoneRecordMapper;
 import com.carbon.po.AuctionDoneRecord;
-import com.carbon.po.DirectionDoneRecord;
+import com.carbon.po.BulkAgreement.DirectionDoneRecord;
 import com.carbon.po.GroupDoneRecord;
-import com.carbon.po.ListingDoneRecord;
+import com.carbon.po.Listing.ListingDoneRecord;
 import com.carbon.service.SelectMarketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import java.sql.Timestamp;
 @Service

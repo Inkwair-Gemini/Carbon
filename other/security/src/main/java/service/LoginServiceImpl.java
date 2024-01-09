@@ -1,6 +1,8 @@
 package service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.carbon.mapper.ClientMapper;
+import com.carbon.po.Client;
 import utils.JwtHelper;
 import utils.MD5;
 import com.carbon.result.Result;
@@ -9,21 +11,19 @@ import org.springframework.stereotype.Service;
 import redis.RedisCache;
 import java.util.HashMap;
 
-import static com.carbon.utils.LoginUserInfoHelper.*;
-
 @Service
 public class LoginServiceImpl implements LoginService {
 
     @Autowired
-    private MyUserMapper userMapper;
+    private ClientMapper clientMapper;
     @Autowired
     private RedisCache redisCache;
 
     @Override
-    public Result login(String username, String password) {
+    public Result login(String operatorCode, String password) {
         //根据用户名从数据库中查询用户
-        MyUser user = userMapper.selectOne(new LambdaQueryWrapper<MyUser>()
-                .eq(username != null, MyUser::getUsername, username));
+        Client user = clientMapper.selectOne(new LambdaQueryWrapper<Client>()
+                .eq(username != null, client::getUsername, username));
         if (user == null) {
             return Result.fail("用户不存在");
         }

@@ -1,7 +1,7 @@
 package com.carbon.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.carbon.po.ClientTradeQuota;
+import com.carbon.po.Quota.ClientTradeQuota;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

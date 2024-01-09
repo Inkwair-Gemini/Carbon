@@ -1,9 +1,9 @@
 package com.carbon.service.Impl;
 
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.carbon.input.CapitalTransferPost;
+import com.carbon.input.CapitalAndQuota.CapitalTransferPost;
 import com.carbon.mapper.*;
 import com.carbon.po.*;
+import com.carbon.po.Capital.*;
 import com.carbon.service.CapitalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,5 +1,7 @@
 package com.carbon.service;
 
+import com.carbon.po.Client;
+
 import java.util.List;
 
 //大宗协议群组控制类
@@ -16,4 +18,6 @@ public interface BulkAgreementGroupService {
     void addMember(String groupId,String memberName,String clientId);
     //删除成员
     void deleteMember(String groupId,String memberName,String clientId);
+    //查询群组内成员
+    List<Client> selectGroupClient(String groupID);
 }

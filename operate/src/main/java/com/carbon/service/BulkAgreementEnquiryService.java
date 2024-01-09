@@ -1,8 +1,7 @@
 package com.carbon.service;
 
-import com.carbon.input.DirectionEnquiryPost;
-import com.carbon.input.DirectionPost;
-import com.carbon.input.GroupEnquiryPost;
+import com.carbon.input.BulkAgreement.DirectionEnquiryPost;
+import com.carbon.input.BulkAgreement.GroupEnquiryPost;
 
 import java.util.List;
 

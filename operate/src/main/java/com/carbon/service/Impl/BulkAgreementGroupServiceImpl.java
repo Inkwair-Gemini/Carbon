@@ -107,4 +107,16 @@ public class BulkAgreementGroupServiceImpl implements BulkAgreementGroupService 
             groupMapper.updateById(group);
         }
     }
+    @Override
+    public List<Client> selectGroupClient(String groupId){
+        QueryWrapper<GroupClient> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("group_id", groupId);
+        List<GroupClient> groupClients = groupClientMapper.selectList(queryWrapper);
+        List<Client> clients = new ArrayList<>();
+        for (GroupClient groupClient : groupClients) {
+            Client client= clientMapper.selectById(groupClient.getClientId());
+            clients.add(client);
+        }
+        return clients;
+    }
 }
