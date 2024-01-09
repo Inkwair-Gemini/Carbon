@@ -1,7 +1,7 @@
 package com.carbon.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.carbon.po.AuctionClient;
+import com.carbon.po.Auction.AuctionClient;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

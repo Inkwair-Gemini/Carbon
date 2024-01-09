@@ -1,5 +1,5 @@
 package com.carbon.controller;
-import com.carbon.po.ClientOperator;
+import com.carbon.po.User.ClientOperator;
 import com.carbon.result.Result;
 import com.carbon.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;

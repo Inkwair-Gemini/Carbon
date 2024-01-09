@@ -8,7 +8,7 @@ import com.carbon.mapper.*;
 import com.carbon.po.Capital.CapitalAccount;
 import com.carbon.po.Listing.ListingDoneRecord;
 import com.carbon.po.Quota.ClientTradeQuota;
-import com.carbon.po.QuotaAccount;
+import com.carbon.po.Quota.QuotaAccount;
 import com.carbon.service.ListingService;
 import com.carbon.utils.ClientIdUtils;
 import org.springframework.beans.factory.annotation.Autowired;

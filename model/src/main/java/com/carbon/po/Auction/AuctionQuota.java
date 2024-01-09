@@ -1,4 +1,4 @@
-
+package com.carbon.po.Auction;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,6 +21,7 @@ public class AuctionQuota implements Serializable {
     private Double price; // 委托价格
     private Double amount; // 委托数量
     private Double totalBalance; // 总价
+    private Double recentPrice;//最新价格
     private String clientId;
     // 剩余时间
     private String status; // 状态

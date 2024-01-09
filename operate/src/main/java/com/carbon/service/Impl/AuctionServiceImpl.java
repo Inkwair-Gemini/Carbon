@@ -5,8 +5,14 @@ import com.carbon.input.Auction.AuctionPost;
 import com.carbon.input.Auction.AuctionRequest;
 import com.carbon.mapper.*;
 import com.carbon.po.*;
+import com.carbon.po.Auction.AuctionClient;
+import com.carbon.po.Auction.AuctionDoneRecord;
+import com.carbon.po.Auction.AuctionQuota;
 import com.carbon.po.Capital.CapitalAccount;
 import com.carbon.po.Quota.ClientTradeQuota;
+import com.carbon.po.Quota.QuotaAccount;
+import com.carbon.po.User.Client;
+import com.carbon.po.User.ClientOperator;
 import com.carbon.service.AuctionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -88,6 +94,7 @@ public class AuctionServiceImpl implements AuctionService {
             auctionQuota.setPrice(auctionRequest.getPrice());
             auctionQuota.setAmount(auctionRequest.getAmount());
             auctionQuota.setTotalBalance(auctionRequest.getPrice()*auctionRequest.getAmount());
+            auctionQuota.setRecentPrice(auctionRequest.getPrice()*auctionRequest.getAmount());
             //todo 添加未来发布时间、状态
             //获取当前时间
             Calendar calendar = Calendar.getInstance();
@@ -158,6 +165,9 @@ public class AuctionServiceImpl implements AuctionService {
         if(isEnoughCapital && isHigh){
             //提交洽谈出价
             auctionPostMapper.insert(auctionPost);
+            //更新单向竞价商品最新价格
+            auctionQuota.setRecentPrice(auctionPost.getPrice());
+            auctionQuotaMapper.updateById(auctionQuota);
         }
     }
 

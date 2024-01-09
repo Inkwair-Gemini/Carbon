@@ -1,20 +1,17 @@
 package com.carbon.controller;
 
-import com.carbon.input.DirectionEnquiryPost;
-import com.carbon.input.DirectionPost;
-import com.carbon.input.GroupEnquiryPost;
-import com.carbon.input.GroupPost;
-import com.carbon.mapper.GroupClientMapper;
-import com.carbon.mapper.GroupMapper;
-import com.carbon.po.Client;
-import com.carbon.po.DirectionDoneRecord;
-import com.carbon.po.Group;
-import com.carbon.po.GroupDoneRecord;
+import com.carbon.input.BulkAgreement.DirectionEnquiryPost;
+import com.carbon.input.BulkAgreement.DirectionPost;
+import com.carbon.input.BulkAgreement.GroupEnquiryPost;
+import com.carbon.input.BulkAgreement.GroupPost;
+import com.carbon.po.BulkAgreement.DirectionDoneRecord;
+import com.carbon.po.BulkAgreement.Group;
+import com.carbon.po.BulkAgreement.GroupDoneRecord;
+import com.carbon.po.User.Client;
 import com.carbon.result.Result;
 import com.carbon.service.BulkAgreementEnquiryService;
 import com.carbon.service.BulkAgreementGroupService;
 import com.carbon.service.BulkAgreementOfferService;
-import com.carbon.service.TradeSelectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

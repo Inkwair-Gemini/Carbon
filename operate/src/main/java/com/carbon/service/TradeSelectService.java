@@ -5,7 +5,7 @@ import com.carbon.input.Listing.ListingPost;
 import com.carbon.output.BulkAgreement.DirectionAndGroupDoneRecordResult;
 import com.carbon.output.BulkAgreement.DirectionAndGroupEnquiryPostResult;
 import com.carbon.output.BulkAgreement.DirectionAndGroupPostResult;
-import com.carbon.po.AuctionDoneRecord;
+import com.carbon.po.Auction.AuctionDoneRecord;
 import com.carbon.po.Listing.ListingDoneRecord;
 import java.util.List;
 import java.sql.Timestamp;
