@@ -62,18 +62,18 @@ public class JwtAuthenticationTokenFilter implements Filter {
         System.out.println("有token获取认证信息...");
 
         //解析token
-        String userid = "";
+        String operatorCode = "";
         try {
             System.out.println("第1.2步：解析token");
             // 获取jwt中的用户名（或id）
-            userid = JwtHelper.getUserId(token);
+            operatorCode = JwtHelper.getOperatorCode(token);
         } catch (Exception e) {
             ResponseUtil.out(response, Result.build(null,ResultCodeEnum.LOGIN_ERROR));
             return;
         }
 
         //从redis中获取用户信息
-        String redisKey = "login:" + userid;
+        String redisKey = "login:" + operatorCode;
         JSONObject loginUser = redisCache.getCacheObject(redisKey);
         System.out.println("第1.3步：判断redis中是否有数据");
         if(Objects.isNull(loginUser)){

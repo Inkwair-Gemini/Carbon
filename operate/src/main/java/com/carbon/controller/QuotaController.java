@@ -24,7 +24,6 @@ public class QuotaController {
     //配额转入/转出
     @PostMapping("/transfer")
     public Result  QuotaTransfer(@RequestBody QuotaTransferPost quotaTransferPost, @RequestBody String operatorCode){
-        // todo 事务管理
         try {
             String quotaAccount = quotaTransferPost.getQuotaAccount();
             String subjectMatterCode = quotaTransferPost.getSubjectMatterCode();

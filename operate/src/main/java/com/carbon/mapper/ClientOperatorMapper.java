@@ -1,7 +1,6 @@
 package com.carbon.mapper;
-
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.carbon.po.ClientOperator;
+import com.carbon.po.User.ClientOperator;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
