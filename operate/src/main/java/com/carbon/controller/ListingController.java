@@ -2,7 +2,6 @@ package com.carbon.controller;
 
 import com.carbon.input.Listing.DelistingPost;
 import com.carbon.input.Listing.ListingPost;
-import com.carbon.output.SelectPositionInfoResult;
 import com.carbon.po.Listing.ListingDoneRecord;
 import com.carbon.result.Result;
 import com.carbon.service.ListingService;

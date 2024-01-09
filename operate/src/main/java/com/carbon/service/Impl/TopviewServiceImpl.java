@@ -2,8 +2,8 @@ package com.carbon.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.carbon.mapper.ListingDoneRecordMapper;
-import com.carbon.output.DealDivision;
-import com.carbon.output.TimeDivision;
+import com.carbon.output.market.DealDivision;
+import com.carbon.output.market.TimeDivision;
 import com.carbon.po.Listing.ListingDoneRecord;
 import com.carbon.service.TopviewService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,7 @@
 package com.carbon.service;
 
-import com.carbon.output.DealDivision;
-import com.carbon.output.TimeDivision;
+import com.carbon.output.market.DealDivision;
+import com.carbon.output.market.TimeDivision;
 
 import java.util.List;
 

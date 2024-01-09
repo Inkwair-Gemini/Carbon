@@ -1,4 +1,4 @@
-package com.carbon.output;
+package com.carbon.output.market;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

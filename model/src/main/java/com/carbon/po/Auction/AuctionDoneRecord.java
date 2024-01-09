@@ -1,4 +1,4 @@
-
+package com.carbon.po.Auction;
 
 import java.io.Serializable;
 import java.sql.Timestamp;

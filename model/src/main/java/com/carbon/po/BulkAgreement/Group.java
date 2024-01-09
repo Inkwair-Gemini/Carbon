@@ -1,4 +1,4 @@
-package com.carbon.po.User;
+package com.carbon.po.BulkAgreement;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

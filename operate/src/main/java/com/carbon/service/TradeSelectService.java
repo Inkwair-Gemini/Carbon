@@ -5,7 +5,7 @@ import com.carbon.input.Listing.ListingPost;
 import com.carbon.output.BulkAgreement.DirectionAndGroupDoneRecordResult;
 import com.carbon.output.BulkAgreement.DirectionAndGroupEnquiryPostResult;
 import com.carbon.output.BulkAgreement.DirectionAndGroupPostResult;
-import com.carbon.po.AuctionDoneRecord;
+import com.carbon.po.Auction.AuctionDoneRecord;
 import com.carbon.po.Listing.ListingDoneRecord;
 import java.util.List;
 import java.sql.Timestamp;
@@ -23,5 +23,5 @@ public interface TradeSelectService {
     //单向竞价交易请求查询
     List<AuctionRequest> selectAuctionRequest(String operatorCode,String subjectMatterCode, Timestamp beginTime, Timestamp endTime);
     //单向竞价交易成交查询
-    List<AuctionDoneRecord> selectAuctionDoneRecord(String clientId,String subjectMatterCode, Timestamp beginTime, Timestamp endTime);
+    List<AuctionDoneRecord> selectAuctionDoneRecord(String clientId, String subjectMatterCode, Timestamp beginTime, Timestamp endTime);
 }
