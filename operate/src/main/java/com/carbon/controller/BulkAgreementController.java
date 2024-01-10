@@ -1,4 +1,5 @@
 package com.carbon.controller;
+
 import com.carbon.input.BulkAgreement.DirectionEnquiryPost;
 import com.carbon.input.BulkAgreement.DirectionPost;
 import com.carbon.input.BulkAgreement.GroupEnquiryPost;
@@ -11,7 +12,6 @@ import com.carbon.result.Result;
 import com.carbon.service.BulkAgreementEnquiryService;
 import com.carbon.service.BulkAgreementGroupService;
 import com.carbon.service.BulkAgreementOfferService;
-import com.carbon.service.TradeSelectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

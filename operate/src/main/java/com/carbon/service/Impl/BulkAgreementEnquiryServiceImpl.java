@@ -6,7 +6,6 @@ import com.carbon.input.BulkAgreement.DirectionPost;
 import com.carbon.input.BulkAgreement.GroupEnquiryPost;
 import com.carbon.input.BulkAgreement.GroupPost;
 import com.carbon.mapper.*;
-import com.carbon.po.*;
 import com.carbon.po.BulkAgreement.DirectionDoneRecord;
 import com.carbon.po.BulkAgreement.Group;
 import com.carbon.po.BulkAgreement.GroupClient;
