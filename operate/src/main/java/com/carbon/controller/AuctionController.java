@@ -2,11 +2,15 @@ package com.carbon.controller;
 
 import com.carbon.input.Auction.AuctionPost;
 import com.carbon.input.Auction.AuctionRequest;
+import com.carbon.po.Auction.AuctionDoneRecord;
 import com.carbon.po.Auction.AuctionQuota;
 import com.carbon.result.Result;
 import com.carbon.service.AuctionService;
+import com.carbon.service.TradeSelectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.sql.Timestamp;
 import java.util.List;
 
 @RestController
@@ -14,6 +18,8 @@ import java.util.List;
 public class AuctionController {
     @Autowired
     AuctionService auctionService;
+    @Autowired
+    TradeSelectService tradeSelectService;
 
     //申请拍卖物品
     //接收单向竞价拍卖申请表单
@@ -109,5 +115,20 @@ public class AuctionController {
             e.printStackTrace();
             return Result.fail();
         }
+    }
+
+    //查询单向竞价成交记录
+    //接收clientId
+    //返回List<AuctionDoneRecord>
+    @GetMapping("/selectAuctionDoneRecord/{clientId}")
+    public  Result SelectAuctionDoneRecord(@PathVariable String clientId,@PathVariable String subjectMatterCode,@PathVariable Timestamp beginTime,@PathVariable Timestamp endTime){
+        try{
+            List<AuctionDoneRecord> auctionDoneRecords=tradeSelectService.selectAuctionDoneRecord(clientId,subjectMatterCode,beginTime,endTime);
+            return Result.ok(auctionDoneRecords);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.fail();
+        }
+
     }
 }
