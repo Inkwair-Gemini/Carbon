@@ -5,13 +5,13 @@ import lombok.Getter;
 @Getter
 public enum ResultCodeEnum {
     SUCCESS(200, "成功"),
-    FAIL(201, "失败"),
-    SERVICE_ERROR(2012, "服务异常"),
-    DATA_ERROR(204, "数据异常"),
+    FAIL(400, "失败"),
+    SERVICE_ERROR(405, "服务异常"),
+    DATA_ERROR(403, "数据异常"),
 
-    LOGIN_AUTH(209, "未登陆"),
-    PERMISSION(210, "没有权限"),
-    LOGIN_ERROR(208,"认证失败");
+    LOGIN_AUTH(410, "未登陆"),
+    PERMISSION(409, "没有权限"),
+    LOGIN_ERROR(408,"认证失败");
 
     private final Integer code;
 

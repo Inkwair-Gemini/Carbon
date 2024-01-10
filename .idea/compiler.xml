@@ -11,9 +11,11 @@
         <module name="model" />
         <module name="operate" />
         <module name="common" />
-        <module name="utils" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="utils" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_STRING" value="-parameters" />

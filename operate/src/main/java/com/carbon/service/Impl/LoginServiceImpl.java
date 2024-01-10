@@ -33,9 +33,9 @@ public class LoginServiceImpl implements LoginService {
         }
 
         ClientOperator clientOperator = clientOperatorMapper.selectOne(new LambdaQueryWrapper<ClientOperator>()
-                .eq(ClientOperator::getId,operatorCode));
+                .eq(ClientOperator::getId,operatorCode).eq(ClientOperator::getClientId,clientId));
         if (clientOperator == null){
-            return Result.fail("操作员不存在");
+            return Result.fail("该操作员不存在");
         }
 
         // 校验密码
