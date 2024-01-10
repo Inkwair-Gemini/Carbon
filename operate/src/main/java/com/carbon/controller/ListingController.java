@@ -1,7 +1,9 @@
 package com.carbon.controller;
 
+import com.carbon.input.Auction.AuctionPost;
 import com.carbon.input.Listing.DelistingPost;
 import com.carbon.input.Listing.ListingPost;
+import com.carbon.po.Auction.AuctionDoneRecord;
 import com.carbon.po.Listing.ListingDoneRecord;
 import com.carbon.result.Result;
 import com.carbon.service.ListingService;
@@ -201,6 +203,29 @@ public class ListingController {
         try {
             List<ListingPost> listingPostList = ListingService.selectSellerListing();
             return Result.ok(listingPostList);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.fail();
+        }
+    }
+
+    //查询当日挂牌交易委托记录
+    @GetMapping("/selectDayListingPost/{clientId}")
+    public Result selectDayListingPost(@PathVariable String clientId){
+        try{
+            List<ListingPost> listingPosts = ListingService.selectDayListingPost(clientId);
+            return Result.ok(listingPosts);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.fail();
+        }
+    }
+    //查询当日挂牌交易成交记录
+    @GetMapping("/selectDayListingDoneRecord/{clientId}")
+    public Result selectDayListingDoneRecord(@PathVariable String clientId){
+        try{
+            List<ListingDoneRecord> listingDoneRecords = ListingService.selectDayListingDoneRecord(clientId);
+            return Result.ok(listingDoneRecords);
         }catch (Exception e){
             e.printStackTrace();
             return Result.fail();

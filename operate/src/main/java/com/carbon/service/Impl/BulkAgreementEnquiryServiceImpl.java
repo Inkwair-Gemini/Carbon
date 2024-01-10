@@ -6,6 +6,7 @@ import com.carbon.input.BulkAgreement.DirectionPost;
 import com.carbon.input.BulkAgreement.GroupEnquiryPost;
 import com.carbon.input.BulkAgreement.GroupPost;
 import com.carbon.mapper.*;
+import com.carbon.po.Auction.AuctionDoneRecord;
 import com.carbon.po.BulkAgreement.DirectionDoneRecord;
 import com.carbon.po.BulkAgreement.Group;
 import com.carbon.po.BulkAgreement.GroupClient;
@@ -21,7 +22,11 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 @Service
 public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryService {
     @Autowired
@@ -334,5 +339,46 @@ public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryServ
             groupDoneRecord.setDelistingClient(client.getId());
             groupDoneRecordMapper.insert(groupDoneRecord);
         }
+    }
+    @Override
+    public List<DirectionEnquiryPost> selectDayDirectionOfferEnquiry(String clientId) {
+        //1.获取所有客户操作员
+        Map<String,Object> clientOperatormap=new HashMap<>();
+        clientOperatormap.put("client_id",clientId);
+        List<ClientOperator> clientOperators = clientOperatorMapper.selectByMap(clientOperatormap);
+        List<DirectionEnquiryPost> directionEnquiryPosts = new ArrayList<>();
+        //2.获取当天起始时间戳
+        LocalDate localDate = LocalDate.now();
+        Timestamp beginTime = Timestamp.valueOf(localDate.atStartOfDay());
+        Timestamp endTime = Timestamp.valueOf(localDate.atTime(23, 59, 59));
+        //3.获取所有操作员的记录
+        for(int i=0;i<clientOperators.size();i++){
+            QueryWrapper<DirectionEnquiryPost> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("operator_code", clientOperators.get(i).getId()).between("time", beginTime, endTime);
+            directionEnquiryPosts.addAll(directionEnquiryPostMapper.selectList(queryWrapper));
+        }
+
+        return directionEnquiryPosts;
+
+    }
+
+    @Override
+    public List<GroupEnquiryPost> selectDayGroupOfferEnquiry(String clientId) {
+        //1.获取所有客户操作员
+        Map<String,Object> clientOperatormap=new HashMap<>();
+        clientOperatormap.put("client_id",clientId);
+        List<ClientOperator> clientOperators = clientOperatorMapper.selectByMap(clientOperatormap);
+        List<GroupEnquiryPost> groupEnquiryPosts = new ArrayList<>();
+        //2.获取当天起始时间戳
+        LocalDate localDate = LocalDate.now();
+        Timestamp beginTime = Timestamp.valueOf(localDate.atStartOfDay());
+        Timestamp endTime = Timestamp.valueOf(localDate.atTime(23, 59, 59));
+        //3.获取所有操作员的记录
+        for(int i=0;i<clientOperators.size();i++){
+            QueryWrapper<GroupEnquiryPost> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("operator_code", clientOperators.get(i).getId()).between("time", beginTime, endTime);
+            groupEnquiryPosts.addAll(groupEnquiryPostMapper.selectList(queryWrapper));
+        }
+        return groupEnquiryPosts;
     }
 }

@@ -259,7 +259,7 @@ public class BulkAgreementController {
     @GetMapping("/selectGroup/{clientId}")
     public Result SelectGroup(@PathVariable String clientId){
         try{
-            List<Group> groups=bulkAgreementGroupService.selectGroup(clientId);
+            List<Group> groups= bulkAgreementGroupService.selectGroup(clientId);
             return Result.ok(groups);
         }catch (Exception e){
             e.printStackTrace();
@@ -344,6 +344,117 @@ public class BulkAgreementController {
             List<Client> clients=bulkAgreementGroupService.selectGroupClient(groupId);
             return Result.ok(clients);
         }catch (Exception e){
+            e.printStackTrace();
+            return Result.fail();
+        }
+    }
+    //查询大宗协议定向报价记录
+    @GetMapping("/selectDirectionOfferInfo/{operatorCode}")
+    public Result selectDirectionOfferInfo(@PathVariable String operatorCode) {
+        try {
+            List<DirectionPost> DirectionPosts = bulkAgreementOfferService.selectDirectionOfferInfo(operatorCode);
+            return Result.ok(DirectionPosts);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail();
+        }
+    }
+    //查询大宗协议群组报价记录
+    @GetMapping("/selectGroupOfferInfo/{operatorCode}")
+    public Result selectGroupOfferInfo(@PathVariable String operatorCode) {
+        try {
+            List<GroupPost> GroupPosts = bulkAgreementOfferService.selectGroupOfferInfo(operatorCode);
+            return Result.ok(GroupPosts);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail();
+        }
+    }
+    //查询大宗协议定向询价记录
+    @GetMapping("/selectDirectionOfferEnquiry/{operatorCode}")
+    public Result selectDirectionOfferEnquiry(@PathVariable String operatorCode) {
+        try {
+            List<DirectionEnquiryPost> DirectionEnquiryPosts = bulkAgreementEnquiryService.selectDirectionOfferEnquiry(operatorCode);
+            return Result.ok(DirectionEnquiryPosts);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail();
+        }
+    }
+    //查询大宗协议定向询价记录
+    @GetMapping("/selectGroupOfferEnquiry/{operatorCode}")
+    public Result selectGroupOfferEnquiry(@PathVariable String operatorCode) {
+        try {
+            List<GroupEnquiryPost> GroupPosts = bulkAgreementEnquiryService.selectGroupOfferEnquiry(operatorCode);
+            return Result.ok(GroupPosts);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail();
+        }
+    }
+    //查询大宗协议当日定向报价记录
+    @GetMapping("/selectDayDirectionOfferInfo/{clientId}")
+    public Result selectDayDirectionOfferInfo(@PathVariable String clientId) {
+        try {
+            List<DirectionPost> DirectionPosts = bulkAgreementOfferService.selectDayDirectionOfferInfo(clientId);
+            return Result.ok(DirectionPosts);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail();
+        }
+    }
+    //查询大宗协议群组报价记录
+    @GetMapping("/selectDayGroupOfferInfo/{clientId}")
+    public Result selectDayGroupOfferInfo(@PathVariable String clientId) {
+        try {
+            List<GroupPost> GroupPosts = bulkAgreementOfferService.selectDayGroupOfferInfo(clientId);
+            return Result.ok(GroupPosts);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail();
+        }
+    }
+    //查询大宗协议当日定向报价成交记录
+    @GetMapping("/selectDayDirectionDoneRecord/{clientId}")
+    public Result SelectDayDirectionDoneRecord(@PathVariable String clientId){
+        try{
+            List<DirectionDoneRecord> directionDoneRecords=bulkAgreementOfferService.selectDayDirectionBargainInfo(clientId);
+            return Result.ok(directionDoneRecords);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.fail();
+        }
+    }
+
+    //查询大宗协议群组报价当日成交记录
+    @GetMapping("/selectDayGroupDoneRecord/{clientId}")
+    public Result SelectDayGroupDoneRecord(@PathVariable String clientId){
+        try{
+            List<GroupDoneRecord> groupDoneRecords=bulkAgreementOfferService.selectDayGroupBargainInfo(clientId);
+            return Result.ok(groupDoneRecords);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.fail();
+        }
+    }
+    //查询大宗协议当日定向询价记录
+    @GetMapping("/selectDayDirectionOfferEnquiry/{clientId}")
+    public Result selectDayDirectionOfferEnquiry(@PathVariable String clientId) {
+        try {
+            List<DirectionEnquiryPost> DirectionEnquiryPosts = bulkAgreementEnquiryService.selectDayDirectionOfferEnquiry(clientId);
+            return Result.ok(DirectionEnquiryPosts);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail();
+        }
+    }
+    //查询大宗协议当日定向询价记录
+    @GetMapping("/selectDayGroupOfferEnquiry/{clientId}")
+    public Result selectDayGroupOfferEnquiry(@PathVariable String clientId) {
+        try {
+            List<GroupEnquiryPost> GroupPosts = bulkAgreementEnquiryService.selectDayGroupOfferEnquiry(clientId);
+            return Result.ok(GroupPosts);
+        } catch (Exception e) {
             e.printStackTrace();
             return Result.fail();
         }
