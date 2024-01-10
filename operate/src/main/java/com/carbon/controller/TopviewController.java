@@ -1,7 +1,7 @@
 package com.carbon.controller;
 
-import com.carbon.output.DealDivision;
-import com.carbon.output.TimeDivision;
+import com.carbon.output.market.DealDivision;
+import com.carbon.output.market.TimeDivision;
 import com.carbon.result.Result;
 import com.carbon.service.TopviewService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -13,7 +13,8 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class RedisCache {
 
-    public RedisTemplate redisTemplate = new RedisTemplate();
+    @Autowired
+    public RedisTemplate redisTemplate;
 
     /**
      * 缓存基本的对象，Integer、String、实体类等

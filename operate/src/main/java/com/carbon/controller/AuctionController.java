@@ -2,12 +2,11 @@ package com.carbon.controller;
 
 import com.carbon.input.Auction.AuctionPost;
 import com.carbon.input.Auction.AuctionRequest;
-import com.carbon.po.AuctionQuota;
+import com.carbon.po.Auction.AuctionQuota;
 import com.carbon.result.Result;
 import com.carbon.service.AuctionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController

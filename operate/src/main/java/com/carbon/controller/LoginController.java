@@ -5,6 +5,7 @@ import com.carbon.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @RequestMapping("/user")
 public class LoginController {
@@ -16,10 +17,11 @@ public class LoginController {
     public Result login(@RequestBody ClientOperator clientOperator){
         return loginService.login(clientOperator.getId(), clientOperator.getClientId(),clientOperator.getPassword());
     }
+
     //登出
     @GetMapping("/loginOut")
-    public Result loginOut(){
-        loginService.loginOut();
+    public Result loginOut(@RequestParam String operatorCode){
+        loginService.loginOut(operatorCode);
         return Result.ok();
     }
 }

@@ -7,5 +7,5 @@ public interface LoginService {
 
     Result login(String operatorCode,String clientId , String password);
 
-    void loginOut();
+    void loginOut(String operatorCode);
 }

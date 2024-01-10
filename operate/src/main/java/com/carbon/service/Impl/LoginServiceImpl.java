@@ -14,8 +14,6 @@ import utils.JwtHelper;
 import utils.MD5;
 import java.util.HashMap;
 
-import static com.carbon.utils.LoginUserInfoHelper.*;
-
 @Service
 public class LoginServiceImpl implements LoginService {
 
@@ -54,10 +52,6 @@ public class LoginServiceImpl implements LoginService {
         //存入redis
         redisCache.setCacheObject("login:" + Auth,clientOperator);
 
-        //存入线程
-        setClientId(clientId);
-        setOperatorCode(operatorCode);
-
         //把token响应给前端
         HashMap<String, String> map = new HashMap<>();
         map.put("token", jwt);
@@ -65,10 +59,7 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public void loginOut() {
-        String operatorCode = getOperatorCode();
-        removeClientId();
-        removeOperatorCode();
+    public void loginOut(String operatorCode) {
         redisCache.deleteObject("login:" + operatorCode);
     }
 }

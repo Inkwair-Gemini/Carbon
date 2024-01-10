@@ -1,6 +1,7 @@
 package filter;
 
 import com.alibaba.fastjson.JSONObject;
+import redis.RedisCache;
 import utils.JwtHelper;
 import utils.ResponseUtil;
 import com.carbon.result.Result;
@@ -16,7 +17,6 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
-import redis.RedisCache;
 
 /**
  * 每次请求的 Security 过滤类。执行jwt有效性检查
@@ -47,6 +47,7 @@ public class JwtAuthenticationTokenFilter implements Filter {
         // 如果请求路径为不需要过滤的路径，则直接放行
         if (Arrays.asList(excludeUrls).contains(requestURI)) {
             filterChain.doFilter(request, response);
+            System.out.println("登陆请求，直接放行");
             return;
         }
 
