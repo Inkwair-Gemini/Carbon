@@ -1,7 +1,7 @@
 package com.carbon.quota;
 
 // 配额
-enum Quota {
+public enum Quota {
     peie1("INK", "测试标的物1"),
     peie2("JUN", "测试标的物2"),
     peie3("HONG","测试标的物3"),

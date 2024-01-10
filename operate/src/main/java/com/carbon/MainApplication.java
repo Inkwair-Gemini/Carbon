@@ -9,6 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @ServletComponentScan(value = {"filter"})
 @ComponentScan(value = {"redis","com.carbon"})
+@MapperScan(value = {"com.carbon.mapper"})
 public class MainApplication {
 
 	public static void main(String[] args) {
