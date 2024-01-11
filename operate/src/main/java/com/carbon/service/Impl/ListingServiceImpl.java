@@ -34,12 +34,9 @@ public class ListingServiceImpl implements ListingService {
     private QuotaAccountMapper QuotaAccountMapper;
     @Autowired
     private ClientTradeQuotaMapper ClientTradeQuotaMapper;
-    @Autowired
-    private ClientOperatorMapper clientOperatorMapper;
 
 
-    @Autowired
-    private static ListingDoneRecord setListingDoneRecord(DelistingPost delistingPost, ListingPost listingPost) {
+    private ListingDoneRecord setListingDoneRecord(DelistingPost delistingPost, ListingPost listingPost) {
         ListingDoneRecord listingDoneRecord=new ListingDoneRecord();
         listingDoneRecord.setTime(delistingPost.getTime());
         listingDoneRecord.setSubjectMatterCode(listingPost.getSubjectMatterCode());
@@ -48,18 +45,24 @@ public class ListingServiceImpl implements ListingService {
         listingDoneRecord.setDealPrice(listingPost.getPrice());
         listingDoneRecord.setDealAmount(delistingPost.getAmount());
         listingDoneRecord.setDealBalance(listingPost.getPrice()* delistingPost.getAmount());
-        //只保留数字
+
         ClientIdUtils clientIdUtils=new ClientIdUtils();
         String listingClient;
         String delistingClient;
-        if(listingPost.getQuotaAccount().charAt(0)=='q')
-            listingClient=clientIdUtils.getIdByQuotaAccountId(listingPost.getQuotaAccount());
-        else
-            listingClient=clientIdUtils.getIdByCapitalAccountId(listingPost.getQuotaAccount());
-        if(delistingPost.getQuotaAccount().charAt(0)=='q')
-            delistingClient=clientIdUtils.getIdByQuotaAccountId(delistingPost.getQuotaAccount());
-        else
-            delistingClient=clientIdUtils.getIdByCapitalAccountId(delistingPost.getQuotaAccount());
+        if(listingPost.getQuotaAccount().charAt(0)=='q') {
+            listingClient = QuotaAccountMapper.selectById(listingPost.getQuotaAccount()).getClientId();
+        }
+        else {
+            System.out.println(listingPost.getQuotaAccount());
+            System.out.println(CapitalAccountMapper.selectById(listingPost.getQuotaAccount()));
+            listingClient = CapitalAccountMapper.selectById(listingPost.getQuotaAccount()).getClientId();
+        }
+        if(delistingPost.getQuotaAccount().charAt(0)=='q') {
+            delistingClient = QuotaAccountMapper.selectById(delistingPost.getQuotaAccount()).getClientId();
+        }
+        else {
+            delistingClient = CapitalAccountMapper.selectById(delistingPost.getQuotaAccount()).getClientId();
+        }
         listingDoneRecord.setListingClient(listingClient);
         listingDoneRecord.setDelistingClient(delistingClient);
         return listingDoneRecord;
@@ -183,8 +186,8 @@ public class ListingServiceImpl implements ListingService {
         query2.eq("id",delistingPost.getListingId());
         ListingPost listingPost=ListingPostMapper.selectOne(query2);
         
-        QueryWrapper query = new QueryWrapper<ListingPost>();
-        query.eq("account_id",delistingPost.getQuotaAccount());
+        QueryWrapper query = new QueryWrapper<ClientTradeQuota>();
+        query.eq("quota_account_id",delistingPost.getQuotaAccount());
         query.eq("subject_matter_code",listingPost.getSubjectMatterCode());
         Double amount= ClientTradeQuotaMapper.selectOne(query).getAvailableQuotaAmount();
         Double unamount=ClientTradeQuotaMapper.selectOne(query).getUnavailableQuotaAmount();
@@ -211,7 +214,7 @@ public class ListingServiceImpl implements ListingService {
         }
         //更新配额
         UpdateWrapper update = new UpdateWrapper<ClientTradeQuota>();
-        update.eq("account_id",listingPost.getQuotaAccount());
+        update.eq("quota_account_id",listingPost.getQuotaAccount());
         update.eq("subject_matter_code",listingPost.getSubjectMatterCode());
         update.set("available_quota_amount",amount-listingPost.getAmount());
         update.set("unavailable_quota_amount",unamount+listingPost.getAmount());
@@ -348,21 +351,21 @@ public class ListingServiceImpl implements ListingService {
             update2.eq("id",listingPost.getQuotaAccount());
             update2.set("available_capital",availableCapital+listingPost.getPrice()*listingPost.getAmount());
             update2.set("unavailable_capital",unavailableCapital-listingPost.getPrice()*listingPost.getAmount());
-            CapitalAccountMapper.update(null,update);
+            CapitalAccountMapper.update(null,update2);
         }
         else
         {
-            QueryWrapper query2 = new QueryWrapper<ListingPost>();
-            query2.eq("account_id",listingPost.getQuotaAccount());
+            QueryWrapper query2 = new QueryWrapper<ClientTradeQuota>();
+            query2.eq("quota_account_id",listingPost.getQuotaAccount());
             query2.eq("subject_matter_code",listingPost.getSubjectMatterCode());
             Double amount= ClientTradeQuotaMapper.selectOne(query2).getAvailableQuotaAmount();
             Double unamount=ClientTradeQuotaMapper.selectOne(query2).getUnavailableQuotaAmount();
             //更新配额
             UpdateWrapper update3 = new UpdateWrapper<ClientTradeQuota>();
-            update3.eq("account_id",listingPost.getQuotaAccount());
+            update3.eq("quota_account_id",listingPost.getQuotaAccount());
             update3.eq("subject_matter_code",listingPost.getSubjectMatterCode());
-            update3.set("available_quota_amount",amount-listingPost.getAmount());
-            update3.set("unavailable_quota_amount",unamount+listingPost.getAmount());
+            update3.set("available_quota_amount",amount+listingPost.getAmount());
+            update3.set("unavailable_quota_amount",unamount-listingPost.getAmount());
             ClientTradeQuotaMapper.update(null,update3);
         }
         return true;

@@ -101,8 +101,8 @@ public class ListingController {
     // 挂牌撤销
     //传入挂牌表单Id
     //返回ok
-    @PostMapping("/cancel")
-    public Result CancelListing(@RequestBody String listingId){
+    @GetMapping("/cancel/{listingId}")
+    public Result CancelListing(@PathVariable String listingId){
         try {
             if(ListingService.cancelListing(listingId))
                 return Result.ok();
