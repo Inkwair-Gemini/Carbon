@@ -28,7 +28,7 @@ public class ListingController {
         listingPost.setTime(new Timestamp(System.currentTimeMillis()));
         listingPost.setFlowType("买入");
         listingPost.setListingType("挂牌");
-        listingPost.setStatus("待交易");
+        listingPost.setStatus("未成交");
         try {
             if(ListingService.purchaserListing(listingPost))
                 return Result.ok();
@@ -48,7 +48,7 @@ public class ListingController {
         listingPost.setTime(new Timestamp(System.currentTimeMillis()));
         listingPost.setFlowType("卖出");
         listingPost.setListingType("挂牌");
-        listingPost.setStatus("待交易");
+        listingPost.setStatus("未成交");
         try {
             if(ListingService.sellerListing(listingPost))
                 return Result.ok();

@@ -305,7 +305,7 @@ public class ListingServiceImpl implements ListingService {
     public List<ListingPost> selectPurchaserListing() {
         QueryWrapper query = new QueryWrapper<ListingPost>();
         query.eq("flow_type","买入");
-        query.eq("status","待交易");
+        query.eq("status","未成交");
         Timestamp temp = new Timestamp(System.currentTimeMillis());
         //把temp设为当天的0点
         temp.setHours(0);
@@ -320,7 +320,7 @@ public class ListingServiceImpl implements ListingService {
     public List<ListingPost> selectSellerListing() {
         QueryWrapper query = new QueryWrapper<ListingPost>();
         query.eq("flow_type","卖出");
-        query.eq("status","待交易");
+        query.eq("status","未成交");
         Timestamp temp = new Timestamp(System.currentTimeMillis());
         //把temp设为当天的0点
         temp.setHours(0);
@@ -335,7 +335,7 @@ public class ListingServiceImpl implements ListingService {
     public boolean cancelListing(String listingId) {
         UpdateWrapper update = new UpdateWrapper<ListingPost>();
         update.eq("id",listingId);
-        update.set("status","已撤销");
+        update.set("status","已撤单");
         update.set("delisting_time",new Timestamp(System.currentTimeMillis()));
         ListingPostMapper.update(null,update);
         QueryWrapper query=new QueryWrapper<ListingPost>();
@@ -374,13 +374,13 @@ public class ListingServiceImpl implements ListingService {
     @Override
     public void autoCancel() {
         QueryWrapper query = new QueryWrapper<ListingPost>();
-        query.eq("status","待交易");
+        query.eq("status","未成交");
         List listingPostList=ListingPostMapper.selectList(query);
         for(int i=0;i<listingPostList.size();i++){
             ListingPost listingPost=(ListingPost)listingPostList.get(i);
             UpdateWrapper update = new UpdateWrapper<ListingPost>();
             update.eq("id",listingPost.getId());
-            update.set("status","已撤销");
+            update.set("status","已撤单");
             update.set("delisting_time",new Timestamp(System.currentTimeMillis()));
             ListingPostMapper.update(null,update);
         }
