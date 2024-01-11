@@ -30,7 +30,9 @@ public class BulkAgreementGroupServiceImpl implements BulkAgreementGroupService 
 
         List<Group> groups = new ArrayList<>();
         for (GroupClient groupClient : groupClients) {
-            Group group = groupMapper.selectById(groupClient.getGroupId());
+            QueryWrapper<Group> queryWrapper1 = new QueryWrapper<>();
+            queryWrapper1.eq("id", groupClient.getGroupId());
+            Group group = groupMapper.selectOne(queryWrapper1);
             groups.add(group);
         }
 

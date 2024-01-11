@@ -135,12 +135,13 @@ public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryServ
         LocalDate yesterday = localDate.minusDays(1);
         Timestamp beginTime = Timestamp.valueOf(yesterday.atStartOfDay());
         Timestamp endTime = Timestamp.valueOf(yesterday.atTime(23, 59, 59));
-        QueryWrapper<DirectionDoneRecord> directionDoneRecordQueryWrapper = new QueryWrapper<>();
+        QueryWrapper<GroupDoneRecord> groupDoneRecordQueryWrapper = new QueryWrapper<>();
         //  2.1.查询昨日收盘价
-        directionDoneRecordQueryWrapper.eq("subject_matter_code", groupEnquiryPost.getSubjectMatterCode()).between("time", beginTime, endTime);
-        List<DirectionDoneRecord> directionDoneRecordList = directionDoneRecordMapper.selectList(directionDoneRecordQueryWrapper);
-        Double closingPrice = BulkStockUtils.getDirectionClosingPrice(directionDoneRecordList);
+        groupDoneRecordQueryWrapper.eq("subject_matter_code", groupEnquiryPost.getSubjectMatterCode()).between("time", beginTime, endTime);
+        List<GroupDoneRecord> groupDoneRecordList = groupDoneRecordMapper.selectList(groupDoneRecordQueryWrapper);
+        Double closingPrice = BulkStockUtils.getGroupClosingPrice(groupDoneRecordList);
         //  2.2.计算开价范围
+
         Double[] closingPriceRange = BulkStockUtils.getClosingPriceRange(closingPrice);
         //  2.3.判断是否在开价范围内
         boolean isInPriceRange = groupEnquiryPost.getPrice() >= closingPriceRange[0] && groupEnquiryPost.getPrice() <= closingPriceRange[1];
