@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @projectName: Carbon
@@ -243,19 +245,21 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
     @Override
     public List<DirectionPost> selectDirectionOfferInfo(String operatorCode) {
         ClientOperator clientOperator = clientOperatorMapper.selectById(operatorCode);
-        //  1.查询报价记录
-        //操作员发出方的报价记录
+        // 1.查询报价记录
+        // 操作员发出方的报价记录
         QueryWrapper<DirectionPost> queryWrapper1 = new QueryWrapper<>();
         queryWrapper1.eq("operator_code", operatorCode);
         List<DirectionPost> directionPostList1 = directionPostMapper.selectList(queryWrapper1);
-        //作为接收方的报价记录
+        // 作为接收方的报价记录
         QueryWrapper<DirectionPost> queryWrapper2 = new QueryWrapper<>();
         queryWrapper2.eq("direction_client", clientOperator.getClientId());
         List<DirectionPost> directionPostList2 = directionPostMapper.selectList(queryWrapper2);
-        //  2.返回报价记录
-        //合并记录
-        directionPostList1.addAll(directionPostList2);
-        return directionPostList1;
+        // 2.返回报价记录
+        // 合并记录并删除重复项
+        List<DirectionPost> combinedList = Stream.concat(directionPostList1.stream(), directionPostList2.stream())
+                .distinct()
+                .collect(Collectors.toList());
+        return combinedList;
     }
 
     @Override
@@ -304,11 +308,12 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
         //  2.返回成交记录
         return bargainList;
     }
+
     //当日定向报价查询
-    public List<DirectionPost> selectDayDirectionOfferInfo(String clientId){
+    public List<DirectionPost> selectDayDirectionOfferInfo(String clientId) {
         //1.获取所有客户操作员
-        Map<String,Object> clientOperatormap=new HashMap<>();
-        clientOperatormap.put("client_id",clientId);
+        Map<String, Object> clientOperatormap = new HashMap<>();
+        clientOperatormap.put("client_id", clientId);
         List<ClientOperator> clientOperators = clientOperatorMapper.selectByMap(clientOperatormap);
         List<DirectionPost> directionPosts = new ArrayList<>();
 
@@ -318,7 +323,7 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
         Timestamp endTime = Timestamp.valueOf(localDate.atTime(23, 59, 59));
 
         //3.查询所有操作员定向报价记录
-        for(int i=0;i<clientOperators.size();i++){
+        for (int i = 0; i < clientOperators.size(); i++) {
             //操作员发出方的报价记录
             QueryWrapper<DirectionPost> queryWrapper1 = new QueryWrapper<>();
             queryWrapper1.eq("operator_code", clientOperators.get(i).getId()).between("time", beginTime, endTime);
@@ -331,12 +336,15 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
 
         return directionPosts;
 
-    };
+    }
+
+    ;
+
     //当日群组报价查询
-    public List<GroupPost> selectDayGroupOfferInfo(String clientId){
+    public List<GroupPost> selectDayGroupOfferInfo(String clientId) {
         //1.获取所有客户操作员
-        Map<String,Object> clientOperatormap=new HashMap<>();
-        clientOperatormap.put("client_id",clientId);
+        Map<String, Object> clientOperatormap = new HashMap<>();
+        clientOperatormap.put("client_id", clientId);
         List<ClientOperator> clientOperators = clientOperatorMapper.selectByMap(clientOperatormap);
         List<GroupPost> groupPosts = new ArrayList<>();
 
@@ -346,7 +354,7 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
         Timestamp endTime = Timestamp.valueOf(localDate.atTime(23, 59, 59));
 
         //3.查询所有操作员群组报价记录
-        for(int i=0;i<clientOperators.size();i++){
+        for (int i = 0; i < clientOperators.size(); i++) {
             //获取客户所在的所有群组id
             ClientOperator clientOperator = clientOperatorMapper.selectById(clientOperators.get(i).getId());
             QueryWrapper<GroupClient> queryWrapper = new QueryWrapper<>();
@@ -362,9 +370,12 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
             }
         }
         return groupPosts;
-    };
+    }
+
+    ;
+
     //当日定向成交查询
-    public List<DirectionDoneRecord> selectDayDirectionBargainInfo(String clientId){
+    public List<DirectionDoneRecord> selectDayDirectionBargainInfo(String clientId) {
         //1.获取当日时间戳
         LocalDate localDate = LocalDate.now();
         Timestamp beginTime = Timestamp.valueOf(localDate.atStartOfDay());
@@ -376,9 +387,12 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
         List<DirectionDoneRecord> directionDoneRecords = directionDoneRecordMapper.selectList(queryWrapper);
         return directionDoneRecords;
 
-    };
+    }
+
+    ;
+
     //当日群组成交查询
-    public List<GroupDoneRecord> selectDayGroupBargainInfo(String clientId){
+    public List<GroupDoneRecord> selectDayGroupBargainInfo(String clientId) {
         //1.获取当日时间戳
         LocalDate localDate = LocalDate.now();
         Timestamp beginTime = Timestamp.valueOf(localDate.atStartOfDay());
@@ -389,6 +403,8 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
         queryWrapper.eq("listing_client", clientId).or().eq("delisting_client", clientId).between("time", beginTime, endTime);
         List<GroupDoneRecord> groupDoneRecords = groupDoneRecordMapper.selectList(queryWrapper);
         return groupDoneRecords;
-    };
+    }
+
+    ;
 
 }
