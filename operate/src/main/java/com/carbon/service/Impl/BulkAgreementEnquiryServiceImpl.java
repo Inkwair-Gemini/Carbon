@@ -176,25 +176,52 @@ public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryServ
 
     @Override
     public void makeDirectionBargain(DirectionEnquiryPost directionEnquiryPost) {
-        ClientOperator clientOperator = clientOperatorMapper.selectById(directionEnquiryPost.getOperatorCode());
-        Client client = clientMapper.selectById(clientOperator.getClientId());
-        CapitalAccount capitalAccount = capitalAccountMapper.selectById(client.getCapitalAccountId());
+        //获取摘牌方和挂牌方客户
+        Client listingClient = clientMapper.selectById(directionEnquiryPost.getDirectionClient());
+        ClientOperator delistingClientOperator = clientOperatorMapper.selectById(directionEnquiryPost.getOperatorCode());
+        Client delistingClient = clientMapper.selectById(delistingClientOperator.getClientId());
+
+
+        CapitalAccount capitalAccount = new CapitalAccount();
         ClientTradeQuota clientTradeQuota = new ClientTradeQuota();
         DirectionDoneRecord directionDoneRecord = new DirectionDoneRecord();
         boolean isEnough = false;
+        boolean isCapitalEnough= false;
+        boolean isQuotaEnough = false;
         //1.判断买卖方向
         if (directionEnquiryPost.getFlowType().equals("买入")) {
-            // 1.1.判断是否有足够的资金
-            double availableCapital = capitalAccount.getAvailableCapital();
-            if (availableCapital >= directionEnquiryPost.getAmount() * directionEnquiryPost.getPrice()) {
+            // 1.1.判断挂牌方是否有足够的配额
+            //获取挂牌方配额账户
+            QueryWrapper<ClientTradeQuota> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("quota_account_id", listingClient.getQuotaAccountId()).eq("subject_matter_code", directionEnquiryPost.getSubjectMatterCode());
+            clientTradeQuota = clientTradeQuotaMapper.selectOne(queryWrapper);
+            if (clientTradeQuota.getAvailableQuotaAmount() >= directionEnquiryPost.getAmount()) {
+                isQuotaEnough = true;
+            }
+            //获取摘牌方资金账户
+            capitalAccount = capitalAccountMapper.selectById(delistingClient.getCapitalAccountId());
+            if (capitalAccount.getAvailableCapital() >= directionEnquiryPost.getAmount() * directionEnquiryPost.getPrice()) {
+                isCapitalEnough = true;
+            }
+
+            if (isQuotaEnough && isCapitalEnough) {
                 isEnough = true;
             }
         } else if (directionEnquiryPost.getFlowType().equals("卖出")) {
-            // 1.2.判断是否有足够的可用交易配额
+            //判断摘牌方是否有足够的配额
+            //获取摘牌方配额账户
             QueryWrapper<ClientTradeQuota> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("quota_account_id", client.getQuotaAccountId()).eq("subject_matter_code", directionEnquiryPost.getSubjectMatterCode());
+            queryWrapper.eq("quota_account_id", delistingClient.getQuotaAccountId()).eq("subject_matter_code", directionEnquiryPost.getSubjectMatterCode());
             clientTradeQuota = clientTradeQuotaMapper.selectOne(queryWrapper);
             if (clientTradeQuota.getAvailableQuotaAmount() >= directionEnquiryPost.getAmount()) {
+                isQuotaEnough = true;
+            }
+            //获取挂牌方资金账户
+            capitalAccount = capitalAccountMapper.selectById(listingClient.getCapitalAccountId());
+            if (capitalAccount.getAvailableCapital() >= directionEnquiryPost.getAmount() * directionEnquiryPost.getPrice()) {
+                isCapitalEnough = true;
+            }
+            if (isQuotaEnough && isCapitalEnough) {
                 isEnough = true;
             }
         }
@@ -216,23 +243,34 @@ public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryServ
 
         boolean isDone = false;
         if (directionEnquiryPost.getFlowType().equals("买入") && isEnough && isInPriceRange) {
-            // 1.1.1.冻结部分资金
-            capitalAccount.setAvailableCapital(capitalAccount.getAvailableCapital() - directionEnquiryPost.getAmount() * directionEnquiryPost.getPrice());
-            capitalAccount.setUnavailableCapital(capitalAccount.getUnavailableCapital() + directionEnquiryPost.getAmount() * directionEnquiryPost.getPrice());
-            // 1.1.2.更新资金账户
-            capitalAccountMapper.updateById(capitalAccount);
-            directionEnquiryPostMapper.insert(directionEnquiryPost);
-            isDone = true;
-        } else if (directionEnquiryPost.getFlowType().equals("卖出") && isEnough && isInPriceRange) {
-            // 1.2.1.冻结部分交易配额
+            // 1.1.1.冻结摘牌方部分资金，冻结挂牌方部分配额
             clientTradeQuota.setAvailableQuotaAmount(clientTradeQuota.getAvailableQuotaAmount() - directionEnquiryPost.getAmount());
             clientTradeQuota.setUnavailableQuotaAmount(clientTradeQuota.getUnavailableQuotaAmount() + directionEnquiryPost.getAmount());
-            // 1.2.2.更新交易配额
-            clientTradeQuotaMapper.updateById(clientTradeQuota);
-            directionEnquiryPostMapper.insert(directionEnquiryPost);
+            capitalAccount.setAvailableCapital(capitalAccount.getAvailableCapital() - directionEnquiryPost.getAmount() * directionEnquiryPost.getPrice());
+            capitalAccount.setUnavailableCapital(capitalAccount.getUnavailableCapital() + directionEnquiryPost.getAmount() * directionEnquiryPost.getPrice());
+
+            // 1.1.2.更新摘牌方资金账户，更新挂牌方配额账户
+            capitalAccountMapper.updateById(capitalAccount);
+            QueryWrapper<ClientTradeQuota> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("quota_account_id", listingClient.getQuotaAccountId()).eq("subject_matter_code", directionEnquiryPost.getSubjectMatterCode());
+            clientTradeQuotaMapper.update(queryWrapper);
+
+            isDone = true;
+        } else if (directionEnquiryPost.getFlowType().equals("卖出") && isEnough && isInPriceRange) {
+            // 1.2.1.冻结摘牌方部分配额，冻结挂牌方部分资金
+            clientTradeQuota.setAvailableQuotaAmount(clientTradeQuota.getAvailableQuotaAmount() - directionEnquiryPost.getAmount());
+            clientTradeQuota.setUnavailableQuotaAmount(clientTradeQuota.getUnavailableQuotaAmount() + directionEnquiryPost.getAmount());
+            capitalAccount.setAvailableCapital(capitalAccount.getAvailableCapital() - directionEnquiryPost.getAmount() * directionEnquiryPost.getPrice());
+            capitalAccount.setUnavailableCapital(capitalAccount.getUnavailableCapital() + directionEnquiryPost.getAmount() * directionEnquiryPost.getPrice());
+
+            // 1.2.2.更新摘牌方配额账户，更新挂牌方资金账户
+            QueryWrapper<ClientTradeQuota> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("quota_account_id", delistingClient.getQuotaAccountId()).eq("subject_matter_code", directionEnquiryPost.getSubjectMatterCode());
+            clientTradeQuotaMapper.update(queryWrapper);
+            capitalAccountMapper.updateById(capitalAccount);
             isDone = true;
         }
-        if (isDone){
+        if (isDone) {
             // 生成成交记录
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             directionDoneRecord.setTime(timestamp);
@@ -248,9 +286,8 @@ public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryServ
             directionDoneRecord.setFinallyAmount(directionEnquiryPost.getAmount());
             directionDoneRecord.setFinallyPrice(directionEnquiryPost.getPrice());
             directionDoneRecord.setFinallyBalance(directionEnquiryPost.getAmount() * directionEnquiryPost.getPrice());
-            ClientOperator clientOperator1 = clientOperatorMapper.selectById(directionPost.getOperatorCode());
-            directionDoneRecord.setListingClient(clientOperator1.getClientId());
-            directionDoneRecord.setDelistingClient(client.getId());
+            directionDoneRecord.setListingClient(listingClient.getId());
+            directionDoneRecord.setDelistingClient(delistingClient.getId());
             directionDoneRecordMapper.insert(directionDoneRecord);
         }
     }
@@ -340,11 +377,12 @@ public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryServ
             groupDoneRecordMapper.insert(groupDoneRecord);
         }
     }
+
     @Override
     public List<DirectionEnquiryPost> selectDayDirectionOfferEnquiry(String clientId) {
         //1.获取所有客户操作员
-        Map<String,Object> clientOperatormap=new HashMap<>();
-        clientOperatormap.put("client_id",clientId);
+        Map<String, Object> clientOperatormap = new HashMap<>();
+        clientOperatormap.put("client_id", clientId);
         List<ClientOperator> clientOperators = clientOperatorMapper.selectByMap(clientOperatormap);
         List<DirectionEnquiryPost> directionEnquiryPosts = new ArrayList<>();
         //2.获取当天起始时间戳
@@ -352,7 +390,7 @@ public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryServ
         Timestamp beginTime = Timestamp.valueOf(localDate.atStartOfDay());
         Timestamp endTime = Timestamp.valueOf(localDate.atTime(23, 59, 59));
         //3.获取所有操作员的记录
-        for(int i=0;i<clientOperators.size();i++){
+        for (int i = 0; i < clientOperators.size(); i++) {
             QueryWrapper<DirectionEnquiryPost> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("operator_code", clientOperators.get(i).getId()).between("time", beginTime, endTime);
             directionEnquiryPosts.addAll(directionEnquiryPostMapper.selectList(queryWrapper));
@@ -365,8 +403,8 @@ public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryServ
     @Override
     public List<GroupEnquiryPost> selectDayGroupOfferEnquiry(String clientId) {
         //1.获取所有客户操作员
-        Map<String,Object> clientOperatormap=new HashMap<>();
-        clientOperatormap.put("client_id",clientId);
+        Map<String, Object> clientOperatormap = new HashMap<>();
+        clientOperatormap.put("client_id", clientId);
         List<ClientOperator> clientOperators = clientOperatorMapper.selectByMap(clientOperatormap);
         List<GroupEnquiryPost> groupEnquiryPosts = new ArrayList<>();
         //2.获取当天起始时间戳
@@ -374,7 +412,7 @@ public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryServ
         Timestamp beginTime = Timestamp.valueOf(localDate.atStartOfDay());
         Timestamp endTime = Timestamp.valueOf(localDate.atTime(23, 59, 59));
         //3.获取所有操作员的记录
-        for(int i=0;i<clientOperators.size();i++){
+        for (int i = 0; i < clientOperators.size(); i++) {
             QueryWrapper<GroupEnquiryPost> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("operator_code", clientOperators.get(i).getId()).between("time", beginTime, endTime);
             groupEnquiryPosts.addAll(groupEnquiryPostMapper.selectList(queryWrapper));
