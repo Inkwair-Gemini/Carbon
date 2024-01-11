@@ -2,21 +2,24 @@ package com.carbon.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.carbon.input.Auction.AuctionPost;
 import com.carbon.input.Listing.DelistingPost;
 import com.carbon.input.Listing.ListingPost;
 import com.carbon.mapper.*;
+import com.carbon.po.Auction.AuctionDoneRecord;
 import com.carbon.po.Capital.CapitalAccount;
 import com.carbon.po.Listing.ListingDoneRecord;
 import com.carbon.po.Quota.ClientTradeQuota;
 import com.carbon.po.Quota.QuotaAccount;
+import com.carbon.po.User.ClientOperator;
 import com.carbon.service.ListingService;
 import com.carbon.utils.ClientIdUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.Comparator;
+
+import java.util.*;
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
 public class ListingServiceImpl implements ListingService {
@@ -31,6 +34,9 @@ public class ListingServiceImpl implements ListingService {
     private QuotaAccountMapper QuotaAccountMapper;
     @Autowired
     private ClientTradeQuotaMapper ClientTradeQuotaMapper;
+    @Autowired
+    private ClientOperatorMapper clientOperatorMapper;
+
 
     @Autowired
     private static ListingDoneRecord setListingDoneRecord(DelistingPost delistingPost, ListingPost listingPost) {
@@ -376,4 +382,51 @@ public class ListingServiceImpl implements ListingService {
             ListingPostMapper.update(null,update);
         }
     }
+
+
+    //查询当日挂牌交易委托记录
+    public List<ListingPost> selectDayListingPost(String clientId){
+        //1.获取所有客户操作员
+        Map<String,Object> clientOperatormap=new HashMap<>();
+        clientOperatormap.put("client_id",clientId);
+        List<ClientOperator> clientOperators = clientOperatorMapper.selectByMap(clientOperatormap);
+        List<ListingPost> listingPosts = new ArrayList<>();
+
+        //2.获取当日时间戳
+        LocalDate localDate = LocalDate.now();
+        Timestamp beginTime = Timestamp.valueOf(localDate.atStartOfDay());
+        Timestamp endTime = Timestamp.valueOf(localDate.atTime(23, 59, 59));
+
+        //2.获取所有操作员的记录
+        for(int i=0;i<clientOperators.size();i++){
+            QueryWrapper<ListingPost> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("operator_code", clientOperators.get(i).getId()).between("time", beginTime, endTime);
+            listingPosts.addAll(ListingPostMapper.selectList(queryWrapper));
+        }
+
+        return listingPosts;
+    };
+    //查询当日挂牌交易成交记录
+    public List<ListingDoneRecord> selectDayListingDoneRecord(String clientId){
+        //1.获取所有客户操作员
+        Map<String,Object> clientOperatormap=new HashMap<>();
+        clientOperatormap.put("client_id",clientId);
+        List<ClientOperator> clientOperators = clientOperatorMapper.selectByMap(clientOperatormap);
+        List<ListingDoneRecord> listingDoneRecords = new ArrayList<>();
+
+        //2.获取当日时间戳
+        LocalDate localDate = LocalDate.now();
+        Timestamp beginTime = Timestamp.valueOf(localDate.atStartOfDay());
+        Timestamp endTime = Timestamp.valueOf(localDate.atTime(23, 59, 59));
+
+        //2.获取所有操作员的记录
+        for(int i=0;i<clientOperators.size();i++){
+            QueryWrapper<ListingDoneRecord> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("operator_code", clientOperators.get(i).getId()).between("time", beginTime, endTime);
+            listingDoneRecords.addAll(ListingDoneRecordMapper.selectList(queryWrapper));
+        }
+
+        return listingDoneRecords;
+    };
+
 }

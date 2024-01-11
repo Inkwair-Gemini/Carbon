@@ -1,6 +1,7 @@
 package com.carbon.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.carbon.po.Auction.AuctionDoneRecord;
 import com.carbon.po.BulkAgreement.DirectionDoneRecord;
 import com.carbon.po.BulkAgreement.GroupClient;
 import com.carbon.po.BulkAgreement.GroupDoneRecord;
@@ -20,7 +21,9 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @projectName: Carbon
@@ -299,4 +302,91 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
         //  2.返回成交记录
         return bargainList;
     }
+    //当日定向报价查询
+    public List<DirectionPost> selectDayDirectionOfferInfo(String clientId){
+        //1.获取所有客户操作员
+        Map<String,Object> clientOperatormap=new HashMap<>();
+        clientOperatormap.put("client_id",clientId);
+        List<ClientOperator> clientOperators = clientOperatorMapper.selectByMap(clientOperatormap);
+        List<DirectionPost> directionPosts = new ArrayList<>();
+
+        //2.获取当日时间戳
+        LocalDate localDate = LocalDate.now();
+        Timestamp beginTime = Timestamp.valueOf(localDate.atStartOfDay());
+        Timestamp endTime = Timestamp.valueOf(localDate.atTime(23, 59, 59));
+
+        //3.查询所有操作员定向报价记录
+        for(int i=0;i<clientOperators.size();i++){
+            //操作员发出方的报价记录
+            QueryWrapper<DirectionPost> queryWrapper1 = new QueryWrapper<>();
+            queryWrapper1.eq("operator_code", clientOperators.get(i).getId()).between("time", beginTime, endTime);
+            directionPosts.addAll(directionPostMapper.selectList(queryWrapper1));
+            //作为接收方的报价记录
+            QueryWrapper<DirectionPost> queryWrapper2 = new QueryWrapper<>();
+            queryWrapper2.eq("direction_id", clientOperators.get(i).getClientId()).between("time", beginTime, endTime);
+            directionPosts.addAll(directionPostMapper.selectList(queryWrapper2));
+        }
+
+        return directionPosts;
+
+    };
+    //当日群组报价查询
+    public List<GroupPost> selectDayGroupOfferInfo(String clientId){
+        //1.获取所有客户操作员
+        Map<String,Object> clientOperatormap=new HashMap<>();
+        clientOperatormap.put("client_id",clientId);
+        List<ClientOperator> clientOperators = clientOperatorMapper.selectByMap(clientOperatormap);
+        List<GroupPost> groupPosts = new ArrayList<>();
+
+        //2.获取当日时间戳
+        LocalDate localDate = LocalDate.now();
+        Timestamp beginTime = Timestamp.valueOf(localDate.atStartOfDay());
+        Timestamp endTime = Timestamp.valueOf(localDate.atTime(23, 59, 59));
+
+        //3.查询所有操作员群组报价记录
+        for(int i=0;i<clientOperators.size();i++){
+            //获取客户所在的所有群组id
+            ClientOperator clientOperator = clientOperatorMapper.selectById(clientOperators.get(i).getId());
+            QueryWrapper<GroupClient> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("client_id", clientOperator.getClientId());
+            List<GroupClient> groupClients = groupClientMapper.selectList(queryWrapper);
+
+            //遍历groupClients，根据每个groupId查询GroupPost
+            for (GroupClient groupClient : groupClients) {
+                QueryWrapper<GroupPost> queryWrapper1 = new QueryWrapper<>();
+                queryWrapper1.eq("group_id", groupClient.getGroupId()).between("time", beginTime, endTime);
+                List<GroupPost> posts = groupPostMapper.selectList(queryWrapper1);
+                groupPosts.addAll(posts);
+            }
+        }
+        return groupPosts;
+    };
+    //当日定向成交查询
+    public List<DirectionDoneRecord> selectDayDirectionBargainInfo(String clientId){
+        //1.获取当日时间戳
+        LocalDate localDate = LocalDate.now();
+        Timestamp beginTime = Timestamp.valueOf(localDate.atStartOfDay());
+        Timestamp endTime = Timestamp.valueOf(localDate.atTime(23, 59, 59));
+
+        //2.查询成交记录
+        QueryWrapper<DirectionDoneRecord> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("listing_client", clientId).or().eq("delisting_client", clientId).between("time", beginTime, endTime);
+        List<DirectionDoneRecord> directionDoneRecords = directionDoneRecordMapper.selectList(queryWrapper);
+        return directionDoneRecords;
+
+    };
+    //当日群组成交查询
+    public List<GroupDoneRecord> selectDayGroupBargainInfo(String clientId){
+        //1.获取当日时间戳
+        LocalDate localDate = LocalDate.now();
+        Timestamp beginTime = Timestamp.valueOf(localDate.atStartOfDay());
+        Timestamp endTime = Timestamp.valueOf(localDate.atTime(23, 59, 59));
+
+        //2.查询成交记录
+        QueryWrapper<GroupDoneRecord> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("listing_client", clientId).or().eq("delisting_client", clientId).between("time", beginTime, endTime);
+        List<GroupDoneRecord> groupDoneRecords = groupDoneRecordMapper.selectList(queryWrapper);
+        return groupDoneRecords;
+    };
+
 }

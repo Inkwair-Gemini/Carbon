@@ -3,11 +3,13 @@ package com.carbon.service.Impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.carbon.input.Auction.AuctionPost;
 import com.carbon.input.Auction.AuctionRequest;
+import com.carbon.input.BulkAgreement.GroupEnquiryPost;
 import com.carbon.mapper.*;
 import com.carbon.po.Auction.AuctionClient;
 import com.carbon.po.Auction.AuctionDoneRecord;
 import com.carbon.po.Auction.AuctionQuota;
 import com.carbon.po.Capital.CapitalAccount;
+import com.carbon.po.Capital.CapitalTradeRecord;
 import com.carbon.po.Listing.ListingDoneRecord;
 import com.carbon.po.Quota.ClientTradeQuota;
 import com.carbon.po.Quota.QuotaAccount;
@@ -18,8 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class AuctionServiceImpl implements AuctionService {
@@ -236,5 +237,52 @@ public class AuctionServiceImpl implements AuctionService {
             return false;
         }
     }
+
+    //查询当日单向竞价委托
+    @Override
+    public List<AuctionPost> selectDayAuctionPost(String clientId){
+        //1.获取所有客户操作员
+        Map<String,Object> clientOperatormap=new HashMap<>();
+        clientOperatormap.put("client_id",clientId);
+        List<ClientOperator> clientOperators = clientOperatorMapper.selectByMap(clientOperatormap);
+        List<AuctionPost> AuctionPosts = new ArrayList<>();
+
+        //2.获取当日时间戳
+        LocalDate localDate = LocalDate.now();
+        Timestamp beginTime = Timestamp.valueOf(localDate.atStartOfDay());
+        Timestamp endTime = Timestamp.valueOf(localDate.atTime(23, 59, 59));
+
+        //3.获取所有操作员的记录
+        for(int i=0;i<clientOperators.size();i++){
+            QueryWrapper<AuctionPost> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("operator_code", clientOperators.get(i).getId()).between("time", beginTime, endTime);
+            AuctionPosts.addAll(auctionPostMapper.selectList(queryWrapper));
+        }
+
+        return AuctionPosts;
+    };
+    //查询当日单向竞价成交记录
+    @Override
+    public List<AuctionDoneRecord> selectDayAuctionDoneRecord(String clientId){
+        //1.获取所有客户操作员
+        Map<String,Object> clientOperatormap=new HashMap<>();
+        clientOperatormap.put("client_id",clientId);
+        List<ClientOperator> clientOperators = clientOperatorMapper.selectByMap(clientOperatormap);
+        List<AuctionDoneRecord> AuctionDoneRecords = new ArrayList<>();
+
+        //2.获取当日时间戳
+        LocalDate localDate = LocalDate.now();
+        Timestamp beginTime = Timestamp.valueOf(localDate.atStartOfDay());
+        Timestamp endTime = Timestamp.valueOf(localDate.atTime(23, 59, 59));
+
+        //3.获取所有操作员的记录
+        for(int i=0;i<clientOperators.size();i++){
+            QueryWrapper<AuctionDoneRecord> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("operator_code", clientOperators.get(i).getId()).between("time", beginTime, endTime);
+            AuctionDoneRecords.addAll(auctionDoneRecordMapper.selectList(queryWrapper));
+        }
+
+        return AuctionDoneRecords;
+    };
 
 }

@@ -27,4 +27,13 @@ public interface BulkAgreementOfferService {
     List<DirectionDoneRecord> selectDirectionBargainInfo(String operatorCode);
     //群组成交查询
     List<GroupDoneRecord> selectGroupBargainInfo(String operatorCode);
+    //当日定向报价查询
+    List<DirectionPost> selectDayDirectionOfferInfo(String clientId);
+    //当日群组报价查询
+    List<GroupPost> selectDayGroupOfferInfo(String clientId);
+    //当日定向成交查询
+    List<DirectionDoneRecord> selectDayDirectionBargainInfo(String clientId);
+    //当日群组成交查询
+    List<GroupDoneRecord> selectDayGroupBargainInfo(String clientId);
+
 }

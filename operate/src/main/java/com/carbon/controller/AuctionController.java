@@ -129,6 +129,27 @@ public class AuctionController {
             e.printStackTrace();
             return Result.fail();
         }
-
+    }
+    //查询当日单向竞价委托
+    @GetMapping("/selectDayAuctionPost/{clientId}")
+    public Result selectDayAuctionPost(@PathVariable String clientId){
+        try{
+            List<AuctionPost> auctionPosts = auctionService.selectDayAuctionPost(clientId);
+            return Result.ok(auctionPosts);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.fail();
+        }
+    }
+    //查询当日单向竞价成交
+    @GetMapping("/selectDayAuctionDoneRecord/{clientId}")
+    public Result selectDayAuctionDoneRecord(@PathVariable String clientId){
+        try{
+            List<AuctionDoneRecord> auctionDoneRecords = auctionService.selectDayAuctionDoneRecord(clientId);
+            return Result.ok(auctionDoneRecords);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.fail();
+        }
     }
 }

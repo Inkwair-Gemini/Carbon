@@ -1,7 +1,9 @@
 package com.carbon.service;
 
+import com.carbon.input.Auction.AuctionPost;
 import com.carbon.input.Listing.DelistingPost;
 import com.carbon.input.Listing.ListingPost;
+import com.carbon.po.Auction.AuctionDoneRecord;
 import com.carbon.po.Listing.ListingDoneRecord;
 
 import java.sql.Timestamp;
@@ -34,4 +36,8 @@ public interface ListingService{
     boolean cancelListing(String listingId);
     // 闭市自动撤销委托
     void autoCancel();
+    //查询当日挂牌交易委托记录
+    List<ListingPost> selectDayListingPost(String clientId);
+    //查询当日挂牌交易成交记录
+    List<ListingDoneRecord> selectDayListingDoneRecord(String clientId);
 }

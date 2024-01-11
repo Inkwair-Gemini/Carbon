@@ -19,4 +19,8 @@ public interface BulkAgreementEnquiryService {
     void makeDirectionBargain(DirectionEnquiryPost directionEnquiryPost);
     //群组达成交易
     void makeGroupBargain(GroupEnquiryPost groupEnquiryPost);
+    //定向报价当日洽谈记录（询价记录）查询
+    List<DirectionEnquiryPost> selectDayDirectionOfferEnquiry(String clientId);
+    //群组报价当日洽谈记录（询价记录）查询
+    List<GroupEnquiryPost> selectDayGroupOfferEnquiry(String clientId);
 }
