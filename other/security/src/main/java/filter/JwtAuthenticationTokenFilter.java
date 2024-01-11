@@ -10,8 +10,6 @@ import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.core.annotation.Order;
-import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import java.io.IOException;
@@ -21,7 +19,6 @@ import java.util.Objects;
 /**
  * 每次请求的 Security 过滤类。执行jwt有效性检查
  */
-@Order(1)
 @WebFilter("/*")
 public class JwtAuthenticationTokenFilter implements Filter {
 
@@ -52,10 +49,17 @@ public class JwtAuthenticationTokenFilter implements Filter {
         }
 
         System.out.println("第1步：进入jwt过滤器");
-        //获取token
-        String token = request.getHeader("token");
-        System.out.println("第1.1步：获取token");
-        if (!StringUtils.hasText(token)) {
+
+        // 获取请求头中的 Authorization 字段
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = "";
+
+        // 判断 Authorization 字段是否存在且以 Bearer 开头
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            // 提取出 token
+            System.out.println("第1.1步：获取token");
+            token = authorizationHeader.substring(7); // 去除 Bearer 后面的空格，提取出 token
+        }else {
             System.out.println("无token转登陆...");
             ResponseUtil.out(response, Result.build(null, ResultCodeEnum.LOGIN_AUTH));
             return;
