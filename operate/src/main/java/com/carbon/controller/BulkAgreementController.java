@@ -62,6 +62,9 @@ public class BulkAgreementController {
     public Result SelectDirectionOffer(@PathVariable String operatorCode){
         try{
             List<DirectionPost> directionPosts=bulkAgreementOfferService.selectDirectionOfferInfo(operatorCode);
+            for (DirectionPost directionPost:directionPosts){
+                System.out.println(directionPost);
+            }
             return Result.ok(directionPosts);
         }catch (Exception e){
             e.printStackTrace();
@@ -242,7 +245,7 @@ public class BulkAgreementController {
     //查询大宗协议群组报价洽谈
     //接收操作员代码
     //返回List<GroupEnquiryPost>
-    @PostMapping("/selectGroupEnquiry/{operatorCode}")
+    @GetMapping("/selectGroupEnquiry/{operatorCode}")
     public Result SelectGroupEnquiry(@PathVariable String operatorCode){
         try{
             List<GroupEnquiryPost> groupEnquiryPosts = bulkAgreementEnquiryService.selectGroupOfferEnquiry(operatorCode);

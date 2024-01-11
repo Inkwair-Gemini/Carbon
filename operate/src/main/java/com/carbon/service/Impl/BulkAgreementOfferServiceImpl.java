@@ -212,7 +212,8 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
             //  1.3.报价未成交，可以撤销
             //  1.3.1.撤销报价
             isCancel = true;
-            directionPostMapper.deleteById(directionPost.getId());
+            directionPost.setStatus("已撤单");
+            directionPostMapper.updateById(directionPost);
         }
         return isCancel;
     }
@@ -232,7 +233,8 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
         } else if (groupPost.getStatus().equals("未成交")) {
             //  1.3.报价未成交，可以撤销
             //  1.3.1.撤销报价
-            groupPostMapper.deleteById(groupPost.getId());
+            groupPost.setStatus("已撤单");
+            groupPostMapper.updateById(groupPost);
             isCancel = true;
         }
         return isCancel;
@@ -248,7 +250,7 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
         List<DirectionPost> directionPostList1 = directionPostMapper.selectList(queryWrapper1);
         //作为接收方的报价记录
         QueryWrapper<DirectionPost> queryWrapper2 = new QueryWrapper<>();
-        queryWrapper2.eq("direction_id", clientOperator.getClientId());
+        queryWrapper2.eq("direction_client", clientOperator.getClientId());
         List<DirectionPost> directionPostList2 = directionPostMapper.selectList(queryWrapper2);
         //  2.返回报价记录
         //合并记录
