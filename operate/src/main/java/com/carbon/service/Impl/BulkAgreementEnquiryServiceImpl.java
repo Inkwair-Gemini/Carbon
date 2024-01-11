@@ -176,7 +176,8 @@ public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryServ
     }
 
     @Override
-    public void makeDirectionBargain(DirectionEnquiryPost directionEnquiryPost) {
+    public void makeDirectionBargain(String directionEnquiryPostId) {
+        DirectionEnquiryPost directionEnquiryPost=directionEnquiryPostMapper.selectById(directionEnquiryPostId);
         //获取摘牌方和挂牌方客户
         Client listingClient = clientMapper.selectById(directionEnquiryPost.getDirectionClient());
         ClientOperator delistingClientOperator = clientOperatorMapper.selectById(directionEnquiryPost.getOperatorCode());
@@ -295,7 +296,8 @@ public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryServ
     }
 
     @Override
-    public void makeGroupBargain(GroupEnquiryPost groupEnquiryPost) {
+    public void makeGroupBargain(String groupEnquiryPostId) {
+        GroupEnquiryPost groupEnquiryPost=groupEnquiryPostMapper.selectById(groupEnquiryPostId);
         //获取挂牌方与摘牌方
         //挂牌方
         Group group=groupMapper.selectById(groupEnquiryPost.getGroupId());

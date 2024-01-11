@@ -147,10 +147,10 @@ public class BulkAgreementController {
     //大宗协议定向报价成交
     //接收定向洽谈表单
     //返回ok
-    @PostMapping("/directionDone")
-    public Result MakeDirectionBargain(@RequestBody DirectionEnquiryPost directionEnquiryPost){
+    @PostMapping("/directionDone/{directionEnquiryPostId}")
+    public Result MakeDirectionBargain(@PathVariable String directionEnquiryPostId){
         try{
-            bulkAgreementEnquiryService.makeDirectionBargain(directionEnquiryPost);
+            bulkAgreementEnquiryService.makeDirectionBargain(directionEnquiryPostId);
             return Result.ok();
         }catch(Exception e){
             e.printStackTrace();
@@ -161,10 +161,10 @@ public class BulkAgreementController {
     //大宗协议群组报价成交
     //接收群组洽谈表单
     //返回ok
-    @PostMapping("/groupDone")
-    public Result MakeGroupBargain(@RequestBody GroupEnquiryPost groupEnquiryPost){
+    @PostMapping("/groupDone/{groupEnquiryPostId}")
+    public Result MakeGroupBargain(@PathVariable String groupEnquiryPostId){
         try{
-            bulkAgreementEnquiryService.makeGroupBargain(groupEnquiryPost);
+            bulkAgreementEnquiryService.makeGroupBargain(groupEnquiryPostId);
             return Result.ok();
         }catch(Exception e){
             e.printStackTrace();
