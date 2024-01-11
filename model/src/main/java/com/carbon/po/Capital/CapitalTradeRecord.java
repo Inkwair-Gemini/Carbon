@@ -1,5 +1,6 @@
 package com.carbon.po.Capital;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,7 @@ public class CapitalTradeRecord implements Serializable {
     private Timestamp time;
     private String operatorCode; // 操作员代码
     private String capitalAccount; // 资金账号
+    @TableField("`type`")
     private String type; // 划转类型
     private Double actualAmount; // 发生金额
     private Double endingBalance; // 期后余额

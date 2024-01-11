@@ -1,5 +1,6 @@
 package com.carbon.po;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,10 @@ public class Tips implements Serializable {
     private String id;
     private Timestamp time;
     private String content;
+    @TableField("`type`")
     private String type; // 消息类型
+    @TableField("`from`")
     private String from; // 发出者
+    @TableField("`to`")
     private String to; // 接收者
 }

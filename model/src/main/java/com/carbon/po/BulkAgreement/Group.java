@@ -1,5 +1,6 @@
 package com.carbon.po.BulkAgreement;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
+@TableName("`group`")
 // 群组
 public class Group implements Serializable {
     private String id;

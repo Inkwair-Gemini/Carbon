@@ -1,5 +1,6 @@
 package com.carbon.po.Capital;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ public class DepositAndWithdrawalRequestRecord implements Serializable {
     private String account; // 资金账号
     private String bindBank; // 银行
     private String bankAccountId; // 银行账户Id
+    @TableField("`type`")
     private String type; // 出/入
     private String requestState; // 申请状态 成功/失败
     private Double actualAmount; // 发生金额

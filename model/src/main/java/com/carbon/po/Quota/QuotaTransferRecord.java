@@ -1,5 +1,6 @@
 package com.carbon.po.Quota;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ public class QuotaTransferRecord implements Serializable {
     private String clientId;
     private String clientName;
     private String operatorCode;
+    @TableField("`type`")
     private String type; // 出/入
     private String subjectMatterCode; // 标的物代码
     private String subjectMatterName; // 标的物名称

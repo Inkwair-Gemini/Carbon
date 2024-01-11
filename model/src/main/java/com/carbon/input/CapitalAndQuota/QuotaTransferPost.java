@@ -1,5 +1,6 @@
 package com.carbon.input.CapitalAndQuota;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,7 @@ public class QuotaTransferPost implements Serializable {
     private String quotaAccount; // 配额账号
     private String subjectMatterCode; // 标的物代码
     private String subjectMatterName; // 标的物名称
+    @TableField("`type`")
     private String type; // 划转类型
     private Double actualAmount; // 划转数量
 }
