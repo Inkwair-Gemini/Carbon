@@ -254,7 +254,7 @@ public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryServ
             capitalAccountMapper.updateById(capitalAccount);
             QueryWrapper<ClientTradeQuota> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("quota_account_id", listingClient.getQuotaAccountId()).eq("subject_matter_code", directionEnquiryPost.getSubjectMatterCode());
-            clientTradeQuotaMapper.update(queryWrapper);
+            clientTradeQuotaMapper.update(clientTradeQuota,queryWrapper);
 
             isDone = true;
         } else if (directionEnquiryPost.getFlowType().equals("卖出") && isEnough && isInPriceRange) {
@@ -267,7 +267,7 @@ public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryServ
             // 1.2.2.更新摘牌方配额账户，更新挂牌方资金账户
             QueryWrapper<ClientTradeQuota> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("quota_account_id", delistingClient.getQuotaAccountId()).eq("subject_matter_code", directionEnquiryPost.getSubjectMatterCode());
-            clientTradeQuotaMapper.update(queryWrapper);
+            clientTradeQuotaMapper.update(clientTradeQuota,queryWrapper);
             capitalAccountMapper.updateById(capitalAccount);
             isDone = true;
         }
@@ -277,13 +277,14 @@ public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryServ
             directionDoneRecord.setTime(timestamp);
             directionDoneRecord.setSubjectMatterCode(directionEnquiryPost.getSubjectMatterCode());
             directionDoneRecord.setSubjectMatterName(directionEnquiryPost.getSubjectMatterName());
-            directionDoneRecord.setFlowType(directionEnquiryPost.getFlowType());
             QueryWrapper<DirectionPost> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("id", directionEnquiryPost.getDirectionPostId());
             List<DirectionPost> directionPostList = directionPostMapper.selectList(queryWrapper);
             DirectionPost directionPost = directionPostList.get(0);
+            directionDoneRecord.setFlowType(directionPost.getFlowType());
             directionDoneRecord.setFirstPrice(directionPost.getPrice());
             directionDoneRecord.setFirstAmount(directionPost.getAmount());
+            directionDoneRecord.setFirstBalance(directionPost.getAmount()*directionPost.getPrice());
             directionDoneRecord.setFinallyAmount(directionEnquiryPost.getAmount());
             directionDoneRecord.setFinallyPrice(directionEnquiryPost.getPrice());
             directionDoneRecord.setFinallyBalance(directionEnquiryPost.getAmount() * directionEnquiryPost.getPrice());
@@ -295,28 +296,55 @@ public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryServ
 
     @Override
     public void makeGroupBargain(GroupEnquiryPost groupEnquiryPost) {
-        ClientOperator clientOperator = clientOperatorMapper.selectById(groupEnquiryPost.getOperatorCode());
-        Client client = clientMapper.selectById(clientOperator.getClientId());
-        Group group = groupMapper.selectById(groupEnquiryPost.getGroupId());
-        GroupClient groupClient = groupClientMapper.selectById(groupEnquiryPost.getGroupId());
-        CapitalAccount capitalAccount = capitalAccountMapper.selectById(client.getCapitalAccountId());
-        GroupDoneRecord groupDoneRecord = new GroupDoneRecord();
+        //获取挂牌方与摘牌方
+        //挂牌方
+        Group group=groupMapper.selectById(groupEnquiryPost.getGroupId());
+        Client listingClient= clientMapper.selectById(group.getGroupMaster());
+        //摘牌方
+        ClientOperator clientOperator=clientOperatorMapper.selectById(groupEnquiryPost.getOperatorCode());
+        Client delistingClient=clientMapper.selectById(clientOperator.getClientId());
 
+        CapitalAccount capitalAccount = new CapitalAccount();
         ClientTradeQuota clientTradeQuota = new ClientTradeQuota();
+        GroupDoneRecord groupDoneRecord = new GroupDoneRecord();
         boolean isEnough = false;
+        boolean isCapitalEnough= false;
+        boolean isQuotaEnough = false;
+
         //1.判断买卖方向
         if (groupEnquiryPost.getFlowType().equals("买入")) {
-            // 1.1.判断是否有足够的资金
-            double availableCapital = capitalAccount.getAvailableCapital();
-            if (availableCapital >= groupEnquiryPost.getAmount() * groupEnquiryPost.getPrice()) {
+            // 1.1.判断挂牌方是否有足够的配额
+            //获取挂牌方配额账户
+            QueryWrapper<ClientTradeQuota> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("quota_account_id", listingClient.getQuotaAccountId()).eq("subject_matter_code", groupEnquiryPost.getSubjectMatterCode());
+            clientTradeQuota = clientTradeQuotaMapper.selectOne(queryWrapper);
+            if (clientTradeQuota.getAvailableQuotaAmount() >= groupEnquiryPost.getAmount()) {
+                isQuotaEnough = true;
+            }
+            //获取摘牌方资金账户
+            capitalAccount = capitalAccountMapper.selectById(delistingClient.getCapitalAccountId());
+            if (capitalAccount.getAvailableCapital() >= groupEnquiryPost.getAmount() * groupEnquiryPost.getPrice()) {
+                isCapitalEnough = true;
+            }
+
+            if (isQuotaEnough && isCapitalEnough) {
                 isEnough = true;
             }
         } else if (groupEnquiryPost.getFlowType().equals("卖出")) {
-            // 1.2.判断是否有足够的可用交易配额
+            //判断摘牌方是否有足够的配额
+            //获取摘牌方配额账户
             QueryWrapper<ClientTradeQuota> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("quota_account_id", client.getQuotaAccountId()).eq("subject_matter_code", groupEnquiryPost.getSubjectMatterCode());
+            queryWrapper.eq("quota_account_id", delistingClient.getQuotaAccountId()).eq("subject_matter_code", groupEnquiryPost.getSubjectMatterCode());
             clientTradeQuota = clientTradeQuotaMapper.selectOne(queryWrapper);
             if (clientTradeQuota.getAvailableQuotaAmount() >= groupEnquiryPost.getAmount()) {
+                isQuotaEnough = true;
+            }
+            //获取挂牌方资金账户
+            capitalAccount = capitalAccountMapper.selectById(listingClient.getCapitalAccountId());
+            if (capitalAccount.getAvailableCapital() >= groupEnquiryPost.getAmount() * groupEnquiryPost.getPrice()) {
+                isCapitalEnough = true;
+            }
+            if (isQuotaEnough && isCapitalEnough) {
                 isEnough = true;
             }
         }
@@ -326,11 +354,11 @@ public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryServ
         LocalDate yesterday = localDate.minusDays(1);
         Timestamp beginTime = Timestamp.valueOf(yesterday.atStartOfDay());
         Timestamp endTime = Timestamp.valueOf(yesterday.atTime(23, 59, 59));
-        QueryWrapper<DirectionDoneRecord> directionDoneRecordQueryWrapper = new QueryWrapper<>();
+        QueryWrapper<GroupDoneRecord> groupDoneRecordQueryWrapper = new QueryWrapper<>();
         //  2.1.查询昨日收盘价
-        directionDoneRecordQueryWrapper.eq("subject_matter_code", groupEnquiryPost.getSubjectMatterCode()).between("time", beginTime, endTime);
-        List<DirectionDoneRecord> directionDoneRecordList = directionDoneRecordMapper.selectList(directionDoneRecordQueryWrapper);
-        Double closingPrice = BulkStockUtils.getDirectionClosingPrice(directionDoneRecordList);
+        groupDoneRecordQueryWrapper.eq("subject_matter_code", groupEnquiryPost.getSubjectMatterCode()).between("time", beginTime, endTime);
+        List<GroupDoneRecord> groupDoneRecordList = groupDoneRecordMapper.selectList(groupDoneRecordQueryWrapper);
+        Double closingPrice = BulkStockUtils.getGroupClosingPrice(groupDoneRecordList);
         //  2.2.计算开价范围
         Double[] closingPriceRange = BulkStockUtils.getClosingPriceRange(closingPrice);
         //  2.3.判断是否在开价范围内
@@ -338,43 +366,53 @@ public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryServ
 
         boolean isDone = false;
         if (groupEnquiryPost.getFlowType().equals("买入") && isEnough && isInPriceRange) {
-            // 1.1.1.冻结部分资金
-            capitalAccount.setAvailableCapital(capitalAccount.getAvailableCapital() - groupEnquiryPost.getAmount() * groupEnquiryPost.getPrice());
-            capitalAccount.setUnavailableCapital(capitalAccount.getUnavailableCapital() + groupEnquiryPost.getAmount() * groupEnquiryPost.getPrice());
-            // 1.1.2.更新资金账户
-            capitalAccountMapper.updateById(capitalAccount);
-            groupEnquiryPostMapper.insert(groupEnquiryPost);
-            isDone = true;
-        } else if (groupEnquiryPost.getFlowType().equals("卖出") && isEnough && isInPriceRange) {
-            // 1.2.1.冻结部分交易配额
+            // 1.1.1.冻结摘牌方部分资金，冻结挂牌方部分配额
             clientTradeQuota.setAvailableQuotaAmount(clientTradeQuota.getAvailableQuotaAmount() - groupEnquiryPost.getAmount());
             clientTradeQuota.setUnavailableQuotaAmount(clientTradeQuota.getUnavailableQuotaAmount() + groupEnquiryPost.getAmount());
-            // 1.2.2.更新交易配额
-            clientTradeQuotaMapper.updateById(clientTradeQuota);
-            groupEnquiryPostMapper.insert(groupEnquiryPost);
+            capitalAccount.setAvailableCapital(capitalAccount.getAvailableCapital() - groupEnquiryPost.getAmount() * groupEnquiryPost.getPrice());
+            capitalAccount.setUnavailableCapital(capitalAccount.getUnavailableCapital() + groupEnquiryPost.getAmount() * groupEnquiryPost.getPrice());
+
+            // 1.1.2.更新摘牌方资金账户，更新挂牌方配额账户
+            capitalAccountMapper.updateById(capitalAccount);
+            QueryWrapper<ClientTradeQuota> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("quota_account_id", listingClient.getQuotaAccountId()).eq("subject_matter_code", groupEnquiryPost.getSubjectMatterCode());
+            clientTradeQuotaMapper.update(clientTradeQuota,queryWrapper);
+
+            isDone = true;
+        } else if (groupEnquiryPost.getFlowType().equals("卖出") && isEnough && isInPriceRange) {
+            // 1.2.1.冻结摘牌方部分配额，冻结挂牌方部分资金
+            clientTradeQuota.setAvailableQuotaAmount(clientTradeQuota.getAvailableQuotaAmount() - groupEnquiryPost.getAmount());
+            clientTradeQuota.setUnavailableQuotaAmount(clientTradeQuota.getUnavailableQuotaAmount() + groupEnquiryPost.getAmount());
+            capitalAccount.setAvailableCapital(capitalAccount.getAvailableCapital() - groupEnquiryPost.getAmount() * groupEnquiryPost.getPrice());
+            capitalAccount.setUnavailableCapital(capitalAccount.getUnavailableCapital() + groupEnquiryPost.getAmount() * groupEnquiryPost.getPrice());
+
+            // 1.2.2.更新摘牌方配额账户，更新挂牌方资金账户
+            QueryWrapper<ClientTradeQuota> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("quota_account_id", delistingClient.getQuotaAccountId()).eq("subject_matter_code", groupEnquiryPost.getSubjectMatterCode());
+            clientTradeQuotaMapper.update(clientTradeQuota,queryWrapper);
+            capitalAccountMapper.updateById(capitalAccount);
             isDone = true;
         }
+
         if (isDone) {
             // 生成成交记录
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             groupDoneRecord.setTime(timestamp);
-            groupDoneRecord.setGroupId(groupEnquiryPost.getGroupId());
             groupDoneRecord.setSubjectMatterCode(groupEnquiryPost.getSubjectMatterCode());
             groupDoneRecord.setSubjectMatterName(groupEnquiryPost.getSubjectMatterName());
-            groupDoneRecord.setFlowType(groupEnquiryPost.getFlowType());
-            QueryWrapper<GroupPost> queryWrapper1 = new QueryWrapper<>();
-
-            queryWrapper1.eq("group_id", group.getId());
-            List<GroupPost> posts = groupPostMapper.selectList(queryWrapper1);
-            GroupPost groupPost = posts.get(0);
+            QueryWrapper<GroupPost> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("group_id", groupEnquiryPost.getGroupId());
+            List<GroupPost> groupPostList = groupPostMapper.selectList(queryWrapper);
+            GroupPost groupPost = groupPostList.get(0);
+            groupDoneRecord.setFlowType(groupPost.getFlowType());
             groupDoneRecord.setFirstPrice(groupPost.getPrice());
             groupDoneRecord.setFirstAmount(groupPost.getAmount());
-
+            groupDoneRecord.setFirstBalance(groupPost.getAmount()*groupPost.getPrice());
             groupDoneRecord.setFinallyAmount(groupEnquiryPost.getAmount());
             groupDoneRecord.setFinallyPrice(groupEnquiryPost.getPrice());
             groupDoneRecord.setFinallyBalance(groupEnquiryPost.getAmount() * groupEnquiryPost.getPrice());
-            groupDoneRecord.setListingClient(group.getGroupMaster());
-            groupDoneRecord.setDelistingClient(client.getId());
+            groupDoneRecord.setListingClient(listingClient.getId());
+            groupDoneRecord.setDelistingClient(delistingClient.getId());
             groupDoneRecordMapper.insert(groupDoneRecord);
         }
     }
