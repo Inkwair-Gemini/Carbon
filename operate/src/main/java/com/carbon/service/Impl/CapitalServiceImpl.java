@@ -128,8 +128,10 @@ public class CapitalServiceImpl implements CapitalService {
     }
 
     @Override
-    public CapitalAccount selectCapitalAccount(String accountId) {
-        return capitalAccountMapper.selectById(accountId);
+    public List<CapitalAccount> selectCapitalAccount(String clientId) {
+        Map<String,Object> map=new HashMap<>();
+        map.put("client_Id",clientId);
+        return capitalAccountMapper.selectByMap(map);
     }
 
     @Override
@@ -166,15 +168,15 @@ public class CapitalServiceImpl implements CapitalService {
 
     @Override
     public List<DepositAndWithdrawalRequestRecord> selectDepositAndWithdrawalRequestRecord(String clientId) {
-        //1.获取客户操作员
-        Map<String,Object> clientOperatormap=new HashMap<>();
-        clientOperatormap.put("client_id",clientId);
-        List<ClientOperator> clientOperators = clientOperatorMapper.selectByMap(clientOperatormap);
+        //1.获取资金账号
+        Map<String,Object> capitalAccountmap=new HashMap<>();
+        capitalAccountmap.put("client_id",clientId);
+        List<CapitalAccount> capitalAccounts = capitalAccountMapper.selectByMap(capitalAccountmap);
+        //2.获取所有资金账号的记录
         List<DepositAndWithdrawalRequestRecord> depositAndWithdrawalRequestRecords = new ArrayList<>();
-        //2.获取所有操作员记录
-        for(int i=0;i<clientOperators.size();i++){
+        for(int i=0;i<capitalAccounts.size();i++){
             Map<String,Object> map=new HashMap<>();
-            map.put("operator_code",clientOperators.get(i).getId());
+            map.put("account",capitalAccounts.get(i).getId());
             depositAndWithdrawalRequestRecords.addAll(depositAndWithdrawalRequestRecordMapper.selectByMap(map));
         }
         return depositAndWithdrawalRequestRecords;

@@ -451,7 +451,7 @@ public class BulkAgreementController {
             return Result.fail();
         }
     }
-    //查询大宗协议当日定向询价记录
+    //查询大宗协议当日群组询价记录
     @GetMapping("/selectDayGroupOfferEnquiry/{clientId}")
     public Result selectDayGroupOfferEnquiry(@PathVariable String clientId) {
         try {

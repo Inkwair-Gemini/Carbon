@@ -35,10 +35,10 @@ public class CapitalController {
     }
 
     //查询资金账号 接受资金账号ID  查询资金账号详细信息  返回资金账号详细信息
-    @GetMapping("/selectCapitalAccount/{accountId}")
-    public Result SelectCapitalAccount(@PathVariable String accountId) {
-        CapitalAccount capitalAccount = capitalService.selectCapitalAccount(accountId);
-        return Result.ok(capitalAccount);
+    @GetMapping("/selectCapitalAccount/{clientId}")
+    public Result SelectCapitalAccount(@PathVariable String clientId) {
+        List<CapitalAccount> capitalAccounts = capitalService.selectCapitalAccount(clientId);
+        return Result.ok(capitalAccounts);
     }
 
     //查询资金交易流水 接受操作员代码 查询资金交易流水 返回资金交易流水详细信息

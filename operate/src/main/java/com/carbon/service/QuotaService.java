@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface QuotaService {
     //查询交易配额
-    List<ClientTradeQuota> SelectClientTradeQuota(String QuotaAccountId, String subjectMatterCode);
+    List<ClientTradeQuota> SelectClientTradeQuota(String ClientId, String subjectMatterCode);
     //查询登记配额
     List<ClientRegisterQuota> SelectClientRegisterQuota(String ClientId, String subjectMatterCode);
     //转入交易配额

@@ -59,15 +59,15 @@ public class QuotaController {
         }
     }
     //查询交易配额
-    @GetMapping("/selectTradeQuota/{clientId}/{subjectMatterCode}")
-    public Result SelectTradeQuota(@PathVariable String clientId,@PathVariable String subjectMatterCode){
-        List<ClientTradeQuota> clientTradeQuotas = quotaService.SelectClientTradeQuota(clientId,subjectMatterCode);
+    @GetMapping("/selectTradeQuota/{clientId}")
+    public Result SelectTradeQuota(@PathVariable String clientId){
+        List<ClientTradeQuota> clientTradeQuotas = quotaService.SelectClientTradeQuota(clientId,"");
         return Result.ok(clientTradeQuotas);
     }
     //查询登记配额
-    @GetMapping("/selectRegisterQuota/{clientId}/{subjectMatterCode}")
-    public Result SelectRegisterQuota(@PathVariable String clientId,@PathVariable String subjectMatterCode){
-        List<ClientRegisterQuota> clientRegisterQuotas = quotaService.SelectClientRegisterQuota(clientId, subjectMatterCode);
+    @GetMapping("/selectRegisterQuota/{clientId}")
+    public Result SelectRegisterQuota(@PathVariable String clientId){
+        List<ClientRegisterQuota> clientRegisterQuotas = quotaService.SelectClientRegisterQuota(clientId, "");
         return Result.ok(clientRegisterQuotas);
     }
     //查询转入转出配额记录

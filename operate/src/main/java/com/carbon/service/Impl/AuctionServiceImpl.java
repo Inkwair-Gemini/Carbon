@@ -264,25 +264,23 @@ public class AuctionServiceImpl implements AuctionService {
     //查询当日单向竞价成交记录
     @Override
     public List<AuctionDoneRecord> selectDayAuctionDoneRecord(String clientId){
-        //1.获取所有客户操作员
-        Map<String,Object> clientOperatormap=new HashMap<>();
-        clientOperatormap.put("client_id",clientId);
-        List<ClientOperator> clientOperators = clientOperatorMapper.selectByMap(clientOperatormap);
-        List<AuctionDoneRecord> AuctionDoneRecords = new ArrayList<>();
 
-        //2.获取当日时间戳
+        //1.获取当日时间戳
         LocalDate localDate = LocalDate.now();
         Timestamp beginTime = Timestamp.valueOf(localDate.atStartOfDay());
         Timestamp endTime = Timestamp.valueOf(localDate.atTime(23, 59, 59));
 
-        //3.获取所有操作员的记录
-        for(int i=0;i<clientOperators.size();i++){
-            QueryWrapper<AuctionDoneRecord> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("operator_code", clientOperators.get(i).getId()).between("time", beginTime, endTime);
-            AuctionDoneRecords.addAll(auctionDoneRecordMapper.selectList(queryWrapper));
-        }
+        //查询成交记录
+        List<AuctionDoneRecord> auctionDoneRecords = new ArrayList<>();
 
-        return AuctionDoneRecords;
+        QueryWrapper<AuctionDoneRecord> purchaserQueryWrapper = new QueryWrapper<>();
+        purchaserQueryWrapper.eq("purchaser_client", clientId).between("time", beginTime, endTime);
+        auctionDoneRecords.addAll(auctionDoneRecordMapper.selectList(purchaserQueryWrapper));
+
+        QueryWrapper<AuctionDoneRecord> requestQueryWrapper = new QueryWrapper<>();
+        requestQueryWrapper.eq("request_client", clientId).between("time", beginTime, endTime);
+        auctionDoneRecords.addAll(auctionDoneRecordMapper.selectList(requestQueryWrapper));
+        return auctionDoneRecords;
     };
 
 }

@@ -18,7 +18,7 @@ public interface CapitalService {
     //转出交易资金
     void capitalOut(String capitalAccountId,Double amount);
     //查询资金账户
-    CapitalAccount selectCapitalAccount(String accountId);
+    List<CapitalAccount> selectCapitalAccount(String clientId);
     //查询资金交易流水
     List<CapitalTradeRecord> selectCapitalTradeRecord(String ClientId);
     //查询出入金记录

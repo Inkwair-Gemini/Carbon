@@ -334,7 +334,7 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
             directionPosts.addAll(directionPostMapper.selectList(queryWrapper1));
             //作为接收方的报价记录
             QueryWrapper<DirectionPost> queryWrapper2 = new QueryWrapper<>();
-            queryWrapper2.eq("direction_id", clientOperators.get(i).getClientId()).between("time", beginTime, endTime);
+            queryWrapper2.eq("direction_client", clientOperators.get(i).getClientId()).between("time", beginTime, endTime);
             directionPosts.addAll(directionPostMapper.selectList(queryWrapper2));
         }
 
@@ -386,9 +386,14 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
         Timestamp endTime = Timestamp.valueOf(localDate.atTime(23, 59, 59));
 
         //2.查询成交记录
-        QueryWrapper<DirectionDoneRecord> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("listing_client", clientId).or().eq("delisting_client", clientId).between("time", beginTime, endTime);
-        List<DirectionDoneRecord> directionDoneRecords = directionDoneRecordMapper.selectList(queryWrapper);
+        QueryWrapper<DirectionDoneRecord> listingQueryWrapper = new QueryWrapper<>();
+        listingQueryWrapper.eq("listing_client", clientId).between("time", beginTime, endTime);
+        List<DirectionDoneRecord> directionDoneRecords = directionDoneRecordMapper.selectList(listingQueryWrapper);
+
+        QueryWrapper<DirectionDoneRecord> delistingQueryWrapper = new QueryWrapper<>();
+        delistingQueryWrapper.eq("delisting_client", clientId).between("time", beginTime, endTime);
+        directionDoneRecords.addAll(directionDoneRecordMapper.selectList(delistingQueryWrapper));
+
         return directionDoneRecords;
 
     }
@@ -403,9 +408,13 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
         Timestamp endTime = Timestamp.valueOf(localDate.atTime(23, 59, 59));
 
         //2.查询成交记录
-        QueryWrapper<GroupDoneRecord> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("listing_client", clientId).or().eq("delisting_client", clientId).between("time", beginTime, endTime);
-        List<GroupDoneRecord> groupDoneRecords = groupDoneRecordMapper.selectList(queryWrapper);
+        QueryWrapper<GroupDoneRecord> listingQueryWrapper = new QueryWrapper<>();
+        listingQueryWrapper.eq("listing_client", clientId).between("time", beginTime, endTime);
+        List<GroupDoneRecord> groupDoneRecords = groupDoneRecordMapper.selectList(listingQueryWrapper);
+
+        QueryWrapper<GroupDoneRecord> delistingQueryWrapper = new QueryWrapper<>();
+        delistingQueryWrapper.eq("delisting_client", clientId).between("time", beginTime, endTime);
+        groupDoneRecords.addAll(groupDoneRecordMapper.selectList(delistingQueryWrapper));
         return groupDoneRecords;
     }
 

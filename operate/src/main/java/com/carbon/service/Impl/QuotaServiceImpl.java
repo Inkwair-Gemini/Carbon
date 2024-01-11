@@ -4,13 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.carbon.Utils.StringUtils;
 import com.carbon.mapper.*;
 import com.carbon.po.*;
-import com.carbon.po.Quota.ClientRegisterQuota;
-import com.carbon.po.Quota.ClientTradeQuota;
-import com.carbon.po.Quota.QuotaTradeRecord;
-import com.carbon.po.Quota.QuotaTransferRecord;
+import com.carbon.po.Capital.CapitalAccount;
+import com.carbon.po.Capital.DepositAndWithdrawalRequestRecord;
+import com.carbon.po.Quota.*;
 import com.carbon.service.QuotaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,15 +29,22 @@ public class QuotaServiceImpl implements QuotaService {
     @Autowired
     private QuotaTradeRecordMapper quotaTradeRecordMapper;
     @Override
-    public List<ClientTradeQuota> SelectClientTradeQuota(String QuotaAccountId, String subjectMatterCode) {
-        Map<String,Object> map=new HashMap<>();
-        if(StringUtils.isNotEmpty(QuotaAccountId)){
-            map.put("quota_account_id",QuotaAccountId);
+    public List<ClientTradeQuota> SelectClientTradeQuota(String clientId, String subjectMatterCode) {
+        //1.获取配额账号
+        Map<String,Object> quotaAccountmap=new HashMap<>();
+        quotaAccountmap.put("client_id",clientId);
+        List<QuotaAccount> quotaAccounts = quotaAccountMapper.selectByMap(quotaAccountmap);
+        //2.获取所有配额账号的记录
+        List<ClientTradeQuota> clientTradeQuotas = new ArrayList<>();
+        for(int i=0;i<quotaAccounts.size();i++){
+            Map<String,Object> map=new HashMap<>();
+            map.put("quota_account_id",quotaAccounts.get(i).getId());
+            if(StringUtils.isNotEmpty(subjectMatterCode)){
+                //map.put("subject_matter_code",subjectMatterCode);
+            }
+            clientTradeQuotas.addAll(clientTradeQuotaMapper.selectByMap(map));
         }
-        if(StringUtils.isNotEmpty(subjectMatterCode)){
-            map.put("subject_matter_code",subjectMatterCode);
-        }
-        return  clientTradeQuotaMapper.selectByMap(map);
+        return clientTradeQuotas;
     }
 
     @Override
@@ -46,7 +54,7 @@ public class QuotaServiceImpl implements QuotaService {
             map.put("client_id",clientId);
         }
         if(StringUtils.isNotEmpty(subjectMatterCode)){
-            map.put("subject_matter_code",subjectMatterCode);
+            //map.put("subject_matter_code",subjectMatterCode);
         }
         return clientRegisterQuotaMapper.selectByMap(map);
     }
