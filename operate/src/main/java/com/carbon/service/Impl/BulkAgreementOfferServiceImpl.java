@@ -103,6 +103,7 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
         if (isEnough && isInPriceRange) {
             //  3.1.定向报价成功
             //  3.1.1.更新资金账户
+            directionPost.setTime(new Timestamp(System.currentTimeMillis()));
             directionPostMapper.insert(directionPost);
             return true;
         } else return false;
@@ -110,6 +111,7 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
 
     @Override
     public boolean groupOffer(GroupPost groupPost) {
+        groupPost.setTime(new Timestamp(System.currentTimeMillis()));
         ClientOperator clientOperator = clientOperatorMapper.selectById(groupPost.getOperatorCode());
         Client client = clientMapper.selectById(clientOperator.getClientId());
         CapitalAccount capitalAccount = capitalAccountMapper.selectById(client.getCapitalAccountId());
@@ -144,9 +146,11 @@ public class BulkAgreementOfferServiceImpl implements BulkAgreementOfferService 
         Double closingPrice = BulkStockUtils.getGroupClosingPrice(groupDoneRecordList);
         //  2.2.计算开价范围
         Double[] closingPriceRange = BulkStockUtils.getClosingPriceRange(closingPrice);
+        System.out.println(closingPriceRange[0]);
         //  2.3.判断是否在开价范围内
         boolean isInPriceRange = groupPost.getPrice() >= closingPriceRange[0] && groupPost.getPrice() <= closingPriceRange[1];
-
+        System.out.println(isInPriceRange);
+        System.out.println(isEnough);
         //  3.判断是否群组报价成功
         if (isEnough && isInPriceRange) {
             //  3.1.群组报价成功
