@@ -8,6 +8,7 @@ import com.carbon.po.Listing.ListingDoneRecord;
 import com.carbon.result.Result;
 import com.carbon.service.ListingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
@@ -145,7 +146,9 @@ public class ListingController {
     //传入客户Id，开始时间，结束时间
     //返回List<ListingPost>
     @PostMapping("history_entrustInfo")
-    public Result SelectEntrustInfo(@RequestBody String clientId,@RequestBody Timestamp start,@RequestBody Timestamp end){
+    public Result selectEntrustInfo(@RequestParam String clientId,
+                                    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Timestamp start,
+                                    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Timestamp end) {
         try {
             List<ListingPost> listingPostList = ListingService.selectEntrustInfo(clientId,start,end);
             return Result.ok(listingPostList);

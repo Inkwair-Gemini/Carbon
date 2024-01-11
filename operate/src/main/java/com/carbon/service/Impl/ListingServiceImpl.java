@@ -84,7 +84,7 @@ public class ListingServiceImpl implements ListingService {
             if(listingPost.getPrice()<listingPost.getPrice()*0.9||listingPost.getPrice()>listingPost.getPrice()*1.1)
                 return false;
         }
-
+        System.out.println(listingPost.getQuotaAccount());
         // 挂牌交易
         Double availableCapital=CapitalAccountMapper.selectById(listingPost.getQuotaAccount()).getAvailableCapital();
         Double unavailableCapital=CapitalAccountMapper.selectById(listingPost.getQuotaAccount()).getUnavailableCapital();
@@ -122,8 +122,8 @@ public class ListingServiceImpl implements ListingService {
         }
 
 
-        QueryWrapper query2 = new QueryWrapper<ListingPost>();
-        query2.eq("account_id",listingPost.getQuotaAccount());
+        QueryWrapper query2 = new QueryWrapper<ClientTradeQuota>();
+        query2.eq("quota_account_id",listingPost.getQuotaAccount());
         query2.eq("subject_matter_code",listingPost.getSubjectMatterCode());
         Double amount= ClientTradeQuotaMapper.selectOne(query2).getAvailableQuotaAmount();
         Double unamount=ClientTradeQuotaMapper.selectOne(query2).getUnavailableQuotaAmount();
@@ -132,7 +132,7 @@ public class ListingServiceImpl implements ListingService {
         ListingPostMapper.insert(listingPost);
         //更新配额
         UpdateWrapper update = new UpdateWrapper<ClientTradeQuota>();
-        update.eq("account_id",listingPost.getQuotaAccount());
+        update.eq("quota_account_id",listingPost.getQuotaAccount());
         update.eq("subject_matter_code",listingPost.getSubjectMatterCode());
         update.set("available_quota_amount",amount-listingPost.getAmount());
         update.set("unavailable_quota_amount",unamount+listingPost.getAmount());
@@ -251,8 +251,8 @@ public class ListingServiceImpl implements ListingService {
         temp.setMinutes(0);
         temp.setSeconds(0);
         QueryWrapper<ListingPost> query = new QueryWrapper<>();
-        query.eq("quata_account",capitalAccount.getId()).or().eq("quota_account",quotaAccount.getId());
-        query.ge("time",temp);
+        query.apply("(quota_account = {0} OR quota_account = {1})", capitalAccount.getId(), quotaAccount.getId())
+                .ge("time", temp);
         List listingPostList=ListingPostMapper.selectList(query);
         return listingPostList;
     }
@@ -267,7 +267,7 @@ public class ListingServiceImpl implements ListingService {
         QuotaAccount quotaAccount = QuotaAccountMapper.selectOne(query3);
 
         QueryWrapper<ListingPost> query = new QueryWrapper<>();
-        query.eq("quata_account", capitalAccount.getId()).or().eq("quota_account",quotaAccount.getId());
+        query.eq("quota_account", capitalAccount.getId()).or().eq("quota_account",quotaAccount.getId());
         query.ge("time",start);
         query.le("time",end);
         List listingPostList=ListingPostMapper.selectList(query);
@@ -282,8 +282,8 @@ public class ListingServiceImpl implements ListingService {
         temp.setMinutes(0);
         temp.setSeconds(0);
         QueryWrapper<ListingDoneRecord> query = new QueryWrapper<ListingDoneRecord>();
-        query.eq("listing_client", clientId).or().eq("delisting_client",clientId);
-        query.ge("time",temp);
+        query.apply("(listing_client = {0} OR delisting_client = {1})", clientId, clientId)
+                .ge("time", temp);
         List listingDoneList=ListingDoneRecordMapper.selectList(query);
         return listingDoneList;
     }
@@ -386,47 +386,36 @@ public class ListingServiceImpl implements ListingService {
 
     //查询当日挂牌交易委托记录
     public List<ListingPost> selectDayListingPost(String clientId){
-        //1.获取所有客户操作员
-        Map<String,Object> clientOperatormap=new HashMap<>();
-        clientOperatormap.put("client_id",clientId);
-        List<ClientOperator> clientOperators = clientOperatorMapper.selectByMap(clientOperatormap);
-        List<ListingPost> listingPosts = new ArrayList<>();
+        Timestamp temp = new Timestamp(System.currentTimeMillis());
+        QueryWrapper query2 = new QueryWrapper<CapitalAccount>();
+        query2.eq("client_id",clientId);
+        CapitalAccount capitalAccount = CapitalAccountMapper.selectOne(query2);
+        QueryWrapper query3 = new QueryWrapper<QuotaAccount>();
+        query3.eq("client_id",clientId);
+        QuotaAccount quotaAccount = QuotaAccountMapper.selectOne(query3);
+        //把temp设为当天的0点
+        temp.setHours(0);
+        temp.setMinutes(0);
+        temp.setSeconds(0);
+        QueryWrapper<ListingPost> query = new QueryWrapper<>();
+        query.apply("(quota_account = {0} OR quota_account = {1})", capitalAccount.getId(), quotaAccount.getId())
+                .ge("time", temp);
+        List listingPostList=ListingPostMapper.selectList(query);
+        return listingPostList;
+    }
 
-        //2.获取当日时间戳
-        LocalDate localDate = LocalDate.now();
-        Timestamp beginTime = Timestamp.valueOf(localDate.atStartOfDay());
-        Timestamp endTime = Timestamp.valueOf(localDate.atTime(23, 59, 59));
-
-        //2.获取所有操作员的记录
-        for(int i=0;i<clientOperators.size();i++){
-            QueryWrapper<ListingPost> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("operator_code", clientOperators.get(i).getId()).between("time", beginTime, endTime);
-            listingPosts.addAll(ListingPostMapper.selectList(queryWrapper));
-        }
-
-        return listingPosts;
-    };
     //查询当日挂牌交易成交记录
     public List<ListingDoneRecord> selectDayListingDoneRecord(String clientId){
-        //1.获取所有客户操作员
-        Map<String,Object> clientOperatormap=new HashMap<>();
-        clientOperatormap.put("client_id",clientId);
-        List<ClientOperator> clientOperators = clientOperatorMapper.selectByMap(clientOperatormap);
-        List<ListingDoneRecord> listingDoneRecords = new ArrayList<>();
-
-        //2.获取当日时间戳
-        LocalDate localDate = LocalDate.now();
-        Timestamp beginTime = Timestamp.valueOf(localDate.atStartOfDay());
-        Timestamp endTime = Timestamp.valueOf(localDate.atTime(23, 59, 59));
-
-        //2.获取所有操作员的记录
-        for(int i=0;i<clientOperators.size();i++){
-            QueryWrapper<ListingDoneRecord> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("operator_code", clientOperators.get(i).getId()).between("time", beginTime, endTime);
-            listingDoneRecords.addAll(ListingDoneRecordMapper.selectList(queryWrapper));
-        }
-
-        return listingDoneRecords;
-    };
+        Timestamp temp = new Timestamp(System.currentTimeMillis());
+        //把temp设为当天的0点
+        temp.setHours(0);
+        temp.setMinutes(0);
+        temp.setSeconds(0);
+        QueryWrapper<ListingDoneRecord> query = new QueryWrapper<ListingDoneRecord>();
+        query.apply("(listing_client = {0} OR delisting_client = {1})", clientId, clientId)
+                .ge("time", temp);
+        List listingDoneList=ListingDoneRecordMapper.selectList(query);
+        return listingDoneList;
+    }
 
 }

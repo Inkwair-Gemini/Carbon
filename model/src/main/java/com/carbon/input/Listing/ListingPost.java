@@ -18,7 +18,7 @@ public class ListingPost implements Serializable {
     private String subjectMatterCode; // 标的物代码
     private String subjectMatterName; // 标的物名称
     private String accountType; // 账户类型
-    private String QuotaAccount;//库存账号
+    private String quotaAccount;//库存账号
     private String flowType; // 买入/卖出
     private String listingType; //挂牌方式
     private Double price; // 委托价格

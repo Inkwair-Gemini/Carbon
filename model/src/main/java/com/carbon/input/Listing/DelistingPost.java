@@ -13,8 +13,8 @@ import java.sql.Timestamp;
 public class DelistingPost implements Serializable {
     private String id;
     private Timestamp time;
-    private String ListingId;//挂牌号
-    private String QuotaAccount;//库存账号
+    private String listingId;//挂牌号
+    private String quotaAccount;//库存账号
     private String accountType; // 账户类型
     private String flowType; // 买入/卖出
     private String listingType; //挂牌方式
