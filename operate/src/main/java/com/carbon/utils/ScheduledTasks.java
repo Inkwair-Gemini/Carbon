@@ -76,7 +76,7 @@ public class ScheduledTasks {
             delistingCapitalAccount = capitalAccountMapper.selectById(delistingClient.getCapitalAccountId());
             //查询对应配额账户
             QueryWrapper<ClientTradeQuota> quotaQueryWrapper1 = new QueryWrapper<>();
-            quotaQueryWrapper1.eq("account_id", listingClient.getQuotaAccountId())
+            quotaQueryWrapper1.eq("quota_account_id", listingClient.getQuotaAccountId())
                     .eq("subject_matter_code", listingDoneRecord.getSubjectMatterCode());
             listingClientTradeQuota = clientTradeQuotaMapper.selectOne(quotaQueryWrapper1);
             QueryWrapper<ClientTradeQuota> quotaQueryWrapper2 = new QueryWrapper<>();
@@ -140,7 +140,7 @@ public class ScheduledTasks {
             delistingCapitalAccount = capitalAccountMapper.selectById(delistingClient.getCapitalAccountId());
             //查询对应配额账户
             QueryWrapper<ClientTradeQuota> quotaQueryWrapper1 = new QueryWrapper<>();
-            quotaQueryWrapper1.eq("account_id", listingClient.getQuotaAccountId())
+            quotaQueryWrapper1.eq("quota_account_id", listingClient.getQuotaAccountId())
                     .eq("subject_matter_code", directionDoneRecord.getSubjectMatterCode());
             listingClientTradeQuota = clientTradeQuotaMapper.selectOne(quotaQueryWrapper1);
             QueryWrapper<ClientTradeQuota> quotaQueryWrapper2 = new QueryWrapper<>();
@@ -203,11 +203,11 @@ public class ScheduledTasks {
             delistingCapitalAccount = capitalAccountMapper.selectById(delistingClient.getCapitalAccountId());
             //查询对应配额账户
             QueryWrapper<ClientTradeQuota> quotaQueryWrapper1 = new QueryWrapper<>();
-            quotaQueryWrapper1.eq("account_id", listingClient.getQuotaAccountId())
+            quotaQueryWrapper1.eq("quota_account_id", listingClient.getQuotaAccountId())
                     .eq("subject_matter_code", groupDoneRecord.getSubjectMatterCode());
             listingClientTradeQuota = clientTradeQuotaMapper.selectOne(quotaQueryWrapper1);
             QueryWrapper<ClientTradeQuota> quotaQueryWrapper2 = new QueryWrapper<>();
-            quotaQueryWrapper2.eq("account_id", delistingClient.getQuotaAccountId())
+            quotaQueryWrapper2.eq("quota_account_id", delistingClient.getQuotaAccountId())
                     .eq("subject_matter_code", groupDoneRecord.getSubjectMatterCode());
             delistingClientTradeQuota = clientTradeQuotaMapper.selectOne(quotaQueryWrapper2);
             if (groupDoneRecord.getFlowType().equals("买入")) {
@@ -265,7 +265,7 @@ public class ScheduledTasks {
             delistingCapitalAccount = capitalAccountMapper.selectById(delistingClient.getCapitalAccountId());
             //查询对应配额账户
             QueryWrapper<ClientTradeQuota> quotaQueryWrapper1 = new QueryWrapper<>();
-            quotaQueryWrapper1.eq("account_id", listingClient.getQuotaAccountId())
+            quotaQueryWrapper1.eq("quota_account_id", listingClient.getQuotaAccountId())
                     .eq("subject_matter_code", auctionDoneRecord.getSubjectMatterCode());
             listingClientTradeQuota = clientTradeQuotaMapper.selectOne(quotaQueryWrapper1);
             QueryWrapper<ClientTradeQuota> quotaQueryWrapper2 = new QueryWrapper<>();
