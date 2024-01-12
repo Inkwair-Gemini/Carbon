@@ -12,7 +12,7 @@ public interface BulkAgreementEnquiryService {
     //群组报价洽谈出价
     boolean sendGroupOfferEnquiry(GroupEnquiryPost groupEnquiryPost);
     //查询定向报价洽谈记录
-    List<DirectionEnquiryPost> selectDirectionOfferEnquiry(String operatorCode);
+    List<DirectionEnquiryPost> selectDirectionOfferEnquiry(String clientId);
     //查询群组报价洽谈记录
     List<GroupEnquiryPost> selectGroupOfferEnquiry(String operatorCode);
     //定向达成交易

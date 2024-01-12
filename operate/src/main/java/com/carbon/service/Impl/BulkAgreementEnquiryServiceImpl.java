@@ -154,13 +154,13 @@ public class BulkAgreementEnquiryServiceImpl implements BulkAgreementEnquiryServ
     }
 
     @Override
-    public List<DirectionEnquiryPost> selectDirectionOfferEnquiry(String operatorCode) {
+    public List<DirectionEnquiryPost> selectDirectionOfferEnquiry(String clientId) {
         //1.获取当天起始时间戳
         LocalDate localDate = LocalDate.now();
         Timestamp beginTime = Timestamp.valueOf(localDate.atStartOfDay());
         Timestamp endTime = Timestamp.valueOf(localDate.atTime(23, 59, 59));
         QueryWrapper<DirectionEnquiryPost> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("operator_code", operatorCode).between("time", beginTime, endTime);
+        queryWrapper.eq("direction_client", clientId).between("time", beginTime, endTime);
         return directionEnquiryPostMapper.selectList(queryWrapper);
     }
 

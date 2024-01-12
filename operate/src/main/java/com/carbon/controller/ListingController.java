@@ -69,7 +69,7 @@ public class ListingController {
         delistingPost.setFlowType("买入");
         delistingPost.setListingType("摘牌");
         try {
-            if(ListingService.purchaserDelisting(delistingPost))
+            if(ListingService.sellerDelisting(delistingPost))
                 return Result.ok();
             else
                 return Result.fail();
@@ -88,7 +88,7 @@ public class ListingController {
         delistingPost.setFlowType("卖出");
         delistingPost.setListingType("摘牌");
         try {
-            if(ListingService.sellerDelisting(delistingPost))
+            if(ListingService.purchaserDelisting(delistingPost))
                 return Result.ok();
             else
                 return Result.fail();

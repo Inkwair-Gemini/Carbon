@@ -231,10 +231,10 @@ public class BulkAgreementController {
     //查询大宗协议定向报价洽谈
     //接收操作员代码
     //返回List<DirectionEnquiryPost>
-    @GetMapping("/selectDirectionEnquiry/{operatorCode}")
-    public Result SelectDirectionEnquiry(@PathVariable String operatorCode){
+    @GetMapping("/selectDirectionEnquiry/{clientId}")
+    public Result SelectDirectionEnquiry(@PathVariable String clientId){
         try{
-            List<DirectionEnquiryPost> directionEnquiryPosts = bulkAgreementEnquiryService.selectDirectionOfferEnquiry(operatorCode);
+            List<DirectionEnquiryPost> directionEnquiryPosts = bulkAgreementEnquiryService.selectDirectionOfferEnquiry(clientId);
             return Result.ok(directionEnquiryPosts);
         }catch(Exception e){
             e.printStackTrace();
