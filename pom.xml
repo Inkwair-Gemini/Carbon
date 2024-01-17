@@ -19,7 +19,6 @@
     <modules>
         <module>model</module>
         <module>operate</module>
-        <module>other</module>
     </modules>
 
     <properties>
@@ -36,7 +35,7 @@
                 <artifactId>mysql-connector-j</artifactId>
                 <version>8.1.0</version>
             </dependency>
-            <!--        mybatis-plus 持久层-->
+            <!--   mybatis-plus -->
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-boot-starter</artifactId>
@@ -47,6 +46,7 @@
                 <artifactId>mybatis-plus</artifactId>
                 <version>3.5.5</version>
             </dependency>
+            <!--   lombok -->
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>

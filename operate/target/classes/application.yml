@@ -1,9 +1,10 @@
 server:
   port: 8800
-#mysql
+
 spring:
   application:
     name: carbon
+    #mysql
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver

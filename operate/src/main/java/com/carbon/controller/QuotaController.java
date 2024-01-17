@@ -11,7 +11,7 @@ import com.carbon.utils.ClientIdUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import static com.carbon.Utils.TimeUtils.getCurrentTimestamp;
+import static com.carbon.utils.toolUtils.TimeUtils.getCurrentTimestamp;
 
 @RestController
 @RequestMapping("/quota")

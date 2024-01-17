@@ -7,13 +7,14 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="security" />
         <module name="model" />
         <module name="operate" />
-        <module name="common" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="common" target="17" />
+      <module name="other" target="1.8" />
+      <module name="security" target="17" />
       <module name="utils" target="17" />
     </bytecodeTargetLevel>
   </component>

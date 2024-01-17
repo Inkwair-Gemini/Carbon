@@ -1,6 +1,6 @@
 package com.carbon.service.Impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.carbon.Utils.StringUtils;
+import com.carbon.utils.toolUtils.StringUtils;
 import com.carbon.input.Auction.AuctionRequest;
 import com.carbon.input.BulkAgreement.DirectionEnquiryPost;
 import com.carbon.input.BulkAgreement.DirectionPost;

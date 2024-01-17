@@ -1,11 +1,8 @@
 package com.carbon.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.carbon.Utils.StringUtils;
+import com.carbon.utils.toolUtils.StringUtils;
 import com.carbon.mapper.*;
-import com.carbon.po.*;
-import com.carbon.po.Capital.CapitalAccount;
-import com.carbon.po.Capital.DepositAndWithdrawalRequestRecord;
 import com.carbon.po.Quota.*;
 import com.carbon.service.QuotaService;
 import org.springframework.beans.factory.annotation.Autowired;
