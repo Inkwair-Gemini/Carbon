@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <!--日志处理器-->
+    <Appenders>
+        <!-- 定义控制台输出 -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+        </Console>
+        <!-- 定义文件输出 -->
+        <File name="File" fileName="logs/mylog.log">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+        </File>
+        <!-- 按照一定规则拆分的日志文件的appender -->
+        <RollingFile name="rollingFile" fileName="logs/myrollog.log"
+                     filePattern="logs/$${date:yyyy-MM-dd-HH-mm}/myrollog-%d{yyyy-MM-dd-HH-mm-ss}-%i.log">
+            <!-- 修正日期格式，确保匹配filePattern -->
+            <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="[%d{HH:mm:ss.SSS} [%t] %-5level %logger{36}] - %msg%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="500KB" />
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <!-- 将DefaultRolloverStrategy放置在Policies下 -->
+            <DefaultRolloverStrategy max="60" />
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="File" />
+            <!-- 添加了rollingFile的引用 -->
+            <AppenderRef ref="rollingFile" />
+        </Root>
+    </Loggers>
+</Configuration>

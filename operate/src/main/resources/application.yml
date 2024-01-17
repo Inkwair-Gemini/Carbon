@@ -49,3 +49,9 @@ mybatis-plus:
     cache-enabled: true
     mapUnderscoreToCamelCase: true # 开启驼峰命名转换法
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 配置日志
+#log4j2
+logging:
+  config: classpath:log4j2.xml
+
+
+
