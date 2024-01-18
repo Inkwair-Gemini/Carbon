@@ -1,4 +1,4 @@
-package com.carbon.rabbitMq.config;
+package com.carbon.config.rabbitmq;
 
 import jakarta.annotation.Resource;
 import org.springframework.amqp.core.*;

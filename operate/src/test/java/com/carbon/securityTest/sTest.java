@@ -2,7 +2,7 @@ package com.carbon.securityTest;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import com.carbon.security.utils.MD5;
+import com.carbon.utils.securityUtils.MD5;
 
 @SpringBootTest
 public class sTest {

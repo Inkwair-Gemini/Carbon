@@ -1,4 +1,4 @@
-package com.carbon.security.config;
+package com.carbon.config.cors;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

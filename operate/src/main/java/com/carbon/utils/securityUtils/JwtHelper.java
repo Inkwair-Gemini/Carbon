@@ -1,4 +1,4 @@
-package com.carbon.security.utils;
+package com.carbon.utils.securityUtils;
 import  io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.util.StringUtils;

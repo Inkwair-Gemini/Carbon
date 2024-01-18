@@ -1,4 +1,4 @@
-package com.carbon.security.redis;
+package com.carbon.config.redis;
 
 import com.alibaba.fastjson.support.spring.FastJsonRedisSerializer;
 import org.springframework.context.annotation.Bean;

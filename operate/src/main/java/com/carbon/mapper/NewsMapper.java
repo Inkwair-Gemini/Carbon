@@ -1,8 +1,8 @@
 package com.carbon.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.carbon.po.Tips;
+import com.carbon.po.News;
 
-public interface TipsMapper extends BaseMapper<Tips> {
+public interface NewsMapper extends BaseMapper<News> {
 
 }

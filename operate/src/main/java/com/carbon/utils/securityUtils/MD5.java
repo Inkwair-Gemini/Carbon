@@ -1,4 +1,4 @@
-package com.carbon.security.utils;
+package com.carbon.utils.securityUtils;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

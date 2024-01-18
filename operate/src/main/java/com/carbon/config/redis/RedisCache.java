@@ -1,4 +1,4 @@
-package com.carbon.security.redis;
+package com.carbon.config.redis;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundSetOperations;

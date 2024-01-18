@@ -1,4 +1,4 @@
-package com.carbon.security.utils;
+package com.carbon.utils.securityUtils;
 
 import com.carbon.result.Result;
 import com.fasterxml.jackson.databind.ObjectMapper;
